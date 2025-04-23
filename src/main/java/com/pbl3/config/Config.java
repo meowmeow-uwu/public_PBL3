@@ -10,6 +10,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 @ApplicationPath("api")
 public class Config extends ResourceConfig{
     public Config(){
-        packages("com.firstweb.resource");
+        packages("com.pbl3.controller");
     }
 }

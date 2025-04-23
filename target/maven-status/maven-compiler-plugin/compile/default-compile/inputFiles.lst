@@ -1,10 +1,13 @@
-E:\NetBean\PBL3\src\main\java\com\pbl3\util\DBUtil.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\Word.java
-E:\NetBean\PBL3\src\main\java\com\pbl3\service\UserService.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\service\WordService.java
-E:\NetBean\PBL3\src\main\java\com\pbl3\dto\User.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\config\Config.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\controller\WordController.java
-E:\NetBean\PBL3\src\main\java\com\pbl3\controller\UserController.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dao\WordDAO.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\util\DBUtil.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\dto\UserGroup.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\service\UserService.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\dto\User.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\service\ServiceInterface.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\controller\UserController.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\dao\DAOInterface.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dao\UserDAO.java

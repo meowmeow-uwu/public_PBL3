@@ -4,12 +4,13 @@
  */
 package com.pbl3.dao;
 
-import com.pbl3.dto.User;
-import com.pbl3.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+
+import com.pbl3.dto.User;
+import com.pbl3.util.DBUtil;
 
 /**
  *
@@ -55,7 +56,7 @@ public class UserDAO implements DAOInterface<User>{
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
             if(rs.next()){
-                return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"), rs.getString("password"), rs.getString("name"), rs.getString("avatar"), rs.getBoolean("is_active"), rs.getInt("group_user_id"));
+                return new User(rs.getInt("user_id"), rs.getString("name"), rs.getString("avatar"), rs.getInt("group_user_id"));
             }
             
             rs.close();

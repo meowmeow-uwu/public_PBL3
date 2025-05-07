@@ -13,10 +13,13 @@ import java.util.ArrayList;
  * @author Danh
  */
 public class UserService implements ServiceInterface<User>{
-
+  
+    private final UserDAO userDAO = new UserDAO();
+  
     @Override
     public int insert(User t) {
-        return 1;
+        
+        return userDAO.insert(t);
     }
 
     @Override

@@ -67,21 +67,6 @@ public class WordDAO implements DAOInterface<Word>{
 
     @Override
     public int delete(int id) {
-        Connection c = null;
-        try {
-            c = DBUtil.makeConnection();
-            String query = "DELETE FROM word WHERE word_id=?";
-            PreparedStatement s = c.prepareStatement(query);
-            s.setInt(1, id);
-            
-            int result = s.executeUpdate();
-            s.close();
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.closeConnection(c);
-        }
         return 0;
     }
 
@@ -91,7 +76,7 @@ public class WordDAO implements DAOInterface<Word>{
         try {
             ArrayList<Word> list = new ArrayList<>();
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM word";
+            String query = "SELECT * FROM word WHERE is_deleted = 0";
             PreparedStatement s = c.prepareStatement(query);
             ResultSet rs = s.executeQuery();
             
@@ -121,7 +106,7 @@ public class WordDAO implements DAOInterface<Word>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM word WHERE word_id = ?";
+            String query = "SELECT * FROM word WHERE word_id = ? and is_deleted = 0";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, wordId);
             ResultSet rs = s.executeQuery();
@@ -188,7 +173,7 @@ public class WordDAO implements DAOInterface<Word>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM word WHERE word_name = ?";
+            String query = "SELECT * FROM word WHERE word_name = ? AND is_deleted = 0";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, wordName);
             ResultSet rs = s.executeQuery();

@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.Response;
  *
  * @author Danh
  */
-    @Path("user")
+    @Path("/user")
 public class UserController {
 @GET
 @Path("{id}")

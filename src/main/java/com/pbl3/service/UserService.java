@@ -14,19 +14,14 @@ import com.pbl3.dto.User;
  * @author Danh
  */
 public class UserService implements ServiceInterface<User>{
-
+  
+    private final UserDAO userDAO = new UserDAO();
+  
     @Override
-    public int insert(User user) {
-        UserDAO dao = new UserDAO();
-        int result = dao.insert(user);
-        if (result > 0) {
-            System.out.println("User inserted successfully.");
-        } else {
-            System.out.println("Failed to insert user.");
-        }
-        return result;
+    public int insert(User t) {
+        
+        return userDAO.insert(t);
     }
-    
 
     @Override
     public int update(User user) {

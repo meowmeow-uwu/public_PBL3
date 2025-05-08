@@ -141,6 +141,61 @@ public class AccountDAO implements DAOInterface<Account> {
         return null;
     }
 
+    public   Account selectByEmail(String email) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM account WHERE email = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setString(1, email);
+            ResultSet rs = s.executeQuery();
+
+            if (rs.next()) {
+                return new Account(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getInt("user_id")
+                );
+            }
+            rs.close();
+            s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
+    public  Account selectByUsername(String username) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM account WHERE username = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setString(1, username);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                return new Account(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getInt("user_id")
+                );
+            }
+            rs.close();
+            s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
     @Override
     public Account selectByCondition(String condition) {
         return null;

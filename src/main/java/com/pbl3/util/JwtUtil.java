@@ -25,7 +25,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public static Integer getUserIdFromToken(String token) {
+    public static int getUserIdFromToken(String token) {
         try {
             return Jwts.parser()
                     .setSigningKey(SECRET_KEY)
@@ -33,7 +33,7 @@ public class JwtUtil {
                     .getBody()
                     .get("user_id", Integer.class);
         } catch (Exception e) {
-            return null;
+            return -1;
         }
     }
 

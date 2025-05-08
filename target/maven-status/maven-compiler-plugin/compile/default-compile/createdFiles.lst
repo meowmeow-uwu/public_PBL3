@@ -11,6 +11,7 @@ com\pbl3\dto\TranslateType.class
 com\pbl3\dao\LanguageDAO.class
 com\pbl3\dao\CollectionDAO.class
 com\pbl3\dto\WordHistory.class
+com\pbl3\filter\CORSFilter.class
 com\pbl3\dto\Topic.class
 com\pbl3\util\DBUtil.class
 com\pbl3\dto\QuestionType.class

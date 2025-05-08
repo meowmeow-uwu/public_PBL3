@@ -12,6 +12,7 @@ com\pbl3\dao\LanguageDAO.class
 com\pbl3\dao\CollectionDAO.class
 com\pbl3\dto\WordHistory.class
 com\pbl3\filter\CORSFilter.class
+com\pbl3\controller\CollectionController.class
 com\pbl3\dto\Topic.class
 com\pbl3\util\DBUtil.class
 com\pbl3\dto\QuestionType.class
@@ -43,6 +44,7 @@ com\pbl3\service\ServiceInterface.class
 com\pbl3\dto\Reading.class
 com\pbl3\service\AccountService.class
 com\pbl3\dto\Post.class
+com\pbl3\service\CollectionService.class
 com\pbl3\dao\DAOInterface.class
 com\pbl3\dto\PostHistory.class
 com\pbl3\dao\TranslateDAO.class

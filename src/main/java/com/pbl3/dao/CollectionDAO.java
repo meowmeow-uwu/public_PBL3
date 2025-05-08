@@ -24,7 +24,7 @@ public class CollectionDAO implements DAOInterface<Collection>{
             String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?)";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, collection.getCollection_name());
-            s.setBoolean(2, collection.is_public());
+            s.setBoolean(2, collection.isPublic());
             
             int result = s.executeUpdate();
             s.close();
@@ -45,7 +45,7 @@ public class CollectionDAO implements DAOInterface<Collection>{
             String query = "UPDATE collection SET collection_name = ?, is_public = ? WHERE collection_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, collection.getCollection_name());
-            s.setBoolean(2, collection.is_public());
+            s.setBoolean(2, collection.isPublic());
             s.setInt(3, collection.getCollection_id());
             
             int result = s.executeUpdate();

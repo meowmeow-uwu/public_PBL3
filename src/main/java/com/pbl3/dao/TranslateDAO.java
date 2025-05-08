@@ -150,6 +150,33 @@ public class TranslateDAO implements DAOInterface<Translate>{
         return null;
     }
 
+    public Translate selectBySourceWordID(int sourceWordId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM translate WHERE source_word_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, sourceWordId);
+            ResultSet rs = s.executeQuery();
+            
+            if (rs.next()) {
+                return new Translate(
+                    rs.getInt("translate_id"),
+                    rs.getInt("source_word_id"),
+                    rs.getInt("trans_word_id"),
+                    rs.getInt("type_translate_id")
+                );
+            }
+            rs.close();
+            s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
     
     
 

@@ -69,7 +69,7 @@ public class TranslationService {
 
         // Nếu là dịch Anh-Việt
         // Bước 3: Lấy bản dịch
-        Translate translate = translateDAO.selectByID(sourceWordObj.getWord_id());
+        Translate translate = translateDAO.selectBySourceWordID(sourceWordObj.getWord_id());
         if (translate == null) {
             return null; // Không tìm thấy bản dịch
         }

@@ -41,7 +41,7 @@ public class TranslationService {
         }
 
         // Bước 2: Lấy định nghĩa của từ vựng nguồn
-        Definition definition = definitionDAO.selectByID(sourceWordObj.getWord_id());
+        Definition definition = definitionDAO.selectByWordID(sourceWordObj.getWord_id());
         if (definition == null) {
             return null; // Không tìm thấy định nghĩa
         }
@@ -91,7 +91,20 @@ public class TranslationService {
         targetInfo.put("pronunciation", targetWordObj.getPronunciation());
         targetInfo.put("sound", targetWordObj.getSound());
         result.put("target", targetInfo);
+        
+        // Lấy definition cho từ tiếng Việt
+        Definition targetDefinition = definitionDAO.selectByWordID(targetWordObj.getWord_id());
+        if (targetDefinition != null) {
+            Map<String, String> targetDefinitionInfo = new HashMap<>();
+            targetDefinitionInfo.put("meaning", targetDefinition.getMeaning());
+            targetDefinitionInfo.put("example", targetDefinition.getExample());
+            targetDefinitionInfo.put("wordType", targetDefinition.getWord_type());
+            result.put("definitionTarget", targetDefinitionInfo);
+        }
 
         return result;
     }
+
+    
+
 }

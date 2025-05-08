@@ -147,4 +147,32 @@ public class DefinitionDAO implements DAOInterface<Definition>{
         // Có thể triển khai theo nhu cầu cụ thể
         return null;
     }
+
+    public Definition selectByWordID(int wordId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM definition WHERE word_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, wordId);
+            ResultSet rs = s.executeQuery();
+            
+            if (rs.next()) {
+                return new Definition(
+                    rs.getInt("definition_id"),
+                    rs.getInt("word_id"),
+                    rs.getString("meaning"),
+                    rs.getString("example"),
+                    rs.getString("word_type")
+                );
+            }
+            rs.close();
+            s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
 }

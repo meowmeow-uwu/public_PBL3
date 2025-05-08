@@ -87,13 +87,20 @@ public class CollectionController {
     public Response getUserCollections(
         @HeaderParam("Authorization") String token
     ) {
-        int userId = JwtUtil.getUserIdFromToken(token);
-        if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
+        try {
+            int userId = JwtUtil.getUserIdFromToken(token);
+            if (userId == -1) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
 
-        List<Map<String, Object>> collections = collectionService.getUserCollections(userId);
-        return Response.ok(collections).build();
+            List<Map<String, Object>> collections = collectionService.getUserCollections(userId);
+            return Response.ok(collections).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                          .entity("{\"error\":\"" + e.getMessage() + "\"}")
+                          .build();
+        }
     }
 
     // Cập nhật bộ sưu tập

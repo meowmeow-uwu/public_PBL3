@@ -23,5 +23,5 @@ import lombok.ToString;
 public class Collection implements Serializable{
     private int collection_id;
     private String collection_name;
-    private boolean is_public;
+    private boolean isPublic;
 }

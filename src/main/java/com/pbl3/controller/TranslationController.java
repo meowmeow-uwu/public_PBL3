@@ -18,27 +18,25 @@ public class TranslationController {
     private static final int VIETNAMESE_LANGUAGE_ID = 2;
 
     @GET
-    @Path("{sourceWord}/{sourceLanguageId}/{targetLanguageId}")
+    @Path("{sourceWord}/{type}")  // type: 1 = Anh-Việt, 2 = Anh-Anh
     @Produces(MediaType.APPLICATION_JSON)
     public Response translateWord(
         @PathParam("sourceWord") String sourceWord,
-        @PathParam("sourceLanguageId") int sourceLanguageId,
-        @PathParam("targetLanguageId") int targetLanguageId
+        @PathParam("type") int type
     ) {
-        // Kiểm tra language
-        if (sourceLanguageId != ENGLISH_LANGUAGE_ID) {
+        // Kiểm tra type
+        if (type != 1 && type != 2) {
             return Response.status(Response.Status.BAD_REQUEST)
-                          .entity("{\"error\":\"Only English source language is supported\"}")
+                          .entity("{\"error\":\"Invalid type. Use 1 for English-Vietnamese or 2 for English-English\"}")
                           .build();
         }
 
-        if (targetLanguageId != ENGLISH_LANGUAGE_ID && targetLanguageId != VIETNAMESE_LANGUAGE_ID) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                          .entity("{\"error\":\"Only English or Vietnamese target language is supported\"}")
-                          .build();
-        }
-
-        Map<String, Object> result = translationService.translateWord(sourceWord, sourceLanguageId, targetLanguageId);
+        // Gọi service với sourceLanguageId luôn là tiếng Anh (1)
+        Map<String, Object> result = translationService.translateWord(
+            sourceWord, 
+            1,  // sourceLanguageId luôn là 1 (tiếng Anh)
+            type == 1 ? 2 : 1  // targetLanguageId: 2 cho Anh-Việt, 1 cho Anh-Anh
+        );
 
         if (result != null) {
             return Response.ok(result).build();

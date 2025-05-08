@@ -15,11 +15,29 @@ public class TranslationService {
     private DefinitionDAO definitionDAO = new DefinitionDAO();
     private TranslateDAO translateDAO = new TranslateDAO();
 
+    // Định nghĩa constant cho language
+    private static final int ENGLISH_LANGUAGE_ID = 1;
+    private static final int VIETNAMESE_LANGUAGE_ID = 2;
+
     public Map<String, Object> translateWord(String sourceWord, int sourceLanguageId, int targetLanguageId) {
-        // Bước 1: Tìm từ vựng nguồn
+        // Kiểm tra language
+        if (sourceLanguageId != ENGLISH_LANGUAGE_ID) {
+            return null; // Chỉ chấp nhận tiếng Anh làm ngôn ngữ nguồn
+        }
+
+        if (targetLanguageId != ENGLISH_LANGUAGE_ID && targetLanguageId != VIETNAMESE_LANGUAGE_ID) {
+            return null; // Chỉ chấp nhận tiếng Anh hoặc tiếng Việt làm ngôn ngữ đích
+        }
+
+        // Bước 1: Tìm từ vựng nguồn (tiếng Anh)
         Word sourceWordObj = wordDAO.findByWordName(sourceWord);
         if (sourceWordObj == null) {
             return null; // Không tìm thấy từ vựng nguồn
+        }
+
+        // Kiểm tra xem từ vựng nguồn có phải tiếng Anh không
+        if (sourceWordObj.getLanguage_id() != ENGLISH_LANGUAGE_ID) {
+            return null; // Từ vựng nguồn không phải tiếng Anh
         }
 
         // Bước 2: Lấy định nghĩa của từ vựng nguồn
@@ -29,29 +47,50 @@ public class TranslationService {
         }
 
         Map<String, Object> result = new HashMap<>();
-        result.put("sourceWord", sourceWordObj.getWord_name());
+        
+        // Thông tin từ vựng nguồn (tiếng Anh)
+        Map<String, String> sourceInfo = new HashMap<>();
+        sourceInfo.put("word", sourceWordObj.getWord_name());
+        sourceInfo.put("pronunciation", sourceWordObj.getPronunciation());
+        sourceInfo.put("sound", sourceWordObj.getSound());
+        result.put("source", sourceInfo);
 
-        // Nếu là dịch cùng ngôn ngữ (Anh-Anh hoặc Việt-Việt)
-        if (sourceLanguageId == targetLanguageId) {
-            result.put("targetWord", definition.getMeaning()); // Lấy definition làm target
+        // Thông tin định nghĩa
+        Map<String, String> definitionInfo = new HashMap<>();
+        definitionInfo.put("meaning", definition.getMeaning());
+        definitionInfo.put("example", definition.getExample());
+        definitionInfo.put("wordType", definition.getWord_type());
+        result.put("definition", definitionInfo);
+
+        // Nếu là dịch Anh-Anh
+        if (targetLanguageId == ENGLISH_LANGUAGE_ID) {
             return result;
         }
 
-        // Nếu là dịch khác ngôn ngữ (Anh-Việt hoặc Việt-Anh)
+        // Nếu là dịch Anh-Việt
         // Bước 3: Lấy bản dịch
         Translate translate = translateDAO.selectByID(sourceWordObj.getWord_id());
         if (translate == null) {
             return null; // Không tìm thấy bản dịch
         }
 
-        // Bước 4: Lấy từ vựng đích
+        // Bước 4: Lấy từ vựng đích (tiếng Việt)
         Word targetWordObj = wordDAO.selectByID(translate.getTrans_word_id());
         if (targetWordObj == null) {
             return null; // Không tìm thấy từ vựng đích
         }
 
-        result.put("definition", definition.getMeaning()); // Thêm definition cho dịch khác ngôn ngữ
-        result.put("targetWord", targetWordObj.getWord_name());
+        // Kiểm tra xem từ vựng đích có phải tiếng Việt không
+        if (targetWordObj.getLanguage_id() != VIETNAMESE_LANGUAGE_ID) {
+            return null; // Từ vựng đích không phải tiếng Việt
+        }
+
+        // Thông tin từ vựng đích (tiếng Việt)
+        Map<String, String> targetInfo = new HashMap<>();
+        targetInfo.put("word", targetWordObj.getWord_name());
+        targetInfo.put("pronunciation", targetWordObj.getPronunciation());
+        targetInfo.put("sound", targetWordObj.getSound());
+        result.put("target", targetInfo);
 
         return result;
     }

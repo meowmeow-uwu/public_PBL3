@@ -1,0 +1,218 @@
+/* Header Styles */
+.header {
+    background: var(--primary-light, #e3f0fc);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 12px 32px;
+    gap: 24px;
+}
+
+/* Logo Styles */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
+}
+
+.logo img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.logo a {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4a90e2;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* Navigation Links */
+.nav-center {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-links li a {
+    color: #222;
+    font-size: 1.1rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links li a:hover {
+    color: #4a90e2;
+}
+
+/* Right Section Styles */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 220px;
+    justify-content: flex-end;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: #e3f0fc;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background 0.2s;
+}
+
+.theme-toggle:hover {
+    background: #d0e6fa;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.login-button, .register-button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.login-button {
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.login-button:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.register-button {
+    background-color: #b7c4d4;         /* Màu xanh dương nhạt */
+    color: #fff;                       /* Màu chữ trắng */
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.register-button:hover {
+    background-color: #357abd;          /* Xanh đậm hơn khi hover */
+    color: #fff;
+}
+
+/* User Menu */
+.user-menu {
+    position: relative;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.user-info:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    padding: 0.5rem 0;
+    min-width: 200px;
+    display: none;
+}
+
+.user-info:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 8px;
+    }
+    .nav-center {
+        width: 100%;
+        justify-content: center;
+    }
+    .nav-links {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .nav-right {
+        width: 100%;
+        justify-content: center;
+    }
+    .auth-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

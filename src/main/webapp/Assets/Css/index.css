@@ -1,0 +1,303 @@
+/* Hero Section */
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, var(--primary-light) 60%, #fff 100%);
+    padding: 60px 0 40px 0;
+    border-radius: 18px;
+    margin: 40px auto 0 auto;
+    max-width: 1200px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    gap: 40px;
+}
+.hero-content {
+    flex: 1 1 320px;
+    min-width: 320px;
+}
+.hero-content h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 18px;
+    line-height: 1.2;
+}
+.hero-content .highlight {
+    color: var(--success);
+    font-size: 2.5rem;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+.hero-content ul {
+    margin: 24px 0 32px 0;
+    padding-left: 20px;
+}
+.hero-content ul li {
+    font-size: 1.15rem;
+    color: #555;
+    margin-bottom: 12px;
+    list-style: disc;
+}
+.hero-image img {
+    max-width: 350px;
+    width: 100%;
+    display: block;
+}
+
+/* Button styles */
+.btn, .btn-primary, .btn-gradient, .btn-success {
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    text-align: center;
+    text-decoration: none;
+}
+.btn-primary {
+    background: var(--success);
+    color: #fff;
+}
+.btn-primary:hover {
+    background: #16b34a;
+}
+.btn-gradient {
+    background: linear-gradient(90deg, var(--primary-color), var(--purple));
+    color: #fff;
+}
+.btn-gradient:hover {
+    background: linear-gradient(90deg, var(--purple), var(--primary-color));
+}
+.btn-success {
+    background: linear-gradient(90deg, var(--success), #00c3ff);
+    color: #fff;
+}
+.btn-success:hover {
+    background: linear-gradient(90deg, #00c3ff, var(--success));
+}
+
+/* Dictionary Section */
+.dictionary-section {
+    background: #f7fbff;
+    border-radius: 18px;
+    margin: 40px auto;
+    max-width: 700px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+}
+.dictionary-section h2 {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+.dictionary-form {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+.dictionary-form input[type='text'] {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #bcdffb;
+    font-size: 1.1rem;
+    width: 260px;
+    outline: none;
+    transition: border 0.3s;
+}
+.dictionary-form input[type='text']:focus {
+    border: 1.5px solid var(--primary-color);
+}
+
+/* Features Section */
+.features-section {
+    margin: 60px auto;
+    max-width: 1200px;
+    padding: 40px 20px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.features-section h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 36px;
+    font-weight: bold;
+}
+.features-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: space-between;
+}
+.feature-item {
+    flex: 1 1 220px;
+    background: #f7fbff;
+    border-radius: 12px;
+    padding: 24px 18px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
+    min-width: 220px;
+    max-width: 270px;
+    margin: 0 auto;
+}
+.feature-item img {
+    width: 60px;
+    margin-bottom: 12px;
+}
+.feature-item h3 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+.feature-item p {
+    color: #555;
+    font-size: 1rem;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin: 60px auto;
+    max-width: 1200px;
+    padding: 40px 20px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.reviews-section h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 36px;
+    font-weight: bold;
+}
+.reviews-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}
+.review-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
+    padding: 24px;
+    min-width: 260px;
+    max-width: 320px;
+    margin-bottom: 16px;
+}
+.review-user {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+}
+.review-stars {
+    color: #f7b500;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+.review-date {
+    color: #888;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+.review-text {
+    color: #333;
+    font-size: 1.05rem;
+}
+
+/* Contact Section */
+.contact-section {
+    max-width: 600px;
+    min-width: 320px;
+    width: 100%;
+    margin: 40px auto;
+    padding: 40px 24px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    text-align: center;
+}
+.contact-section h2 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+.contact-section p {
+    color: #555;
+    margin-bottom: 24px;
+}
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+.contact-form textarea,
+.contact-form input[type='email'] {
+    width: 100%;
+    min-width: 200px;
+    max-width: 500px;
+    border-radius: 8px;
+    border: 1px solid #bcdffb;
+    padding: 14px;
+    font-size: 1.1rem;
+    margin: 0 auto 18px auto;
+    display: block;
+    outline: none;
+    transition: border 0.3s;
+    resize: vertical;
+}
+.contact-form textarea:focus,
+.contact-form input[type='email']:focus {
+    border: 1.5px solid var(--primary-color);
+}
+.contact-form button {
+    min-width: 180px;
+    max-width: 300px;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 24px;
+    }
+    .hero-image img {
+        margin: 0 auto;
+    }
+    .features-list {
+        flex-wrap: wrap;
+        gap: 24px;
+    }
+}
+@media (max-width: 768px) {
+    .hero, .features-section, .reviews-section, .contact-section, .dictionary-section {
+        padding: 24px 8px;
+        margin: 24px 0;
+        border-radius: 10px;
+    }
+    .features-list {
+        flex-direction: column;
+        gap: 18px;
+    }
+    .feature-item {
+        max-width: 100%;
+    }
+    .reviews-list {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .review-card {
+        max-width: 100%;
+    }
+}

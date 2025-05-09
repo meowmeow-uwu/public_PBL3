@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/login_register.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="login-container">
+            <div class="login-title">Login Form</div>
+            <div class="login-desc">Please enter your credentials</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userName">Username</label>
+                    <input class="login-input" type="text" id="username" name="username" placeholder="Enter your username" required>
+                    <div class="input-label-desc">Your unique identifier</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="login-input" type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <div class="input-label-desc">Keep it secure</div>
+                </div>
+                <div class="btn-row">
+                    <a href="/Pages/Components/Login_Register_ForgotPW/forgotPw.html" class="btn-forgot">Forgot Password</a>
+                    <button type="submit" class="btn btn-login">Login</button>
+                </div>
+            </form>
+            <div class="login-register-link">
+                Don't have an account? <a href="/Pages/Components/Login_Register_ForgotPW/register.html">Register here</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+</body>
+</html> 

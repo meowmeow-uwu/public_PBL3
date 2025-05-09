@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/login_register.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="login-container">
+            <div class="login-title">Register</div>
+            <div class="login-desc">Create your account</div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="userName">Username</label>
+                    <input class="login-input" type="text" id="username" name="username" placeholder="Enter your username" required>
+                    <div class="input-label-desc">Choose a unique username</div>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input class="login-input" type="text" id="name" name="name" placeholder="Enter your name" required>
+                    <div class="input-label-desc">Choose a unique name</div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input class="login-input" type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <div class="input-label-desc">We'll never share your email</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="login-input" type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <div class="input-label-desc">At least 6 characters</div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input class="login-input" type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                    <div class="input-label-desc">Re-enter your password</div>
+                </div>
+                <div class="btn-row">
+                    <button type="submit" class="btn btn-login">Register</button>
+                </div>
+            </form>
+            <div class="login-register-link">
+                Already have an account? <a href="/Pages/Components/Login_Register_ForgotPW/login.html">Login here</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+</body>
+</html> 

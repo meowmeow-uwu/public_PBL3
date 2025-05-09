@@ -10,6 +10,7 @@ import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -69,7 +70,54 @@ public class UserController {
                     .entity("{\"error\":\"User info not found\"}").build();
         }
 
-        return Response.ok(user).build();
+        return Response.ok()
+                .entity("{\"name\":\"" + user.getName() + "\","
+                        + "\"avatar\":\"" + user.getAvatar() + "\","
+                        + "\"group_user_id\":" + user.getGroup_user_id() + "}")
+                .build();
+    }
+
+    @PUT
+    @Path("/me/update")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateProfile(
+        @HeaderParam("authorization") String authHeader,
+        @FormParam("name") String name,
+        @FormParam("avatar") String avatar) {
+        // Kiểm tra token
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        String token = authHeader.substring("Bearer ".length()).trim();
+
+        // Lấy user_id từ token
+        int id = JwtUtil.getUserIdFromToken(token);
+        if (id == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid token\"}").build();
+        }
+
+        // Lấy user từ DB
+        User user = userService.selectByID(id);
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"User not found\"}").build();
+        }
+
+        // Cập nhật thông tin
+        user.setName(name);
+        user.setAvatar(avatar);
+
+        int result = userService.update(user);
+
+        if (result > 0) {
+            return Response.ok()
+                    .entity("{\"message\":\"Profile updated successfully\"}").build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\":\"Failed to update profile\"}").build();
+        }
     }
 
     @POST

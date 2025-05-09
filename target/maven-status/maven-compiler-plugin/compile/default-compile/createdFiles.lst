@@ -12,16 +12,18 @@ com\pbl3\dao\LanguageDAO.class
 com\pbl3\dao\CollectionDAO.class
 com\pbl3\dto\WordHistory.class
 com\pbl3\filter\CORSFilter.class
-com\pbl3\controller\CollectionController.class
 com\pbl3\dto\Topic.class
 com\pbl3\util\DBUtil.class
 com\pbl3\dto\QuestionType.class
+com\pbl3\service\CollectionUserService.class
+com\pbl3\controller\CollectionManagementController.class
 com\pbl3\dto\Translate.class
 com\pbl3\service\WordService.class
 com\pbl3\dao\CollectionOfUserDAO.class
 com\pbl3\dto\SubTopic.class
 com\pbl3\dao\DefinitionDAO.class
 com\pbl3\dto\CollectionOfUser.class
+com\pbl3\service\CollectionManagementService.class
 com\pbl3\dto\ReadingQuestion.class
 com\pbl3\dao\UserGroupDAO.class
 com\pbl3\dto\User.class
@@ -42,6 +44,7 @@ com\pbl3\dao\WordDAO.class
 com\pbl3\dto\Word.class
 com\pbl3\service\ServiceInterface.class
 com\pbl3\dto\Reading.class
+com\pbl3\controller\CollectionUserController.class
 com\pbl3\service\AccountService.class
 com\pbl3\dto\Post.class
 com\pbl3\service\CollectionService.class

@@ -14,8 +14,6 @@ public class TranslationController {
     private TranslationService translationService = new TranslationService();
     
     // Định nghĩa constant cho language
-    private static final int ENGLISH_LANGUAGE_ID = 1;
-    private static final int VIETNAMESE_LANGUAGE_ID = 2;
 
     @GET
     @Path("{sourceWord}/{type}")  // type: 1 = Anh-Việt, 2 = Anh-Anh

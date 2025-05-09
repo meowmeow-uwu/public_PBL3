@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class TranslationService {
-    private WordDAO wordDAO = new WordDAO();
+    private WordDAO wordDAO = WordDAO.getInstance();
     private DefinitionDAO definitionDAO = new DefinitionDAO();
     private TranslateDAO translateDAO = new TranslateDAO();
 

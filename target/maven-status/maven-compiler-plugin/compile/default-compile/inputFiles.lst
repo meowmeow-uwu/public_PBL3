@@ -7,7 +7,9 @@ E:\NetBean\PBL3\src\main\java\com\pbl3\dao\CollectionOfUserDAO.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\CollectionOfUser.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\QuestionOfExam.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dao\WordDAO.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\controller\CollectionManagementController.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\util\DBUtil.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\service\CollectionManagementService.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\UserGroup.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\service\UserService.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dao\UserDAO.java
@@ -40,6 +42,7 @@ E:\NetBean\PBL3\src\main\java\com\pbl3\dto\QuestionType.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\service\TranslationService.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\PostHistory.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\controller\AuthController.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\controller\CollectionUserController.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\TranslateType.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dao\TranslateDAO.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\SubTopic.java
@@ -48,7 +51,7 @@ E:\NetBean\PBL3\src\main\java\com\pbl3\dto\Post.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\ReadingQuestion.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dao\LanguageDAO.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\User.java
-E:\NetBean\PBL3\src\main\java\com\pbl3\controller\CollectionController.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\filter\CORSFilter.java
+E:\NetBean\PBL3\src\main\java\com\pbl3\service\CollectionUserService.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\service\ServiceInterface.java
 E:\NetBean\PBL3\src\main\java\com\pbl3\dto\Translate.java

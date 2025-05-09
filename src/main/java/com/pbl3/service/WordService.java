@@ -14,10 +14,9 @@ import com.pbl3.dto.Word;
  * @author Danh
  */
 public class WordService implements ServiceInterface<Word>{
-
+    private WordDAO dao = WordDAO.getInstance();
     @Override
     public int insert(Word Word) {
-        WordDAO dao = new WordDAO();
         int result = dao.insert(Word);
         if (result > 0) {
             System.out.println("Word inserted successfully.");
@@ -30,7 +29,6 @@ public class WordService implements ServiceInterface<Word>{
 
     @Override
     public int update(Word Word) {
-        WordDAO dao = new WordDAO();
         int result = dao.update(Word);
         if (result > 0) {
             System.out.println("Word updated successfully.");
@@ -48,7 +46,6 @@ public class WordService implements ServiceInterface<Word>{
     
     @Override
     public ArrayList<Word> selectAll() {
-        WordDAO dao = new WordDAO();
         ArrayList<Word> Words = dao.selectAll();
         if (Words != null && !Words.isEmpty()) {
             System.out.println("Words fetched successfully.");
@@ -61,7 +58,6 @@ public class WordService implements ServiceInterface<Word>{
 
     @Override
     public Word selectByID(int id) {
-        WordDAO dao = new WordDAO();
         Word u = dao.selectByID(id);
         if(u != null){
             return u;

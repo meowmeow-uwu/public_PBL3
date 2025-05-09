@@ -15,20 +15,44 @@ import java.util.ArrayList;
  *
  * @author Hoang Duong
  */
-public class CollectionDAO implements DAOInterface<Collection>{
-        @Override
+public class CollectionDAO implements DAOInterface<Collection> {
+    // Singleton instance
+    private static CollectionDAO instance;
+    
+    // Private constructor
+    private CollectionDAO() {}
+    
+    // Method để lấy instance
+    public static synchronized CollectionDAO getInstance() {
+        if (instance == null) {
+            instance = new CollectionDAO();
+        }
+        return instance;
+    }
+
+    //return collection_id
+    @Override
     public int insert(Collection collection) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?)";
+            String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?); SELECT SCOPE_IDENTITY();";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, collection.getCollection_name());
             s.setBoolean(2, collection.isPublic());
             
-            int result = s.executeUpdate();
+            // Thực thi câu lệnh INSERT
+            s.executeUpdate();
+            
+            // Lấy ID vừa được tạo
+            ResultSet rs = s.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                s.close();
+                return id;
+            }
+            rs.close();
             s.close();
-            return result;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -138,4 +162,29 @@ public class CollectionDAO implements DAOInterface<Collection>{
     public Collection selectByCondition(String condition) {
         return null;
     }
+
+    public Collection selectByUserID(int userId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM collection WHERE user_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, userId);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                return new Collection(
+                    rs.getInt("collection_id"),
+                    rs.getString("collection_name"),
+                    rs.getBoolean("is_public")
+                );}
+                rs.close();
+                s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
 }

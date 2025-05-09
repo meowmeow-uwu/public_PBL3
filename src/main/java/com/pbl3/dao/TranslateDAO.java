@@ -5,7 +5,6 @@
 package com.pbl3.dao;
 
 import com.pbl3.dto.Translate;
-import com.pbl3.dto.UserGroup;
 import com.pbl3.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -176,8 +175,4 @@ public class TranslateDAO implements DAOInterface<Translate>{
         }
         return null;
     }
-
-    
-    
-
 }

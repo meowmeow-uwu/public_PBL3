@@ -194,6 +194,9 @@ public class UserManagerController {
 
         for (User user : userService.selectAllByGroupUserId(role)) {
             Account account = accountService.selectByUserId(user.getUser_id());
+            if (account != null) {
+                account.setPassword(null); // Xoá mật khẩu
+            }
             Map<String, Object> response = new HashMap<>();
             response.put("user", user);
             response.put("account", account);
@@ -218,12 +221,12 @@ public class UserManagerController {
         }
 
         Account account = accountService.selectByUserId(userId);
-        if(account == null){
+        if (account == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"Not found account\"}").build();
         }
         // Xóa cả thông tin người dùng và tài khoản
         int userResult = userService.delete(userId);
-        
+
         int accountResult = accountService.delete(account.getAccount_id());
 
         if (userResult > 0 && accountResult > 0) {

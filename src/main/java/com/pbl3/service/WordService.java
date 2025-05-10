@@ -4,17 +4,25 @@
  */
 package com.pbl3.service;
 
+import com.pbl3.dao.DefinitionDAO;
 import java.util.ArrayList;
 
 import com.pbl3.dao.WordDAO;
+import com.pbl3.dto.Definition;
 import com.pbl3.dto.Word;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Danh
  */
-public class WordService implements ServiceInterface<Word>{
+public class WordService implements ServiceInterface<Word> {
 
+    private final WordDAO wordDAO = new WordDAO();
+    private final DefinitionDAO definitionDAO = new DefinitionDAO();
+   
     @Override
     public int insert(Word Word) {
         WordDAO dao = new WordDAO();
@@ -26,7 +34,6 @@ public class WordService implements ServiceInterface<Word>{
         }
         return result;
     }
-    
 
     @Override
     public int update(Word Word) {
@@ -39,13 +46,12 @@ public class WordService implements ServiceInterface<Word>{
         }
         return result;
     }
-    
 
     @Override
     public int delete(int wid) {
-		return 0;
+        return 0;
     }
-    
+
     @Override
     public ArrayList<Word> selectAll() {
         WordDAO dao = new WordDAO();
@@ -57,13 +63,12 @@ public class WordService implements ServiceInterface<Word>{
         }
         return Words;
     }
-    
 
     @Override
     public Word selectByID(int id) {
         WordDAO dao = new WordDAO();
         Word u = dao.selectByID(id);
-        if(u != null){
+        if (u != null) {
             return u;
         }
         return null;
@@ -73,5 +78,31 @@ public class WordService implements ServiceInterface<Word>{
     public Word selectByCondition(String condition) {
         return null;
     }
-    
+
+    public Map<String, Object> getWordDetail(int wordId) {
+        Map<String, Object> result = new HashMap<>();
+
+        // Lấy thông tin từ
+        Word word = wordDAO.selectByID(wordId);
+        if (word != null) {
+            result.put("word_id", word.getWord_id());
+            result.put("word", word.getWord_name());
+            result.put("phonetic", word.getPronunciation());
+            result.put("sound", word.getSound());
+
+            // Lấy tất cả định nghĩa
+            ArrayList<Definition> definitions = definitionDAO.selectAllByWordID(wordId);
+            List<Map<String, String>> definitionsList = new ArrayList<>();
+            for (Definition def : definitions) {
+                Map<String, String> defMap = new HashMap<>();
+                defMap.put("meaning", def.getMeaning());
+                defMap.put("example", def.getExample());
+                defMap.put("word_type", def.getWord_type());
+                definitionsList.add(defMap);
+            }
+            result.put("definitions", definitionsList);
+        }
+
+        return result;
+    }
 }

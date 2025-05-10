@@ -6,105 +6,103 @@ import com.pbl3.dao.WordDAO;
 import com.pbl3.dto.Definition;
 import com.pbl3.dto.Translate;
 import com.pbl3.dto.Word;
-
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TranslationService {
-    private WordDAO wordDAO = new WordDAO();
-    private DefinitionDAO definitionDAO = new DefinitionDAO();
-    private TranslateDAO translateDAO = new TranslateDAO();
+
+    private final WordDAO wordDAO = new WordDAO();
+    private final DefinitionDAO definitionDAO = new DefinitionDAO();
+    private final TranslateDAO translateDAO = new TranslateDAO();
+    // Cache cho kết quả dịch
 
     // Định nghĩa constant cho language
     private static final int ENGLISH_LANGUAGE_ID = 1;
     private static final int VIETNAMESE_LANGUAGE_ID = 2;
 
-    public Map<String, Object> translateWord(String sourceWord, int sourceLanguageId, int targetLanguageId) {
-        // Kiểm tra language
-        if (sourceLanguageId != ENGLISH_LANGUAGE_ID) {
-            return null; // Chỉ chấp nhận tiếng Anh làm ngôn ngữ nguồn
+    private static final int ENG_VIET_TYPE = 1;
+    private static final int VIET_ENG_TYPE = 2;
+
+    // Số lượng kết quả tối đa
+    private static final int MAX_RESULTS = 15;
+
+    public static void main(String s[]) {
+        int j = 1;
+        TranslationService sa = new TranslationService();
+        List<Map<String, Object>> li = sa.translateWord("h", ENGLISH_LANGUAGE_ID, ENGLISH_LANGUAGE_ID);
+        for (Object ss : li) {
+            System.out.println(ss.toString() + j);
+            j++;
+
         }
-
-        if (targetLanguageId != ENGLISH_LANGUAGE_ID && targetLanguageId != VIETNAMESE_LANGUAGE_ID) {
-            return null; // Chỉ chấp nhận tiếng Anh hoặc tiếng Việt làm ngôn ngữ đích
-        }
-
-        // Bước 1: Tìm từ vựng nguồn (tiếng Anh)
-        Word sourceWordObj = wordDAO.findByWordName(sourceWord);
-        if (sourceWordObj == null) {
-            return null; // Không tìm thấy từ vựng nguồn
-        }
-
-        // Kiểm tra xem từ vựng nguồn có phải tiếng Anh không
-        if (sourceWordObj.getLanguage_id() != ENGLISH_LANGUAGE_ID) {
-            return null; // Từ vựng nguồn không phải tiếng Anh
-        }
-
-        // Bước 2: Lấy định nghĩa của từ vựng nguồn
-        Definition definition = definitionDAO.selectByWordID(sourceWordObj.getWord_id());
-        if (definition == null) {
-            return null; // Không tìm thấy định nghĩa
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        
-        // Thông tin từ vựng nguồn (tiếng Anh)
-        Map<String, String> sourceInfo = new HashMap<>();
-        sourceInfo.put("word", sourceWordObj.getWord_name());
-        sourceInfo.put("pronunciation", sourceWordObj.getPronunciation());
-        sourceInfo.put("sound", sourceWordObj.getSound());
-        result.put("source", sourceInfo);
-
-        // Thông tin định nghĩa
-        Map<String, String> definitionInfo = new HashMap<>();
-        definitionInfo.put("meaning", definition.getMeaning());
-        definitionInfo.put("example", definition.getExample());
-        definitionInfo.put("wordType", definition.getWord_type());
-        result.put("definition", definitionInfo);
-
-        // Nếu là dịch Anh-Anh
-        if (targetLanguageId == ENGLISH_LANGUAGE_ID) {
-            return result;
-        }
-
-        // Nếu là dịch Anh-Việt
-        // Bước 3: Lấy bản dịch
-        Translate translate = translateDAO.selectBySourceWordID(sourceWordObj.getWord_id());
-        if (translate == null) {
-            return null; // Không tìm thấy bản dịch
-        }
-
-        // Bước 4: Lấy từ vựng đích (tiếng Việt)
-        Word targetWordObj = wordDAO.selectByID(translate.getTrans_word_id());
-        if (targetWordObj == null) {
-            return null; // Không tìm thấy từ vựng đích
-        }
-
-        // Kiểm tra xem từ vựng đích có phải tiếng Việt không
-        if (targetWordObj.getLanguage_id() != VIETNAMESE_LANGUAGE_ID) {
-            return null; // Từ vựng đích không phải tiếng Việt
-        }
-
-        // Thông tin từ vựng đích (tiếng Việt)
-        Map<String, String> targetInfo = new HashMap<>();
-        targetInfo.put("word", targetWordObj.getWord_name());
-        targetInfo.put("pronunciation", targetWordObj.getPronunciation());
-        targetInfo.put("sound", targetWordObj.getSound());
-        result.put("target", targetInfo);
-        
-        // Lấy definition cho từ tiếng Việt
-        Definition targetDefinition = definitionDAO.selectByWordID(targetWordObj.getWord_id());
-        if (targetDefinition != null) {
-            Map<String, String> targetDefinitionInfo = new HashMap<>();
-            targetDefinitionInfo.put("meaning", targetDefinition.getMeaning());
-            targetDefinitionInfo.put("example", targetDefinition.getExample());
-            targetDefinitionInfo.put("wordType", targetDefinition.getWord_type());
-            result.put("definitionTarget", targetDefinitionInfo);
-        }
-
-        return result;
     }
 
-    
+    // API tìm kiếm từ cơ bản
+    public List<Map<String, Object>> translateWord(String sourceWord, int sourceLanguageId, int targetLanguageId) {
+        try {
+            List<Map<String, Object>> results = new ArrayList<>();
+
+            // Tìm tất cả các từ bắt đầu bằng sourceWord với giới hạn MAX_RESULTS
+            ArrayList<Word> sourceWords = wordDAO.findByWordNamePrefixAndLanguage(sourceWord, sourceLanguageId, MAX_RESULTS);
+
+            if (sourceWords == null || sourceWords.isEmpty()) {
+                return results;
+            }
+            int typeTranslateId;
+            if (sourceLanguageId == 1 && targetLanguageId == 2) {
+                typeTranslateId = ENG_VIET_TYPE;
+            } else if (sourceLanguageId == 2 && targetLanguageId == 1) {
+                typeTranslateId = VIET_ENG_TYPE;
+            } else {
+                return results;
+            }
+            for (Word sourceWordObj : sourceWords) {
+                try {
+                    // Tìm tất cả bản dịch của từ
+                    ArrayList<Translate> translations = translateDAO.selectAllBySourceWordIDAndType(sourceWordObj.getWord_id(), typeTranslateId);
+
+                    if (translations != null && !translations.isEmpty()) {
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("source_word_id", sourceWordObj.getWord_id());
+                        result.put("source_word", sourceWordObj.getWord_name());
+                        result.put("source_phonetic", sourceWordObj.getPronunciation());
+
+                        // Danh sách các từ đích
+                        List<Map<String, Object>> targetWords = new ArrayList<>();
+                        // Dùng Set để theo dõi các target_word_id đã thêm
+                        Set<Integer> addedTargetIds = new HashSet<>();
+
+                        for (Translate translation : translations) {
+                            try {
+                                Word targetWord = wordDAO.selectByID(translation.getTrans_word_id());
+                                if (targetWord != null && !addedTargetIds.contains(targetWord.getWord_id())) {
+                                    Map<String, Object> targetWordInfo = new HashMap<>();
+                                    targetWordInfo.put("target_word_id", targetWord.getWord_id());
+                                    targetWordInfo.put("target_word", targetWord.getWord_name());
+                                    targetWords.add(targetWordInfo);
+                                    // Thêm target_word_id vào Set để tránh trùng lặp
+                                    addedTargetIds.add(targetWord.getWord_id());
+                                }
+                            } catch (Exception e) {
+                                // Bỏ qua lỗi và tiếp tục với từ tiếp theo
+                            }
+                        }
+                        result.put("target_words", targetWords);
+                        results.add(result);
+                    }
+                } catch (Exception e) {
+                }
+            }
+
+            return results;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error translating word: " + e.getMessage(), e);
+        }
+    }
 
 }

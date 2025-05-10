@@ -5,7 +5,6 @@
 package com.pbl3.dao;
 
 import com.pbl3.dto.Translate;
-import com.pbl3.dto.UserGroup;
 import com.pbl3.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,8 +15,9 @@ import java.util.ArrayList;
  *
  * @author Hoang Duong
  */
-public class TranslateDAO implements DAOInterface<Translate>{
-   @Override
+public class TranslateDAO implements DAOInterface<Translate> {
+
+    @Override
     public int insert(Translate t) {
         Connection c = null;
         try {
@@ -27,11 +27,11 @@ public class TranslateDAO implements DAOInterface<Translate>{
             s.setInt(1, t.getSource_word_id());
             s.setInt(2, t.getTrans_word_id());
             s.setInt(3, t.getType_translate_id());
-            
+
             int result = s.executeUpdate();
             s.close();
             return result;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -51,11 +51,11 @@ public class TranslateDAO implements DAOInterface<Translate>{
             s.setInt(2, t.getTrans_word_id());
             s.setInt(3, t.getType_translate_id());
             s.setInt(4, t.getTranslate_id());
-            
+
             int result = s.executeUpdate();
             s.close();
             return result;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -72,11 +72,11 @@ public class TranslateDAO implements DAOInterface<Translate>{
             String query = "DELETE FROM translate WHERE translate_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
-            
+
             int result = s.executeUpdate();
             s.close();
             return result;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -94,19 +94,19 @@ public class TranslateDAO implements DAOInterface<Translate>{
             String query = "SELECT * FROM translate";
             PreparedStatement s = c.prepareStatement(query);
             ResultSet rs = s.executeQuery();
-            
+
             while (rs.next()) {
                 list.add(new Translate(
-                    rs.getInt("translate_id"),
-                    rs.getInt("source_word_id"),
-                    rs.getInt("trans_word_id"),
-                    rs.getInt("type_translate_id")
+                        rs.getInt("translate_id"),
+                        rs.getInt("source_word_id"),
+                        rs.getInt("trans_word_id"),
+                        rs.getInt("type_translate_id")
                 ));
             }
             rs.close();
             s.close();
             return list;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -124,18 +124,18 @@ public class TranslateDAO implements DAOInterface<Translate>{
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
-            
+
             if (rs.next()) {
                 return new Translate(
-                    rs.getInt("translate_id"),
-                    rs.getInt("source_word_id"),
-                    rs.getInt("trans_word_id"),
-                    rs.getInt("type_translate_id")
+                        rs.getInt("translate_id"),
+                        rs.getInt("source_word_id"),
+                        rs.getInt("trans_word_id"),
+                        rs.getInt("type_translate_id")
                 );
             }
             rs.close();
             s.close();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -158,13 +158,13 @@ public class TranslateDAO implements DAOInterface<Translate>{
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, sourceWordId);
             ResultSet rs = s.executeQuery();
-            
+
             if (rs.next()) {
                 return new Translate(
-                    rs.getInt("translate_id"),
-                    rs.getInt("source_word_id"),
-                    rs.getInt("trans_word_id"),
-                    rs.getInt("type_translate_id")
+                        rs.getInt("translate_id"),
+                        rs.getInt("source_word_id"),
+                        rs.getInt("trans_word_id"),
+                        rs.getInt("type_translate_id")
                 );
             }
             rs.close();
@@ -177,7 +177,34 @@ public class TranslateDAO implements DAOInterface<Translate>{
         return null;
     }
 
-    
-    
+    public ArrayList<Translate> selectAllBySourceWordIDAndType(int sourceWordId, int typeTranslateId) {
+        Connection c = null;
+        try {
+            ArrayList<Translate> list = new ArrayList<>();
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM translate WHERE source_word_id = ? AND type_translate_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, sourceWordId);
+            s.setInt(2, typeTranslateId);
+            ResultSet rs = s.executeQuery();
+
+            while (rs.next()) {
+                list.add(new Translate(
+                        rs.getInt("translate_id"),
+                        rs.getInt("source_word_id"),
+                        rs.getInt("trans_word_id"),
+                        rs.getInt("type_translate_id")
+                ));
+            }
+            rs.close();
+            s.close();
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
 
 }

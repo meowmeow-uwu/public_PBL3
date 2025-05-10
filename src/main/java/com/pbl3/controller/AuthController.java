@@ -46,7 +46,7 @@ public class AuthController {
         account.setPassword(password);
         account.setUser_id(userId);
 
-        int result = accountService.registerAccount(account);
+        int result = accountService.insert(account);
         return (result > 0)
                 ? Response.status(Response.Status.CREATED).build()
                 : Response.status(Response.Status.BAD_REQUEST)

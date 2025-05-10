@@ -15,8 +15,9 @@ import java.util.ArrayList;
  *
  * @author Hoang Duong
  */
-public class DefinitionDAO implements DAOInterface<Definition>{
-     @Override
+public class DefinitionDAO implements DAOInterface<Definition> {
+
+    @Override
     public int insert(Definition definition) {
         Connection c = null;
         try {
@@ -27,7 +28,7 @@ public class DefinitionDAO implements DAOInterface<Definition>{
             s.setString(2, definition.getMeaning());
             s.setString(3, definition.getExample());
             s.setString(4, definition.getWord_type());
-            
+
             int result = s.executeUpdate();
             s.close();
             return result;
@@ -51,7 +52,7 @@ public class DefinitionDAO implements DAOInterface<Definition>{
             s.setString(3, definition.getExample());
             s.setString(4, definition.getWord_type());
             s.setInt(5, definition.getDefinition_id());
-            
+
             int result = s.executeUpdate();
             s.close();
             return result;
@@ -71,7 +72,7 @@ public class DefinitionDAO implements DAOInterface<Definition>{
             String query = "DELETE FROM definition WHERE definition_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
-            
+
             int result = s.executeUpdate();
             s.close();
             return result;
@@ -92,14 +93,14 @@ public class DefinitionDAO implements DAOInterface<Definition>{
             String query = "SELECT * FROM definition";
             PreparedStatement s = c.prepareStatement(query);
             ResultSet rs = s.executeQuery();
-            
+
             while (rs.next()) {
                 list.add(new Definition(
-                    rs.getInt("definition_id"),
-                    rs.getInt("word_id"),
-                    rs.getString("meaning"),
-                    rs.getString("example"),
-                    rs.getString("word_type")
+                        rs.getInt("definition_id"),
+                        rs.getInt("word_id"),
+                        rs.getString("meaning"),
+                        rs.getString("example"),
+                        rs.getString("word_type")
                 ));
             }
             rs.close();
@@ -122,14 +123,14 @@ public class DefinitionDAO implements DAOInterface<Definition>{
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
-            
+
             if (rs.next()) {
                 return new Definition(
-                    rs.getInt("definition_id"),
-                    rs.getInt("word_id"),
-                    rs.getString("meaning"),
-                    rs.getString("example"),
-                    rs.getString("word_type")
+                        rs.getInt("definition_id"),
+                        rs.getInt("word_id"),
+                        rs.getString("meaning"),
+                        rs.getString("example"),
+                        rs.getString("word_type")
                 );
             }
             rs.close();
@@ -156,18 +157,48 @@ public class DefinitionDAO implements DAOInterface<Definition>{
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, wordId);
             ResultSet rs = s.executeQuery();
-            
+
             if (rs.next()) {
                 return new Definition(
-                    rs.getInt("definition_id"),
-                    rs.getInt("word_id"),
-                    rs.getString("meaning"),
-                    rs.getString("example"),
-                    rs.getString("word_type")
+                        rs.getInt("definition_id"),
+                        rs.getInt("word_id"),
+                        rs.getString("meaning"),
+                        rs.getString("example"),
+                        rs.getString("word_type")
                 );
             }
             rs.close();
             s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
+    public ArrayList<Definition> selectAllByWordID(int wordId) {
+        Connection c = null;
+        try {
+            ArrayList<Definition> list = new ArrayList<>();
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM definition WHERE word_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, wordId);
+            ResultSet rs = s.executeQuery();
+
+            while (rs.next()) {
+                list.add(new Definition(
+                        rs.getInt("definition_id"),
+                        rs.getInt("word_id"),
+                        rs.getString("meaning"),
+                        rs.getString("example"),
+                        rs.getString("word_type")
+                ));
+            }
+            rs.close();
+            s.close();
+            return list;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

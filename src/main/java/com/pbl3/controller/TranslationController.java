@@ -7,43 +7,49 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 import java.util.Map;
 
 @Path("translate")
 public class TranslationController {
-    private TranslationService translationService = new TranslationService();
-    
+
+    private final TranslationService translationService = new TranslationService();
+
     // Định nghĩa constant cho language
     private static final int ENGLISH_LANGUAGE_ID = 1;
     private static final int VIETNAMESE_LANGUAGE_ID = 2;
 
     @GET
-    @Path("{sourceWord}/{type}")  // type: 1 = Anh-Việt, 2 = Anh-Anh
+    @Path("{sourceWord}/{sourceLanguageId}/{targetLanguageId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response translateWord(
-        @PathParam("sourceWord") String sourceWord,
-        @PathParam("type") int type
+            @PathParam("sourceWord") String sourceWord,
+            @PathParam("sourceLanguageId") int sourceLanguageId,
+            @PathParam("targetLanguageId") int targetLanguageId
     ) {
-        // Kiểm tra type
-        if (type != 1 && type != 2) {
+        // Kiểm tra sourceLanguageId
+        if ((sourceLanguageId != ENGLISH_LANGUAGE_ID && sourceLanguageId != VIETNAMESE_LANGUAGE_ID)
+         || (targetLanguageId != ENGLISH_LANGUAGE_ID && targetLanguageId != VIETNAMESE_LANGUAGE_ID)) {
             return Response.status(Response.Status.BAD_REQUEST)
-                          .entity("{\"error\":\"Invalid type. Use 1 for English-Vietnamese or 2 for English-English\"}")
-                          .build();
+                    .entity("{\"error\":\"Invalid language ID. Use 1 for English or 2 for Vietnamese\"}")
+                    .build();
         }
 
-        // Gọi service với sourceLanguageId luôn là tiếng Anh (1)
-        Map<String, Object> result = translationService.translateWord(
-            sourceWord, 
-            1,  // sourceLanguageId luôn là 1 (tiếng Anh)
-            type == 1 ? 2 : 1  // targetLanguageId: 2 cho Anh-Việt, 1 cho Anh-Anh
+
+        // Gọi service với sourceLanguageId và targetLanguageId tương ứng
+        List<Map<String, Object>> results = translationService.translateWord(
+                sourceWord,
+                sourceLanguageId,
+                targetLanguageId
         );
 
-        if (result != null) {
-            return Response.ok(result).build();
+        if (results != null && !results.isEmpty()) {
+            return Response.ok(results).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND)
-                          .entity("{\"error\":\"Translation not found\"}")
-                          .build();
+                    .entity("{\"error\":\"No matching words found\"}")
+                    .build();
         }
     }
+
 }

@@ -16,7 +16,6 @@ import java.util.ArrayList;
  * @author Hoang Duong
  */
 public class DefinitionDAO implements DAOInterface<Definition> {
-
     @Override
     public int insert(Definition definition) {
         Connection c = null;

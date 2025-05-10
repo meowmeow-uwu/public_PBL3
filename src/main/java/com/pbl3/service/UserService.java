@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dao.UserDAO;
 import com.pbl3.dto.User;
+import com.pbl3.util.JwtUtil;
 
 /**
  *
@@ -53,14 +54,15 @@ public class UserService implements ServiceInterface<User>{
     public ArrayList<User> selectAll() {
         UserDAO dao = new UserDAO();
         ArrayList<User> users = dao.selectAll();
-        if (users != null && !users.isEmpty()) {
-            System.out.println("Users fetched successfully.");
-        } else {
-            System.out.println("No users found.");
-        }
+        
         return users;
     }
-    
+    public ArrayList<User> selectAllByGroupUserId(int groupUserId) {
+        UserDAO dao = new UserDAO();
+        ArrayList<User> users = dao.selectAll();
+        
+        return users;
+    }
 
     @Override
     public User selectByID(int id) {
@@ -76,5 +78,16 @@ public class UserService implements ServiceInterface<User>{
     public User selectByCondition(String condition) {
         return null;
     }
-    
+    public boolean isAdmin(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return false;
+        }
+        String token = authHeader.substring("Bearer ".length()).trim();
+        int id = JwtUtil.getUserIdFromToken(token);
+        if (id == -1) {
+            return false;
+        }
+        User user = this.selectByID(id);
+        return user != null && user.getGroup_user_id() == 1; // Giả sử role_id = 1 là admin
+    }
 }

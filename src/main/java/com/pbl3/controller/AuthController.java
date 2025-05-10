@@ -31,6 +31,7 @@ public class AuthController {
             @FormParam("password") String password,
             @FormParam("name") String name
     ) {
+        
         User user = new User();
         user.setName(name);
         user.setAvatar("https://imgur.com/a/Ne5GWsq.png");
@@ -45,8 +46,14 @@ public class AuthController {
         account.setEmail(email);
         account.setPassword(password);
         account.setUser_id(userId);
-
-        int result = accountService.insert(account);
+        int result;
+        try{
+        result = accountService.insert(account);
+        }catch(Exception e){
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("{\"error\":\"Unable to register account\"}")
+                        .build();
+                }
         return (result > 0)
                 ? Response.status(Response.Status.CREATED).build()
                 : Response.status(Response.Status.BAD_REQUEST)

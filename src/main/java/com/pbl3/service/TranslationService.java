@@ -1,9 +1,7 @@
 package com.pbl3.service;
 
-import com.pbl3.dao.DefinitionDAO;
 import com.pbl3.dao.TranslateDAO;
 import com.pbl3.dao.WordDAO;
-import com.pbl3.dto.Definition;
 import com.pbl3.dto.Translate;
 import com.pbl3.dto.Word;
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import java.util.Set;
 public class TranslationService {
 
     private final WordDAO wordDAO = new WordDAO();
-    private final DefinitionDAO definitionDAO = new DefinitionDAO();
     private final TranslateDAO translateDAO = new TranslateDAO();
     // Cache cho kết quả dịch
 

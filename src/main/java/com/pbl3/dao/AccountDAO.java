@@ -40,6 +40,34 @@ public class AccountDAO implements DAOInterface<Account> {
         return 0;
     }
 
+    public Account selectByUserId(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM account WHERE user_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                return new Account(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getInt("user_id")
+                );
+            }
+            s.close();
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return null;
+    }
+
     @Override
     public int update(Account t) {
         Connection c = null;
@@ -55,6 +83,7 @@ public class AccountDAO implements DAOInterface<Account> {
 
             int result = s.executeUpdate();
             s.close();
+
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,7 +170,7 @@ public class AccountDAO implements DAOInterface<Account> {
         return null;
     }
 
-    public   Account selectByEmail(String email) {
+    public Account selectByEmail(String email) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
@@ -169,7 +198,7 @@ public class AccountDAO implements DAOInterface<Account> {
         return null;
     }
 
-    public  Account selectByUsername(String username) {
+    public Account selectByUsername(String username) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();

@@ -155,7 +155,7 @@ public class CollectionUserController {
 
         //Xóa 1 từ khỏi bộ sưu tập
         @DELETE
-        @Path("{collectionId}")
+        @Path("{collectionId}/delete-word")
         @Produces(MediaType.APPLICATION_JSON)
         public Response deleteWordFromCollection(
             @HeaderParam("Authorization") String token,

@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Hoang Duong
  */
 @Path("/admin/users")
-public class UserManagerController {
+public class UserManagementController {
 
     private final AccountService accountService = new AccountService();
     private final UserService userService = new UserService();

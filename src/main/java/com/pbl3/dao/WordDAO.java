@@ -15,8 +15,19 @@ import java.util.ArrayList;
  *
  * @author Danh
  */
-public class WordDAO implements DAOInterface<Word> {
 
+public class WordDAO implements DAOInterface<Word>{
+    private static WordDAO instance;
+    
+    private WordDAO() {}
+    
+    public static synchronized WordDAO getInstance() {
+        if (instance == null) {
+            instance = new WordDAO();
+        }
+        return instance;
+    }
+    
     @Override
     public int insert(Word word) {
         Connection c = null;

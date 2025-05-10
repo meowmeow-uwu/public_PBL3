@@ -20,13 +20,12 @@ import java.util.Map;
  */
 public class WordService implements ServiceInterface<Word> {
 
-    private final WordDAO wordDAO = new WordDAO();
     private final DefinitionDAO definitionDAO = new DefinitionDAO();
-   
+    private final WordDAO wordDAO = WordDAO.getInstance();
+
     @Override
     public int insert(Word Word) {
-        WordDAO dao = new WordDAO();
-        int result = dao.insert(Word);
+        int result = wordDAO.insert(Word);
         if (result > 0) {
             System.out.println("Word inserted successfully.");
         } else {
@@ -37,8 +36,7 @@ public class WordService implements ServiceInterface<Word> {
 
     @Override
     public int update(Word Word) {
-        WordDAO dao = new WordDAO();
-        int result = dao.update(Word);
+        int result = wordDAO.update(Word);
         if (result > 0) {
             System.out.println("Word updated successfully.");
         } else {
@@ -54,8 +52,7 @@ public class WordService implements ServiceInterface<Word> {
 
     @Override
     public ArrayList<Word> selectAll() {
-        WordDAO dao = new WordDAO();
-        ArrayList<Word> Words = dao.selectAll();
+        ArrayList<Word> Words = wordDAO.selectAll();
         if (Words != null && !Words.isEmpty()) {
             System.out.println("Words fetched successfully.");
         } else {
@@ -66,8 +63,7 @@ public class WordService implements ServiceInterface<Word> {
 
     @Override
     public Word selectByID(int id) {
-        WordDAO dao = new WordDAO();
-        Word u = dao.selectByID(id);
+        Word u = wordDAO.selectByID(id);
         if (u != null) {
             return u;
         }

@@ -13,9 +13,8 @@ import java.util.Set;
 
 public class TranslationService {
 
-    private final WordDAO wordDAO = new WordDAO();
-    private final TranslateDAO translateDAO = new TranslateDAO();
-    // Cache cho kết quả dịch
+    private WordDAO wordDAO = WordDAO.getInstance();
+    private TranslateDAO translateDAO = new TranslateDAO();
 
     // Định nghĩa constant cho language
     private static final int ENGLISH_LANGUAGE_ID = 1;

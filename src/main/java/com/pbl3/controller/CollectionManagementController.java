@@ -3,7 +3,8 @@ package com.pbl3.controller;
 import java.util.List;
 import java.util.Map;
 
-import com.pbl3.service.CollectionService;
+import com.pbl3.dto.Collection;
+import com.pbl3.service.CollectionManagementService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.Consumes;
@@ -20,9 +21,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("collections")
-public class CollectionController {
-    private CollectionService collectionService = new CollectionService();
-
+public class CollectionManagementController {
+    private CollectionManagementService collectionService = CollectionManagementService.getInstance();
+    private final int CID = -1;
+    private static boolean Public = true;
     // Tạo bộ sưu tập mới
     @POST
     @Path("create")
@@ -37,8 +39,13 @@ public class CollectionController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+        if(!collectionService.isAccessed(userId)){
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
 
-        int collectionId = collectionService.createCollection(name, isPublic, userId);
+        Public = isPublic;
+        Collection collection = new Collection(CID, name, Public);
+        int collectionId = collectionService.insert(collection);
         if (collectionId > 0) {
             return Response.ok("{\"collectionId\": " + collectionId + "}").build();
         }
@@ -58,9 +65,12 @@ public class CollectionController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+        if(!collectionService.isAccessed(userId)){
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
 
-        boolean success = collectionService.addWordToCollection(collectionId, wordId);
-        return success ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
+        int success = collectionService.addWordToCollection(collectionId, wordId);
+        return success != 0 ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     // Lấy danh sách từ trong bộ sưu tập
@@ -72,7 +82,7 @@ public class CollectionController {
         @PathParam("collectionId") int collectionId
     ) {
         int userId = JwtUtil.getUserIdFromToken(token);
-        if (userId == -1) {
+        if (userId == -1 || !collectionService.isAccessed(userId)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
@@ -80,9 +90,9 @@ public class CollectionController {
         return Response.ok(words).build();
     }
 
-    // Lấy danh sách bộ sưu tập của user
+    // Lấy danh sách bộ sưu tập
     @GET
-    @Path("user")
+    @Path("all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserCollections(
         @HeaderParam("Authorization") String token
@@ -93,7 +103,7 @@ public class CollectionController {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
 
-            List<Map<String, Object>> collections = collectionService.getUserCollections(userId);
+            List<Map<String, Object>> collections = collectionService.getAllPublicCollections();
             return Response.ok(collections).build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,7 +129,7 @@ public class CollectionController {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        if (!collectionService.hasAccessToCollection(userId, collectionId)) {
+        if (!collectionService.isAccessed(userId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
@@ -140,11 +150,35 @@ public class CollectionController {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        if (!collectionService.hasAccessToCollection(userId, collectionId)) {
+        if (!collectionService.isAccessed(userId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
         boolean success = collectionService.deleteCollection(collectionId);
         return success ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
     }
+
+    //Xóa 1 từ khỏi bộ sưu tập
+    @DELETE
+    @Path("{collectionId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteWordFromCollection(
+        @HeaderParam("Authorization") String token,
+        @PathParam("collectionId") int collectionId,
+        @FormParam("wordId") int wordId
+    ) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        if (!collectionService.isAccessed(userId)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+        int success = collectionService.deleteWordFromCollection(collectionId, wordId);
+        return success != 0 ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+
 }

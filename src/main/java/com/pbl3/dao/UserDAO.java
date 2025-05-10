@@ -125,6 +125,30 @@ public class UserDAO implements DAOInterface<User> {
         return null;
     }
 
+    public ArrayList<User> selectAllByGroupUserId(int groupUserId) {
+        Connection c = null;
+        try {
+            ArrayList<User> listUser = new ArrayList<User>();
+            c = DBUtil.makeConnection();
+            String query = "select * from _user where group_user_id = ? ";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, groupUserId);
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                listUser.add(new User(rs.getInt("user_id"), rs.getString("name"), rs.getString("avatar"), rs.getInt("group_user_id")));
+            }
+            rs.close();
+            s.close();
+            return listUser;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
     @Override
     public User selectByID(int id
     ) {

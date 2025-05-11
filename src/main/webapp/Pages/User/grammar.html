@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Learning</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="../../Assets/Css/User/grammar.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css"">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css"">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div class="container">
+        <!-- Topic Selection Section -->
+        <div class="topics-section" id="topicsSection">
+            <h2>Choose a Grammar Topic</h2>
+            <div class="topics-grid">
+                <div class="topic-card" data-topic="present-simple">
+                    <div class="topic-circle">
+                        <span>Present Simple</span>
+                    </div>
+                </div>
+                <div class="topic-card" data-topic="present-continuous">
+                    <div class="topic-circle">
+                        <span>Present Continuous</span>
+                    </div>
+                </div>
+                <div class="topic-card" data-topic="conditional-1">
+                    <div class="topic-circle">
+                        <span>Conditional Type 1</span>
+                    </div>
+                </div>
+                <div class="topic-card" data-topic="comparison">
+                    <div class="topic-circle">
+                        <span>Comparison</span>
+                    </div>
+                </div>
+                <div class="topic-card" data-topic="passive-voice">
+                    <div class="topic-circle">
+                        <span>Passive Voice</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson Detail Section -->
+        <div class="lesson-section hidden" id="lessonSection">
+            <div class="lesson-header">
+                <button class="back-button" id="backButton">
+                    <i class="fas fa-arrow-left"></i> Back to Topics
+                </button>
+                <div class="lesson-actions">
+                    <button class="action-btn favorite" title="Add to Favorites">
+                        <i class="far fa-star"></i>
+                    </button>
+                    <button class="action-btn completed" title="Mark as Completed">
+                        <i class="far fa-check-circle"></i>
+                    </button>
+                    <button class="action-btn restart" title="Restart Lesson">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="action-btn related" title="Related Topics">
+                        <i class="fas fa-book"></i>
+                    </button>
+                    <span class="timer" title="Time Spent">
+                        <i class="far fa-clock"></i> 00:00
+                    </span>
+                </div>
+            </div>
+
+            <div class="lesson-content">
+                <h1 class="grammar-title">Present Simple Tense</h1>
+                
+                <div class="grammar-section">
+                    <h2><i class="fas fa-puzzle-piece"></i> Structure</h2>
+                    <div class="content-card">
+                        <p>S + V(s/es) + O</p>
+                    </div>
+                </div>
+
+                <div class="grammar-section">
+                    <h2><i class="fas fa-info-circle"></i> Description</h2>
+                    <div class="content-card">
+                        <p>Used to describe habits, general truths, and regular actions.</p>
+                    </div>
+                </div>
+
+                <div class="grammar-section">
+                    <h2><i class="fas fa-comment"></i> Examples</h2>
+                    <div class="content-card">
+                        <ul>
+                            <li>She walks to school every day.</li>
+                            <li>The sun rises in the east.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grammar-section">
+                    <h2><i class="fas fa-search"></i> Analysis</h2>
+                    <div class="content-card">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Singular subject → Add "s" to verb</li>
+                            <li><i class="fas fa-check"></i> Describes regular actions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grammar-section">
+                    <h2><i class="fas fa-lightbulb"></i> Memory Tip</h2>
+                    <div class="content-card">
+                        <p>"Present Simple – actions as regular as clockwork"</p>
+                    </div>
+                </div>
+
+                <div class="grammar-section">
+                    <h2><i class="fas fa-tasks"></i> Exercises</h2>
+                    <div class="content-card">
+                        <div class="exercise">
+                            <p>1. She ___ (go) to school.</p>
+                            <div class="options">
+                                <label><input type="radio" name="q1" value="a"> a. go</label>
+                                <label><input type="radio" name="q1" value="b"> b. goes</label>
+                                <label><input type="radio" name="q1" value="c"> c. going</label>
+                            </div>
+                            <button class="check-answer">Check Answer</button>
+                            <div class="answer hidden">
+                                <p>✅ Answer: b. goes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="../../Javascript/User/grammar.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+</body>
+</html>

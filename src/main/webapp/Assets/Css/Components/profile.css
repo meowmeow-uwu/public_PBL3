@@ -1,0 +1,101 @@
+.profile-container {
+  max-width: 900px;
+  margin: 40px auto 0 auto;
+  padding: 2.5rem 2rem 3rem 2rem;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(80,120,200,0.10);
+  transition: margin-left 0.3s;
+}
+.profile-has-sidebar {
+  margin-left: 320px !important; /* Dịch sang trái khi có sidebar */
+}
+.profile-main {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+.profile-avatar {
+  flex: 0 0 160px;
+  text-align: center;
+}
+.profile-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 2px solid #4a90e2;
+}
+.profile-info {
+  flex: 1;
+}
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 6px;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #bcdffb;
+  padding: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+.form-group input:focus,
+.form-group select:focus {
+  border: 1.5px solid #4a90e2;
+}
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 18px;
+}
+.profile-section {
+  margin-bottom: 24px;
+}
+.profile-section h3 {
+  color: #4a90e2;
+  margin-bottom: 12px;
+}
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 24px;
+  min-width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  position: relative;
+}
+.close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  .profile-container, .profile-has-sidebar {
+    margin-left: 0 !important;
+    padding: 1rem;
+  }
+  .profile-main { flex-direction: column; gap: 18px; }
+  .profile-avatar { margin-bottom: 12px; }
+}

@@ -1,0 +1,254 @@
+.body{
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 0;
+}
+h1{
+  margin-top: 40px;
+  text-align: center;
+}
+.dictionary-container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    padding: 32px 24px;
+  }
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1.5px solid #bcdffb;
+    font-size: 1.1rem;
+    outline: none;
+    transition: border 0.3s;
+  }
+  .search-bar input:focus {
+    border: 1.5px solid #4a90e2;
+  }
+  .search-bar button {
+    min-width: 90px;
+    margin-left: 8px;
+  }
+  .suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+  }
+  .suggestions.active {
+    display: block;
+  }
+  .suggestion-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  .suggestion-item:hover {
+    background-color: #f5f5f5;
+  }
+  .suggestion-word {
+    font-weight: bold;
+    color: #333;
+  }
+  .suggestion-meaning {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 3px;
+  }
+  .result-card {
+    margin-top: 32px;
+    background: #f7fbff;
+    border-radius: 12px;
+    padding: 24px 18px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
+    position: relative;
+  }
+  .result-header {
+    background: #4285f4;
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .word {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+  }
+  .phonetic {
+    font-size: 1.1rem;
+    color: #e3f0fc;
+    margin-left: 12px;
+  }
+  .save-btn {
+    background: linear-gradient(90deg, #1fd655 0%, #00c3ff 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 22px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .save-btn:hover {
+    background: linear-gradient(90deg, #00c3ff 0%, #1fd655 100%);
+  }
+  .meaning {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  /* Popup lưu từ */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.active {
+    display: flex;
+  }
+  .save-modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    min-width: 320px;
+    max-width: 90vw;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+    text-align: left;
+    position: relative;
+  }
+  .save-modal label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .save-modal input, .save-modal textarea {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #bcdffb;
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border 0.3s;
+  }
+  .save-modal input:focus, .save-modal textarea:focus {
+    border: 1.5px solid #4a90e2;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  .modal-actions button {
+    min-width: 80px;
+  }
+  .close-modal {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #888;
+    cursor: pointer;
+  }
+  @media (max-width: 600px) {
+    .dictionary-container { padding: 16px 2vw; }
+    .result-card { padding: 14px 4vw; }
+    .save-modal { padding: 18px 4vw; }
+  }
+  .lang-select-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 0 8px;
+    border: 1px solid #e3f0fc;
+    margin-right: 8px;
+  }
+  .lang-select-group select {
+    border: none;
+    background: none;
+    font-size: 1rem;
+    padding: 6px 2px;
+    outline: none;
+    color: #333;
+  }
+  .lang-select-group select:focus {
+    outline: 1.5px solid #4a90e2;
+  }
+  #swapLang {
+    color: #888;
+    transition: color 0.2s;
+  }
+  #swapLang:hover {
+    color: #4a90e2;
+  }
+  .result-card hr {
+    border: none;
+    border-top: 1px solid #e3f0fc;
+    margin: 18px 0;
+  }
+  .result-card ul {
+    padding-left: 18px;
+    margin: 0;
+  }
+  .result-card li {
+    margin-bottom: 6px;
+    font-size: 1.08rem;
+  }
+  .definition-item {
+    margin: 15px 0;
+    padding: 10px;
+    border-left: 3px solid #4a90e2;
+  }
+  .word-type {
+    color: #666;
+    font-style: italic;
+  }
+  .sound-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1.3rem;
+    margin-left: 8px;
+  }
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4285f4;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+    margin: 32px auto;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }

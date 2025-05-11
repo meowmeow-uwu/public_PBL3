@@ -1,0 +1,1 @@
+const API_BASE = "https://0762-103-156-58-230.ngrok-free.app/PBL3/api/translate";

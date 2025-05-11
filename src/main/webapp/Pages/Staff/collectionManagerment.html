@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Bộ sưu tập</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Staff/collectionManagerment.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div id="sidebar"></div>
+<div class="collection-container">
+    <h1>Quản lý Bộ sưu tập</h1>
+    <!-- Toolbar -->
+    <div class="collection-toolbar">
+        <input type="text" id="searchInput" placeholder="Tìm theo tên bộ sưu tập...">
+        <select id="typeFilter">
+            <option value="">Tất cả loại</option>
+            <option value="Từ vựng">Từ vựng</option>
+            <option value="Ngữ pháp">Ngữ pháp</option>
+            <option value="Reading">Reading</option>
+        </select>
+        <button class="btn-primary" onclick="showAddForm()"><i class="fas fa-plus"></i> Thêm bộ sưu tập</button>
+    </div>
+    <!-- Table -->
+    <table class="collection-table">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Chủ đề</th>
+                <th>Loại bộ sưu tập</th>
+                <th>Mô tả ngắn</th>
+                <th>Số lượng mục</th>
+                <th>Tác vụ</th>
+            </tr>
+        </thead>
+        <tbody id="collectionTableBody">
+            <!-- Render bằng JS -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Thêm/Sửa -->
+<div class="modal" id="collectionModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div id="modalFormContent"></div>
+    </div>
+</div>
+
+<script src="/Javascript/GetAPI/getInfor.js"></script>
+<script src="/Javascript/Staff/collectionManagerment.js"></script>
+<script src="/Javascript/Components/sideBar.js"></script>
+<script src="/Javascript/components/theme.js"></script>
+</body>
+</html>

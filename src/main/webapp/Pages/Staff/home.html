@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang quản lý hệ thống học tiếng Anh</title>
+  <link rel="stylesheet" href="/Assets/Css/main.css">
+  <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+  <link rel="stylesheet" href="/Assets/Css/Staff/home.css">
+  <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Chart.js for statistics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div id="sidebar"></div>
+  <!-- <a href="/Pages/User/home.html" style="margin: 20px 300px;" class="btn">User</a> -->
+  <!-- Thêm phần Test Controls
+  <div class="test-controls">
+    <button onclick="switchRole('1')" class="test-btn admin-btn">Test Admin Role</button>
+    <button onclick="switchRole('3')" class="test-btn staff-btn">Test Staff Role</button>
+    <button onclick="logOut()" class="test-btn logout-btn">Logout</button>
+  </div> -->
+
+  <main class="dashboard">
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+      <h1 id="welcome-message">Xin chào, <span id="user-name">Admin</span></h1>
+      <p class="role-badge" id="role-badge">Admin</p>
+    </section>
+
+    <!-- Quick Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Số học viên</h3>
+          <p id="total-students">0</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Số khóa học</h3>
+          <p id="total-courses">0</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Từ vựng hệ thống</h3>
+          <p id="total-vocabulary">0</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Tỷ lệ hoàn thành</h3>
+          <p id="completion-rate">0%</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="chart-container">
+        <h2>Hoạt động học tập</h2>
+        <canvas id="activityChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>Thống kê theo khóa học</h2>
+        <canvas id="courseChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Top Students Section -->
+    <section class="top-students">
+      <h2>🔥 Học viên nổi bật</h2>
+      <div class="students-grid" id="top-students-list">
+        <!-- Will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Admin Only Section -->
+    <section class="admin-section" id="admin-section" style="display: none;">
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Số lượng nhân viên</h3>
+            <p id="total-staff">0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="recent-staff">
+        <h2>👮 Nhân viên gần đây</h2>
+        <div class="staff-list" id="recent-staff-list">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/Javascript/GetAPI/getInfor.js"></script>
+  <script src="/Javascript/components/sideBar.js"></script>
+  <script src="/Javascript/Staff/home.js"></script>
+  <script src="/Javascript/components/theme.js"></script>
+</body>
+</html>

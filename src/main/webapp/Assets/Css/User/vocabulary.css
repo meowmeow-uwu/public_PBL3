@@ -1,0 +1,257 @@
+/* Container */
+.vocabulary-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.page-title {
+    text-align: center;
+    color: var(--theme-text);
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+/* Topic Selection */
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.topic-card {
+    background-color: var(--theme-card-bg);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px var(--theme-shadow);
+}
+
+.topic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px var(--theme-shadow);
+}
+
+.topic-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.topic-card h3 {
+    color: var(--theme-text);
+    margin-bottom: 1rem;
+}
+
+.topic-info {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--theme-text);
+    font-size: 0.9rem;
+}
+
+.level-badge {
+    background-color: var(--theme-primary);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+/* Flashcard Section */
+.flashcard-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.flashcard-container {
+    perspective: 1000px;
+    margin-bottom: 2rem;
+}
+
+.flashcard {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--theme-card-bg);
+    box-shadow: 0 2px 10px var(--theme-shadow);
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+}
+
+.word {
+    font-size: 2.5rem;
+    color: var(--theme-text);
+    margin-bottom: 1rem;
+}
+
+.phonetic {
+    font-size: 1.2rem;
+    color: var(--theme-primary);
+    margin-bottom: 0.5rem;
+}
+
+.word-type {
+    font-size: 1rem;
+    color: var(--theme-text);
+    margin-bottom: 1rem;
+}
+
+.hint {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 1rem;
+}
+
+.meaning {
+    font-size: 2rem;
+    color: var(--theme-text);
+    margin-bottom: 1rem;
+}
+
+.example {
+    font-size: 1.1rem;
+    color: var(--theme-text);
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+/* Navigation */
+.flashcard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.nav-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--theme-primary);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.nav-btn:hover {
+    background-color: var(--theme-hover);
+}
+
+.progress-info {
+    font-size: 1.2rem;
+    color: var(--theme-text);
+}
+
+/* Bottom Actions */
+.bottom-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.action-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--theme-card-bg);
+    color: var(--theme-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: var(--theme-hover);
+}
+
+.card-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Progress Bar */
+.progress-bar {
+    height: 8px;
+    background-color: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--theme-primary);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    color: var(--theme-text);
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .flashcard {
+        height: 300px;
+    }
+
+    .word {
+        font-size: 2rem;
+    }
+
+    .meaning {
+        font-size: 1.5rem;
+    }
+
+    .nav-btn {
+        padding: 0.6rem 1rem;
+    }
+
+    .action-btn {
+        padding: 0.6rem 1rem;
+    }
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Từ Vựng - ORCA English</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/User/vocabulary.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <div class="vocabulary-container">
+        <!-- Topic Selection Section -->
+        <div class="topic-section" id="topicSection">
+            <h1 class="page-title">📚 Chọn chủ đề từ vựng</h1>
+            
+            <div class="topic-grid">
+                <!-- Fruit Topic -->
+                <div class="topic-card" data-topic="fruit">
+                    <div class="topic-icon">🍎</div>
+                    <h3>Trái cây</h3>
+                    <div class="topic-info">
+                        <span>20 từ</span>
+                        <span class="level-badge">A1</span>
+                    </div>
+                </div>
+
+                <!-- Family Topic -->
+                <div class="topic-card" data-topic="family">
+                    <div class="topic-icon">👪</div>
+                    <h3>Gia đình</h3>
+                    <div class="topic-info">
+                        <span>15 từ</span>
+                        <span class="level-badge">A1</span>
+                    </div>
+                </div>
+
+                <!-- Verbs Topic -->
+                <div class="topic-card" data-topic="verbs">
+                    <div class="topic-icon">🔧</div>
+                    <h3>Động từ thường</h3>
+                    <div class="topic-info">
+                        <span>25 từ</span>
+                        <span class="level-badge">A2</span>
+                    </div>
+                </div>
+
+                <!-- Weather Topic -->
+                <div class="topic-card" data-topic="weather">
+                    <div class="topic-icon">🌤️</div>
+                    <h3>Thời tiết</h3>
+                    <div class="topic-info">
+                        <span>18 từ</span>
+                        <span class="level-badge">A2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flashcard Section -->
+        <div class="flashcard-section" id="flashcardSection" style="display: none;">
+            <div class="flashcard-container">
+                <div class="flashcard">
+                    <div class="flashcard-inner">
+                        <!-- Front of card -->
+                        <div class="flashcard-front">
+                            <h2 class="word">apple</h2>
+                            <div class="phonetic">/ˈæp.əl/</div>
+                            <div class="word-type">danh từ</div>
+                            <div class="hint">👉 Bấm vào thẻ để xem nghĩa</div>
+                        </div>
+                        <!-- Back of card -->
+                        <div class="flashcard-back">
+                            <div class="meaning">quả táo</div>
+                            <div class="example">I eat an apple every morning.</div>
+                            <div class="card-actions">
+                                <button class="action-btn repeat-btn">
+                                    <i class="fas fa-redo"></i> Lặp lại
+                                </button>
+                                <button class="action-btn learned-btn">
+                                    <i class="fas fa-check"></i> Đã học
+                                </button>
+                                <button class="action-btn favorite-btn">
+                                    <i class="fas fa-star"></i> Yêu thích
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flashcard-nav">
+                <button class="nav-btn prev-btn">
+                    <i class="fas fa-chevron-left"></i> Thẻ trước
+                </button>
+                <div class="progress-info">
+                    <span class="current-card">1</span>/<span class="total-cards">20</span>
+                </div>
+                <button class="nav-btn next-btn">
+                    Thẻ tiếp theo <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="bottom-actions">
+                <button class="action-btn audio-btn">
+                    <i class="fas fa-volume-up"></i> Nghe phát âm
+                </button>
+                <button class="action-btn image-btn">
+                    <i class="fas fa-image"></i> Xem hình ảnh
+                </button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 30%"></div>
+            </div>
+            <div class="progress-text">6/20 từ đã học</div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <!-- Load components -->
+
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+    <script src="/Javascript/User/vocabulary.js"></script>
+
+    <!-- Add navigation handling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle header navigation
+            const header = document.getElementById('header');
+            header.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link) {
+                    e.preventDefault();
+                    const href = link.getAttribute('href');
+                    if (href) {
+                        window.location.href = href;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

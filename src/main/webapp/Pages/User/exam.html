@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quiz</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="../../Assets/Css/User/exam.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header"></div>
+    
+    <div class="exam-container">
+        <!-- Quiz Header -->
+        <div class="quiz-header">
+            <h1 class="quiz-title">🔤 Bài kiểm tra: A1 – Chủ đề Gia đình</h1>
+            <div class="quiz-info">
+                <div class="progress">
+                    <span class="question-count">Câu hỏi 3 / 10</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="timer">
+                    <i class="far fa-clock"></i>
+                    <span id="time">03:15</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Content -->
+        <div class="quiz-content">
+            <div class="question-container">
+                <h2 class="question-text">🧠 Câu hỏi: Nghĩa của từ "uncle" là gì?</h2>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="answer" value="A">
+                        <span class="option-text">A. Ông</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="B">
+                        <span class="option-text">B. Chú/Bác</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="C">
+                        <span class="option-text">C. Anh họ</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="D">
+                        <span class="option-text">D. Con trai</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev-btn" disabled>
+                    <i class="fas fa-arrow-left"></i> Trước
+                </button>
+                <button class="nav-btn next-btn">
+                    Tiếp theo <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="nav-btn save-btn">
+                    <i class="fas fa-save"></i> Lưu nháp
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen (Hidden by default) -->
+        <div class="results-screen hidden">
+            <div class="results-header">
+                <h2>🎉 Hoàn thành bài kiểm tra!</h2>
+            </div>
+            <div class="results-content">
+                <div class="score-section">
+                    <h3>📊 Điểm: <span id="final-score">8 / 10</span> (80%) ✅</h3>
+                    <div class="score-details">
+                        <span class="correct">🟢 Câu đúng: 8</span>
+                        <span class="incorrect">🔴 Câu sai: 2</span>
+                    </div>
+                </div>
+                <div class="review-section">
+                    <h3>🔍 Gợi ý ôn lại:</h3>
+                    <ul class="review-list">
+                        <li>Từ "niece" – bạn đã chọn sai, hãy xem lại phần gia đình.</li>
+                        <li>Mẫu "Hiện tại tiếp diễn" – bạn cần xem lại bài ngữ pháp A2.</li>
+                    </ul>
+                </div>
+                <div class="results-actions">
+                    <button class="action-btn review-btn">
+                        <i class="fas fa-book"></i> Ôn tập lại
+                    </button>
+                    <button class="action-btn home-btn">
+                        <i class="fas fa-home"></i> Về trang chủ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="../../Javascript/User/exam.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+</body>
+</html>

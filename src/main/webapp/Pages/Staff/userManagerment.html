@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý học viên</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Staff/userManagerment.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .user-manager-container { margin-left: 280px; padding: 2rem; }
+        .search-bar { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .search-bar input, .search-bar select { padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc; }
+        .user-table { width: 100%; border-collapse: collapse; background: #fff; }
+        .user-table th, .user-table td { padding: 0.75rem; border-bottom: 1px solid #eee; text-align: left; }
+        .user-table th { background: #f5f7fa; }
+        .user-table tr:hover { background: #f0f8ff; }
+        .action-btn { background: none; border: none; cursor: pointer; margin-right: 6px; font-size: 1.1rem; }
+        .action-btn[disabled] { color: #ccc; cursor: not-allowed; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.2); align-items: center; justify-content: center; }
+        .modal-content { background: #fff; padding: 2rem; border-radius: 10px; min-width: 350px; }
+        .modal-header { font-weight: bold; margin-bottom: 1rem; }
+        .close-modal { float: right; cursor: pointer; color: #888; }
+        .user-table td {
+            vertical-align: middle;
+        }
+        .user-table .action-btn {
+            opacity: 1 !important; /* Luôn hiển thị */
+            transition: color 0.2s, background 0.2s;
+            margin-right: 8px;
+            color: #4a90e2;
+            border-radius: 4px;
+            padding: 4px 6px;
+        }
+        .user-table .action-btn:hover:not([disabled]) {
+            background: #e3f0fc;
+            color: #357abd;
+        }
+        .user-table tr td .action-btn { opacity: 0; }
+        .user-table tr:hover td .action-btn { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div id="sidebar"></div>
+    <div class="user-manager-container">
+        <h1>Quản lý học viên</h1>
+        <!-- Thanh tìm kiếm và bộ lọc -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm theo tên, email, mã học viên...">
+            <select id="courseFilter">
+                <option value="">Tất cả khóa học</option>
+                <option>Tiếng Anh A1</option>
+                <option>Tiếng Anh B1</option>
+            </select>
+            <select id="statusFilter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="active">Đang học</option>
+                <option value="inactive">Nghỉ</option>
+            </select>
+            <button onclick="searchUser()" class=" btn "><i class="fas fa-search"></i> Tìm kiếm</button>
+        </div>
+        <!-- Bảng danh sách học viên -->
+        <table class="user-table" id="userTable">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Khóa học</th>
+                    <th>Tiến độ (%)</th>
+                    <th>Ngày tạo</th>
+                    <th>Tác vụ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dữ liệu sẽ được render bằng JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal chi tiết học viên -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('detailModal')">&times;</span>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal sửa học viên -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('editModal')">&times;</span>
+            <div id="editContent"></div>
+        </div>
+    </div>
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/sideBar.js"></script>
+    <script>
+        // Dữ liệu mẫu
+        const users = [
+            {id: 1, name: "Nguyễn Văn A", email: "a@gmail.com", course: "Tiếng Anh A1", progress: 70, created: "2025-04-01", status: "active", dob: "2000-01-01", avatar: "https://randomuser.me/api/portraits/men/1.jpg"},
+            {id: 2, name: "Trần Thị B", email: "b@gmail.com", course: "Tiếng Anh B1", progress: 85, created: "2025-03-15", status: "active", dob: "2001-02-02", avatar: "https://randomuser.me/api/portraits/women/2.jpg"},
+            {id: 3, name: "Lê Văn C", email: "c@gmail.com", course: "Tiếng Anh A1", progress: 40, created: "2025-02-20", status: "inactive", dob: "2002-03-03", avatar: "https://randomuser.me/api/portraits/men/3.jpg"},
+        ];
+
+        // Lấy role từ localStorage
+        const role = localStorage.getItem('Role');
+
+        function renderTable(data) {
+            const tbody = document.querySelector('#userTable tbody');
+            tbody.innerHTML = data.map((u, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${u.name}</td>
+                    <td>${u.email}</td>
+                    <td>${u.course}</td>
+                    <td>${u.progress}%</td>
+                    <td>${u.created}</td>
+                    <td>
+                        <button class="action-btn" title="Xem chi tiết" onclick="showDetail(${u.id})"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn" title="Chỉnh sửa" onclick="showEdit(${u.id})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn" title="Gửi thông báo" onclick="alert('Gửi thông báo cho ${u.name}')"><i class="fas fa-envelope"></i></button>
+                        <button class="action-btn" title="Xóa" ${role !== '1' ? 'disabled' : ''} onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchUser() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const course = document.getElementById('courseFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            let filtered = users.filter(u =>
+                (u.name.toLowerCase().includes(keyword) || u.email.toLowerCase().includes(keyword) || u.id.toString().includes(keyword)) &&
+                (course === "" || u.course === course) &&
+                (status === "" || u.status === status)
+            );
+            renderTable(filtered);
+        }
+
+        function showDetail(id) {
+            const u = users.find(x => x.id === id);
+            document.getElementById('detailContent').innerHTML = `
+                <div style="display:flex;gap:1rem;align-items:center;">
+                    <img src="${u.avatar}" alt="avatar" style="width:80px;height:80px;border-radius:50%;">
+                    <div>
+                        <h2>${u.name}</h2>
+                        <p><b>Email:</b> ${u.email}</p>
+                        <p><b>Ngày sinh:</b> ${u.dob}</p>
+                        <p><b>Khóa học:</b> ${u.course}</p>
+                        <p><b>Tiến độ:</b> ${u.progress}%</p>
+                        <p><b>Ngày tạo:</b> ${u.created}</p>
+                        <p><b>Trạng thái:</b> ${u.status === 'active' ? 'Đang học' : 'Nghỉ'}</p>
+                        <p><b>Lịch sử học tập:</b> ...</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function showEdit(id) {
+            const u = users.find(x => x.id === id);
+            document.getElementById('editContent').innerHTML = `
+                <h2>Chỉnh sửa học viên</h2>
+                <form onsubmit="saveEdit(event,${u.id})">
+                    <label>Họ tên: <input type="text" id="editName" value="${u.name}"></label><br><br>
+                    <label>Email: <input type="email" id="editEmail" value="${u.email}"></label><br><br>
+                    <label>Khóa học: <input type="text" id="editCourse" value="${u.course}"></label><br><br>
+                    <label>Tiến độ: <input type="number" id="editProgress" value="${u.progress}"></label><br><br>
+                    <button type="submit">Lưu</button>
+                </form>
+            `;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function saveEdit(e, id) {
+            e.preventDefault();
+            const u = users.find(x => x.id === id);
+            u.name = document.getElementById('editName').value;
+            u.email = document.getElementById('editEmail').value;
+            u.course = document.getElementById('editCourse').value;
+            u.progress = document.getElementById('editProgress').value;
+            closeModal('editModal');
+            renderTable(users);
+        }
+
+        function deleteUser(id) {
+            if (role === '1' && confirm('Bạn chắc chắn muốn xóa học viên này?')) {
+                const idx = users.findIndex(x => x.id === id);
+                if (idx > -1) users.splice(idx, 1);
+                renderTable(users);
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Khởi tạo bảng khi load trang
+        renderTable(users);
+    </script>
+       <script src="/Javascript/components/theme.js"></script>
+</body>
+</html>

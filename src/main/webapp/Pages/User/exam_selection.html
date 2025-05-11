@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Bài Kiểm Tra</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="../../Assets/Css/User/exam_selection.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <div class="selection-container">
+        <h1 class="page-title">📘 Chọn bài kiểm tra</h1>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm bài kiểm tra...">
+            </div>
+            <div class="filter-box">
+                <button class="filter-btn">
+                    <i class="fas fa-filter"></i> Bộ lọc
+                </button>
+                <div class="active-filters">
+                    <span class="filter-tag">A1 <i class="fas fa-times"></i></span>
+                    <span class="filter-tag">Từ vựng <i class="fas fa-times"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Cards Grid -->
+        <div class="exam-grid">
+            <!-- Family Topic Card -->
+            <div class="exam-card">
+                <div class="card-header">
+                    <span class="topic-icon">👨‍👩‍👧‍👦</span>
+                    <div class="topic-info">
+                        <h3>Gia đình</h3>
+                        <span class="level-badge">A1</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Từ vựng cơ bản về người thân</h4>
+                    <div class="exam-details">
+                        <span class="skill-tag">📖 Từ vựng</span>
+                        <span class="time-info">🕒 10 câu – 5 phút</span>
+                    </div>
+                    <div class="progress-info">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%"></div>
+                        </div>
+                        <span>80% hoàn thành trước đó</span>
+                    </div>
+                </div>
+                <button class="start-btn">Bắt đầu</button>
+            </div>
+
+            <!-- Weather Topic Card -->
+            <div class="exam-card">
+                <div class="card-header">
+                    <span class="topic-icon">🌦</span>
+                    <div class="topic-info">
+                        <h3>Thời tiết</h3>
+                        <span class="level-badge">A2</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Từ vựng & Câu hỏi liên quan đến thời tiết</h4>
+                    <div class="exam-details">
+                        <span class="skill-tag">📖 Từ vựng</span>
+                        <span class="time-info">🕒 15 câu – 8 phút</span>
+                    </div>
+                    <div class="progress-info">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                        <span>60% hoàn thành trước đó</span>
+                    </div>
+                </div>
+                <button class="start-btn">Bắt đầu</button>
+            </div>
+
+            <!-- Present Simple Topic Card -->
+            <div class="exam-card">
+                <div class="card-header">
+                    <span class="topic-icon">⏰</span>
+                    <div class="topic-info">
+                        <h3>Thì hiện tại đơn</h3>
+                        <span class="level-badge">A1</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Câu hỏi dạng chia động từ, chọn cấu trúc đúng</h4>
+                    <div class="exam-details">
+                        <span class="skill-tag">📝 Ngữ pháp</span>
+                        <span class="time-info">🕒 12 câu – 6 phút</span>
+                    </div>
+                    <div class="progress-info">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                        <span>45% hoàn thành trước đó</span>
+                    </div>
+                </div>
+                <button class="start-btn">Bắt đầu</button>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button class="nav-btn home-btn">
+                <i class="fas fa-home"></i> Trang chủ
+            </button>
+            <button class="nav-btn history-btn">
+                <i class="fas fa-history"></i> Lịch sử làm bài
+            </button>
+            <button class="nav-btn progress-btn">
+                <i class="fas fa-graduation-cap"></i> Tiến trình học tập
+            </button>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="../../Javascript/User/exam_selection.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+</body>
+</html> 

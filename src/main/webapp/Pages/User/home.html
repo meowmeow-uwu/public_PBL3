@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ - Học tiếng Anh</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/User/home.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <div class="home-container">
+        <!-- Quick Overview Section -->
+        <div class="quick-overview">
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="overview-content">
+                    <h3>Vocabulary</h3>
+                    <p>156 từ đã học</p>
+                    <p>Chuỗi học: 5 ngày</p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-pencil-alt"></i>
+                </div>
+                <div class="overview-content">
+                    <h3>Grammar</h3>
+                    <p>24 bài đã học</p>
+                    <p>12 bài kiểm tra đã làm</p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <div class="overview-content">
+                    <h3>Reading</h3>
+                    <p>3 truyện đã đọc</p>
+                    <p>Mới nhất: The Great Adventure</p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="overview-content">
+                    <h3>My Collection</h3>
+                    <p>Xem các từ/ngữ pháp đã lưu</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Continue Learning Section -->
+        <div class="continue-learning">
+            <div class="learning-card">
+                <h3><i class="fas fa-book"></i> Learn Vocabulary</h3>
+                <p>15 từ mới cần học</p>
+                <button class="continue-btn">Tiếp tục</button>
+            </div>
+
+            <div class="learning-card">
+                <h3><i class="fas fa-graduation-cap"></i> Grammar Lessons</h3>
+                <p>Tiếp tục bài học Unit 5</p>
+                <button class="continue-btn">Học tiếp</button>
+            </div>
+
+            <div class="learning-card">
+                <h3><i class="fas fa-book-reader"></i> Reading Practice</h3>
+                <p>Có 3 truyện mới phù hợp với bạn</p>
+                <button class="continue-btn">Đọc ngay</button>
+            </div>
+
+            <div class="learning-card">
+                <h3><i class="fas fa-tasks"></i> Take a Quiz</h3>
+                <p>Kiểm tra kỹ năng vừa học</p>
+                <button class="continue-btn">Bắt đầu</button>
+            </div>
+        </div>
+
+        <!-- Dictionary & Collection Section -->
+        <div class="dictionary-collection">
+            <div class="dictionary-card">
+                <h3>Dictionary</h3>
+                <div class="search-box">
+                    <input type="text" placeholder="Nhập từ cần tra...">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i> Tra từ
+                    </button>
+                </div>
+            </div>
+
+            <div class="collection-card">
+                <h3>My Collection</h3>
+                <p>Bạn đã lưu 18 từ, 6 mẫu ngữ pháp</p>
+                <button class="continue-btn">Xem bộ sưu tập</button>
+            </div>
+        </div>
+
+        <!-- Today's Goal Section -->
+        <div class="today-goal">
+            <h3>Today's Goal</h3>
+            <ul class="goal-list">
+                <li class="goal-item">
+                    <div class="goal-checkbox checked"></div>
+                    <span>Học 20 từ mới</span>
+                </li>
+                <li class="goal-item">
+                    <div class="goal-checkbox"></div>
+                    <span>Hoàn thành 2 bài học</span>
+                </li>
+                <li class="goal-item">
+                    <div class="goal-checkbox"></div>
+                    <span>Học ít nhất 30 phút</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <ul class="activity-list">
+                <li class="activity-item">
+                    <i class="fas fa-clock activity-icon"></i>
+                    <span class="activity-time">2 giờ trước</span>
+                    <span class="activity-content">Đã thêm từ mới: meticulous</span>
+                </li>
+                <li class="activity-item">
+                    <i class="fas fa-clock activity-icon"></i>
+                    <span class="activity-time">Hôm nay 10:00</span>
+                    <span class="activity-content">Đã hoàn thành bài Grammar 8/10</span>
+                </li>
+                <li class="activity-item">
+                    <i class="fas fa-clock activity-icon"></i>
+                    <span class="activity-time">Hôm nay 9:45</span>
+                    <span class="activity-content">Làm bài Quiz – điểm 8/10</span>
+                </li>
+                <li class="activity-item">
+                    <i class="fas fa-clock activity-icon"></i>
+                    <span class="activity-time">Hôm nay 9:00</span>
+                    <span class="activity-content">Học 20 phút (🎯 Đạt mục tiêu)</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+    <script>
+        // Xử lý checkbox trong Today's Goal
+        document.querySelectorAll('.goal-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+    </script>
+</body>
+</html>

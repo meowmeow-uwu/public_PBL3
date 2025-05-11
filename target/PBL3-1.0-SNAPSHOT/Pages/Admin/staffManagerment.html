@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý nhân viên</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Admin/staffManagerment.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div id="sidebar"></div>
+    <div class="staff-manager-container">
+        <h1>Quản lý nhân viên</h1>
+
+        <!-- Search bar -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm theo tên, email, mã nhân viên...">
+            <select id="statusFilter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="active">Đang hoạt động</option>
+                <option value="locked">Đã khóa</option>
+            </select>
+            <select id="roleFilter">
+                <option value="">Tất cả vai trò</option>
+                <option value="Nhân viên">Nhân viên</option>
+                <option value="Quản lý">Quản lý</option>
+            </select>
+            <button onclick="searchStaff()" class="action-btn">
+                <i class="fas fa-search"></i> Tìm kiếm
+            </button>
+            <button onclick="showAdd()" class="add-btn">
+                <i class="fas fa-plus"></i> Thêm nhân viên
+            </button>
+        </div>
+
+        <!-- Staff table -->
+        <table class="staff-table" id="staffTable">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã NV</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Quyền</th>
+                    <th>Trạng thái</th>
+                    <th>Tác vụ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data sẽ được render bằng JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal thêm/sửa -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('editModal')">&times;</span>
+            <div id="editContent"></div>
+        </div>
+    </div>
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/sideBar.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+    <script src="/Javascript/Admin/staffManagerment.js"></script>
+</body>
+</html>

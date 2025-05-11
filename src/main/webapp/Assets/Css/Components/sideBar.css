@@ -1,0 +1,153 @@
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 0; /* Remove top padding since we have user profile */
+    overflow-y: auto;
+}
+
+.menu-section {
+    padding: 20px 0;
+}
+
+.menu-divider {
+    padding: 10px 20px;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin: 5px 0;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.menu-link:hover {
+    background-color: #f5f5f5;
+    color: #4a90e2;
+}
+
+.menu-link i {
+    width: 24px;
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+.menu-link span {
+    font-size: 1rem;
+}
+
+/* Active state */
+.menu-link.active {
+    background-color: #e3f0fc;
+    color: #4a90e2;
+    border-left: 4px solid #4a90e2;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding-top: 0;
+    }
+    
+    .menu-link {
+        padding: 15px 20px;
+    }
+}
+
+/* Thêm styles cho user profile section */
+.user-profile {
+    padding: 20px;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
+}
+
+.profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.profile-info p {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    padding: 0.5rem 0;
+    min-width: 200px;
+    display: none;
+}
+
+.staff{
+    position: relative;
+}
+.staff:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    color: var(--primary-color);
+}

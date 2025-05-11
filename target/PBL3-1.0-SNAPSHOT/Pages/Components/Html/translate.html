@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tra từ điển - DinoEnglish</title>
+  <link rel="stylesheet" href="/Assets/Css/main.css">
+  <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+  <link rel="stylesheet" href="/Assets/Css/Components/header.css">
+  <link rel="stylesheet" href="/Assets/Css/Components/translate.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <div id="header">
+  </div>
+  <h1>Tra từ điển</h1>
+
+  <div class="dictionary-container">
+    <form class="search-bar" autocomplete="off" onsubmit="return false;">
+      <input type="text" id="searchInput" placeholder="Nhập từ..." />
+      <div class="lang-select-group">
+        <select id="fromLang">
+          <option value="en">Tiếng Anh</option>
+          <option value="vi">Tiếng Việt</option>
+        </select>
+        <button type="button" id="swapLang" title="Đổi chiều dịch" style="background:none;border:none;font-size:1.3rem;cursor:pointer;">&#8646;</button>
+        <select id="toLang">
+          <option value="vi">Tiếng Việt</option>
+          <option value="en">Tiếng Anh</option>
+        </select>
+      </div>
+      <button type="button" id="searchBtn" class="btn">Dịch</button>
+      <div class="suggestions" id="suggestions"></div>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <!-- Modal lưu từ -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="save-modal">
+      <button class="close-modal" onclick="closeSaveModal()">&times;</button>
+      <h3>Lưu từ vựng</h3>
+      <form id="saveForm" onsubmit="return false;">
+        <label for="wordInput">Từ:</label>
+        <input type="text" id="wordInput" readonly>
+        <label for="meaningInput">Nghĩa:</label>
+        <input type="text" id="meaningInput" readonly>
+        <label for="folderInput">Bộ sưu tập:</label>
+        <input type="text" id="folderInput" placeholder="Tên Folder...">
+        <div class="modal-actions">
+          <button type="button" onclick="closeSaveModal()" class="btn" style="background:#eee;color:#333;">Hủy</button>
+          <button type="submit" class="btn btn-success">OK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="footer"> </div>
+  <script src="/Javascript/GetAPI/getInfor.js"></script>
+  <script src="/Javascript/components/header_footer.js"></script>
+  <script src="/Javascript/components/translate.js"></script>
+</body>
+</html>

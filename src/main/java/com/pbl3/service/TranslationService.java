@@ -17,9 +17,6 @@ public class TranslationService {
     private TranslateDAO translateDAO = new TranslateDAO();
 
     // Định nghĩa constant cho language
-    private static final int ENGLISH_LANGUAGE_ID = 1;
-    private static final int VIETNAMESE_LANGUAGE_ID = 2;
-
     private static final int ENG_VIET_TYPE = 1;
     private static final int VIET_ENG_TYPE = 2;
 
@@ -29,7 +26,7 @@ public class TranslationService {
     public static void main(String s[]) {
         int j = 1;
         TranslationService sa = new TranslationService();
-        List<Map<String, Object>> li = sa.translateWord("h", ENGLISH_LANGUAGE_ID, ENGLISH_LANGUAGE_ID);
+        List<Map<String, Object>> li = sa.translateWord("h", ENG_VIET_TYPE, ENG_VIET_TYPE);
         for (Object ss : li) {
             System.out.println(ss.toString() + j);
             j++;

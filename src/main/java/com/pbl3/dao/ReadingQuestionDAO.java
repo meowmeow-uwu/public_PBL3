@@ -129,4 +129,27 @@ public class ReadingQuestionDAO implements DAOInterface<ReadingQuestion> {
     public ReadingQuestion selectByCondition(String condition) {
         return null;
     }
+
+    public ArrayList<ReadingQuestion> selectByReadingID(int readingID) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM reading_question WHERE reading_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, readingID);
+            ResultSet rs = s.executeQuery();
+            ArrayList<ReadingQuestion> readingQuestions = new ArrayList<>();
+            while (rs.next()) {
+                readingQuestions.add(new ReadingQuestion(rs.getInt("reading_question_id"), rs.getInt("reading_id"), rs.getInt("question_type_id"), rs.getString("content")));
+            }
+            s.close();
+            rs.close();
+            return readingQuestions;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
 }

@@ -132,5 +132,27 @@ public class QuestionDAO implements  DAOInterface<Question>{
         return null;
     }
     
-    
+    public ArrayList<Question> selectByExamID(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT q.* FROM question q INNER JOIN exam_has_question ehq ON q.question_id = ehq.question_id WHERE ehq.exam_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+            ResultSet rs = s.executeQuery();
+            ArrayList<Question> questions = new ArrayList<>();
+            while (rs.next()) {
+                questions.add(new Question(rs.getInt("question_id"), rs.getString("content"), rs.getInt("question_type_id")));
+            }
+            s.close();
+            rs.close();
+            return questions;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
 }

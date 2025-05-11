@@ -42,4 +42,8 @@ public class ReadingQuestionService implements ServiceInterface<ReadingQuestion>
     public ReadingQuestion selectByCondition(String condition) {
         return readingQuestionDAO.selectByCondition(condition);
     }
+
+    public ArrayList<ReadingQuestion> selectByReadingID(int readingID) {
+        return readingQuestionDAO.selectByReadingID(readingID);
+    }
 }

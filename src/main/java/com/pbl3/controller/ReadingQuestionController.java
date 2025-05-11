@@ -52,7 +52,11 @@ public class ReadingQuestionController {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         ArrayList<ReadingQuestion> questions = questionService.selectAll();
-        return Response.ok(questions).build();
+        if (questions != null) {
+            return Response.ok(questions).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @POST
@@ -114,6 +118,26 @@ public class ReadingQuestionController {
         }
         ReadingAnswerService answerService = new ReadingAnswerService();
         ArrayList<Answer> answers = answerService.selectByQuestionID(id);
-        return Response.ok(answers).build();
+        if (answers != null) {
+            return Response.ok(answers).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("/reading/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getQuestionsByReadingID(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        ArrayList<ReadingQuestion> questions = questionService.selectByReadingID(id);
+        if (questions != null) {
+            return Response.ok(questions).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

@@ -51,7 +51,11 @@ public class ReadingController {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         ArrayList<Reading> readings = readingService.selectAll();
-        return Response.ok(readings).build();
+        if (readings != null) {
+            return Response.ok(readings).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @POST
@@ -62,7 +66,10 @@ public class ReadingController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        readingService.insert(reading);
+        int result = readingService.insert(reading);
+        if (result == 0) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return Response.ok(reading).build();
     }
 
@@ -74,7 +81,10 @@ public class ReadingController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        readingService.update(reading);
+        int result = readingService.update(reading);
+        if (result == 0) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return Response.ok(reading).build();
     }
 
@@ -86,7 +96,26 @@ public class ReadingController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        readingService.delete(id);
+        int result = readingService.delete(id);
+        if (result == 0) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/exam/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReadingsByExamID(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        ArrayList<Reading> readings = readingService.selectByExamID(id);
+        if (readings != null) {
+            return Response.ok(readings).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

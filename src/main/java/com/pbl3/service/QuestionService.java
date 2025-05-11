@@ -41,5 +41,9 @@ public class QuestionService implements ServiceInterface<Question>{
     public Question selectByCondition(String condition) {
         return questionDAO.selectByCondition(condition);
 }
+
+    public ArrayList<Question> selectByExamID(int id) {
+        return questionDAO.selectByExamID(id);
+    }
     
 }

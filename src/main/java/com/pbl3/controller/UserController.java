@@ -33,7 +33,11 @@ public class UserController {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUser(@PathParam("id") int id) {
+    public Response getUser(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         UserService s = new UserService();
         User user = s.selectByID(id);
 

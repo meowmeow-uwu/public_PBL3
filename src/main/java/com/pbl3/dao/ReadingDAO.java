@@ -138,4 +138,26 @@ public class ReadingDAO implements DAOInterface<Reading>{
         return null;
 }
     
+    public ArrayList<Reading> selectByExamID(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT r.* FROM reading r INNER JOIN exam_has_reading ehr ON r.reading_id = ehr.reading_id WHERE ehr.exam_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+            ResultSet rs = s.executeQuery();
+            ArrayList<Reading> readings = new ArrayList<>();
+            while (rs.next()) {
+                readings.add(new Reading(rs.getInt("reading_id"), rs.getString("title"), rs.getString("content")));
+            }
+            s.close();
+            rs.close();
+            return readings;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
 }

@@ -52,7 +52,11 @@ public class QuestionController {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         ArrayList<Question> questions = questionService.selectAll();
-        return Response.ok(questions).build();
+        if (questions != null) {
+            return Response.ok(questions).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @POST
@@ -114,6 +118,26 @@ public class QuestionController {
         }
         AnswerService answerService = new AnswerService();
         ArrayList<Answer> answers = answerService.selectByQuestionID(id);
-        return Response.ok(answers).build();
+        if (answers != null) {
+            return Response.ok(answers).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("/exam/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getQuestionsByExamID(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        ArrayList<Question> questions = questionService.selectByExamID(id);
+        if (questions != null) {
+            return Response.ok(questions).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

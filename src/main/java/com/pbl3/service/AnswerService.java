@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.pbl3.dao.AnswerDAO;
 import com.pbl3.dto.Answer;
 
-public class AnswerService implements ServiceInterface<Answer>{
+public class AnswerService implements AnswerServiceInterface{
     private AnswerDAO answerDAO;
 
     public AnswerService() {
@@ -42,6 +42,7 @@ public class AnswerService implements ServiceInterface<Answer>{
         return answerDAO.selectByCondition(condition);
     }
 
+    @Override
     public ArrayList<Answer> selectByQuestionID(int id) {
         return answerDAO.selectByQuestionID(id);
     }

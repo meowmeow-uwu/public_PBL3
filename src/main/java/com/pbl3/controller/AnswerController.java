@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.Answer;
 import com.pbl3.service.AnswerService;
-
+import com.pbl3.service.AnswerServiceInterface;
+import com.pbl3.service.ReadingAnswerService;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -17,16 +19,27 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/answers")
 public class AnswerController {
-    private AnswerService answerService;
+    private AnswerServiceInterface answerService;
     
     public AnswerController() {
         this.answerService = new AnswerService();
     }
 
+    private void chooseAnswerService(int type) {
+        if (type == 1) {
+            answerService = new ReadingAnswerService();
+        } else {
+            answerService = new AnswerService();
+        }
+    }
+
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswer(@PathParam("id") int id) {
+    public Response getAnswer(@PathParam("id") int id, @HeaderParam("type") Integer type) {
+        if (type != null) {
+            chooseAnswerService(type);
+        }
         Answer answer = answerService.selectByID(id);
         if (answer != null) {
             return Response.ok(answer).build();
@@ -38,7 +51,10 @@ public class AnswerController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswers() {
+    public Response getAnswers(@HeaderParam("type") Integer type) {
+        if (type != null) {
+            chooseAnswerService(type);
+        }
         ArrayList<Answer> answers = answerService.selectAll();
         return Response.ok(answers).build();
     }
@@ -46,7 +62,10 @@ public class AnswerController {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAnswer(Answer answer) {
+    public Response createAnswer(Answer answer, @HeaderParam("type") Integer type) {
+        if (type != null) {
+            chooseAnswerService(type);
+        }
         int result = answerService.insert(answer);
         if (result > 0) {
             return Response.status(Response.Status.CREATED).build();
@@ -58,7 +77,10 @@ public class AnswerController {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAnswer(@PathParam("id") int id, Answer answer) {
+    public Response updateAnswer(@PathParam("id") int id, Answer answer, @HeaderParam("type") Integer type) {
+        if (type != null) {
+            chooseAnswerService(type);
+        }
         answer.setAnswer_id(id);
         int result = answerService.update(answer);
         if (result > 0) {
@@ -71,7 +93,10 @@ public class AnswerController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAnswer(@PathParam("id") int id) {
+    public Response deleteAnswer(@PathParam("id") int id, @HeaderParam("type") Integer type) {
+        if (type != null) {
+            chooseAnswerService(type);
+        }
         int result = answerService.delete(id);
         if (result > 0) {
             return Response.status(Response.Status.OK).build();

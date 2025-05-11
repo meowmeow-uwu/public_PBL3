@@ -7,6 +7,7 @@ package com.pbl3.controller;
 import com.pbl3.dto.Account;
 import com.pbl3.dto.User;
 import com.pbl3.service.AccountService;
+import com.pbl3.service.AuthService;
 import com.pbl3.service.UserService;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -33,6 +34,7 @@ public class UserManagementController {
 
     private final AccountService accountService = new AccountService();
     private final UserService userService = new UserService();
+    private final AuthService authService = new AuthService();
 
     // Tạo người dùng mới
     @POST
@@ -47,7 +49,7 @@ public class UserManagementController {
             @FormParam("role_id") int roleId,
             @FormParam("avatar") String avatar) {
 
-        if (!userService.isAdmin(authHeader)) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -99,7 +101,7 @@ public class UserManagementController {
             @FormParam("role_id") int roleId,
             @FormParam("avatar") String avatar) {
 
-        if (!userService.isAdmin(authHeader)) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -145,7 +147,7 @@ public class UserManagementController {
             @FormParam("userId") int userId,
             @FormParam("password") String password) {
 
-        if (!userService.isAdmin(authHeader)) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -185,7 +187,7 @@ public class UserManagementController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listUsers(@HeaderParam("authorization") String authHeader,
             @PathParam("role") int role) {
-        if (!userService.isAdmin(authHeader)) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -215,7 +217,7 @@ public class UserManagementController {
             @HeaderParam("authorization") String authHeader,
             @PathParam("id") int userId) {
 
-        if (!userService.isAdmin(authHeader)) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }

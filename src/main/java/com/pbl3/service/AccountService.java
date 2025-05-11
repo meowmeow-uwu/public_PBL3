@@ -86,4 +86,9 @@ public class AccountService implements ServiceInterface<Account> {
     public Account selectByCondition(String condition) {
         return null;
     }
+    
+    public Account selectByUserId(int id)
+    {
+        return accountDAO.selectByUserId(id);
+    }
 }

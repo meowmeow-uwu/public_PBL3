@@ -7,7 +7,6 @@ import com.pbl3.service.ExamService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -89,15 +88,16 @@ public class ExamController {
         return Response.status(Response.Status.OK).entity(exam).build();
     }
 
-    @DELETE
-    @Path("/{id}")
+    @PUT
+    @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteExam(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response deleteExam(@HeaderParam("Authorization") String token, @PathParam("id") int id, Exam exam) {
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        int result = examService.delete(id);
+        exam.set_deleted(true);
+        int result = examService.update(exam);
         if (result == 0) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Failed to delete exam").build();
         }

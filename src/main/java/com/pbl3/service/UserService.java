@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import com.pbl3.dao.UserDAO;
 import com.pbl3.dto.User;
-import com.pbl3.util.JwtUtil;
 
 /**
  *
@@ -78,16 +77,5 @@ public class UserService implements ServiceInterface<User>{
     public User selectByCondition(String condition) {
         return null;
     }
-    public boolean isAdmin(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return false;
-        }
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int id = JwtUtil.getUserIdFromToken(token);
-        if (id == -1) {
-            return false;
-        }
-        User user = this.selectByID(id);
-        return user != null && user.getGroup_user_id() == 1; // Giả sử role_id = 1 là admin
-    }
+    
 }

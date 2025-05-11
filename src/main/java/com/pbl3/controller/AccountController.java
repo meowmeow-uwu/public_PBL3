@@ -51,7 +51,6 @@ public class AccountController {
                 .entity("{\"email\":\"" + account.getEmail() + "\","
                         + "\"username\":\"" + account.getUsername() + "\"}")
                 .build();
-
     }
 
     @PUT

@@ -6,9 +6,11 @@ import com.pbl3.dto.Answer;
 import com.pbl3.dto.Question;
 import com.pbl3.service.AnswerService;
 import com.pbl3.service.QuestionService;
+import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -28,7 +30,11 @@ public class QuestionController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getQuestion(@PathParam("id") int id) {
+    public Response getQuestion(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         Question question = questionService.selectByID(id);
         if (question != null) {
             return Response.ok(question).build();
@@ -40,7 +46,11 @@ public class QuestionController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getQuestions() {
+    public Response getQuestions(@HeaderParam("Authorization") String token) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         ArrayList<Question> questions = questionService.selectAll();
         return Response.ok(questions).build();
     }
@@ -48,7 +58,11 @@ public class QuestionController {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createQuestion(Question question) {
+    public Response createQuestion(@HeaderParam("Authorization") String token, Question question) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         int result = questionService.insert(question);
         if (result > 0) {
             return Response.status(Response.Status.CREATED).build();
@@ -60,7 +74,11 @@ public class QuestionController {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateQuestion(@PathParam("id") int id, Question question) {
+    public Response updateQuestion(@HeaderParam("Authorization") String token, @PathParam("id") int id, Question question) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         question.setQuestion_id(id);
         int result = questionService.update(question);
         if (result > 0) {
@@ -73,7 +91,11 @@ public class QuestionController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestion(@PathParam("id") int id) {
+    public Response deleteQuestion(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         int result = questionService.delete(id);
         if (result > 0) {
             return Response.status(Response.Status.OK).build();
@@ -85,7 +107,11 @@ public class QuestionController {
     @GET
     @Path("/{id}/answers")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswers(@PathParam("id") int id) {
+    public Response getAnswers(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         AnswerService answerService = new AnswerService();
         ArrayList<Answer> answers = answerService.selectByQuestionID(id);
         return Response.ok(answers).build();

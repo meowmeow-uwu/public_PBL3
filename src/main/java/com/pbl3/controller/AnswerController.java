@@ -6,6 +6,8 @@ import com.pbl3.dto.Answer;
 import com.pbl3.service.AnswerService;
 import com.pbl3.service.AnswerServiceInterface;
 import com.pbl3.service.ReadingAnswerService;
+import com.pbl3.util.JwtUtil;
+
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -36,7 +38,11 @@ public class AnswerController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswer(@PathParam("id") int id, @HeaderParam("type") Integer type) {
+    public Response getAnswer(@HeaderParam("Authorization") String token, @PathParam("id") int id, @HeaderParam("type") Integer type) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         if (type != null) {
             chooseAnswerService(type);
         }
@@ -51,7 +57,11 @@ public class AnswerController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswers(@HeaderParam("type") Integer type) {
+    public Response getAnswers(@HeaderParam("Authorization") String token, @HeaderParam("type") Integer type) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         if (type != null) {
             chooseAnswerService(type);
         }
@@ -62,7 +72,11 @@ public class AnswerController {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAnswer(Answer answer, @HeaderParam("type") Integer type) {
+    public Response createAnswer(@HeaderParam("Authorization") String token, Answer answer, @HeaderParam("type") Integer type) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         if (type != null) {
             chooseAnswerService(type);
         }
@@ -77,7 +91,11 @@ public class AnswerController {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAnswer(@PathParam("id") int id, Answer answer, @HeaderParam("type") Integer type) {
+    public Response updateAnswer(@HeaderParam("Authorization") String token, @PathParam("id") int id, Answer answer, @HeaderParam("type") Integer type) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         if (type != null) {
             chooseAnswerService(type);
         }
@@ -93,7 +111,11 @@ public class AnswerController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAnswer(@PathParam("id") int id, @HeaderParam("type") Integer type) {
+    public Response deleteAnswer(@HeaderParam("Authorization") String token, @PathParam("id") int id, @HeaderParam("type") Integer type) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         if (type != null) {
             chooseAnswerService(type);
         }

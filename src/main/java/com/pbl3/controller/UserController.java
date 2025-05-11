@@ -124,7 +124,11 @@ public class UserController {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertUser(User user) {
+    public Response insertUser(@HeaderParam("Authorization") String token, User user) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         UserService s = new UserService();
         int isInserted = s.insert(user);
 
@@ -142,7 +146,11 @@ public class UserController {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUser(int uid) {
+    public Response deleteUser(@HeaderParam("Authorization") String token, @PathParam("id") int uid) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         UserService s = new UserService();
         int isDeleted = s.delete(uid);
 
@@ -159,7 +167,11 @@ public class UserController {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateUser(@PathParam("id") int id, User user) {
+    public Response updateUser(@HeaderParam("Authorization") String token, @PathParam("id") int id, User user) {
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         UserService s = new UserService();
         int isUpdated = s.update(user);
 

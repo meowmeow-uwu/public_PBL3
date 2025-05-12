@@ -20,15 +20,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-
-public class User implements Serializable{
-    private int user_id;
-    private String username;
-    private String email;
-    private String password;
-    private String name;
-    private String avatar;
-    private boolean is_active;
-    //Foreign key UserGroup
+public class UserGroup implements Serializable{
     private int group_user_id;
+    private String group_name;
+    private boolean is_active;
 }

@@ -40,4 +40,9 @@ public class AuthService {
         User user = userService.selectByID(id);
         return user != null && user.getGroup_user_id() == 1;
     }
+
+    public int getUserIdByAuthHeader(String authHeader) {
+        String token = authHeader.substring("Bearer ".length()).trim();
+        return JwtUtil.getUserIdFromToken(token);
+    }
 }

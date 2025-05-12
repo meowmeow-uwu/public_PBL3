@@ -23,5 +23,4 @@ import lombok.ToString;
 public class UserGroup implements Serializable{
     private int group_user_id;
     private String group_name;
-    private boolean is_active;
 }

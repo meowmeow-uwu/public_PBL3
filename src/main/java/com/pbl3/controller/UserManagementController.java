@@ -49,6 +49,10 @@ public class UserManagementController {
             @FormParam("role_id") int roleId,
             @FormParam("avatar") String avatar) {
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
         if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
@@ -100,7 +104,10 @@ public class UserManagementController {
             @FormParam("name") String name,
             @FormParam("role_id") int roleId,
             @FormParam("avatar") String avatar) {
-
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
         if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
@@ -146,15 +153,13 @@ public class UserManagementController {
             @HeaderParam("authorization") String authHeader,
             @FormParam("userId") int userId,
             @FormParam("password") String password) {
-
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
         if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
-        }
-
-        if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("{\"error\":\"Invalid token\"}").build();
         }
 
         Account account = accountService.selectByUserId(userId);
@@ -187,7 +192,11 @@ public class UserManagementController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listUsers(@HeaderParam("authorization") String authHeader,
             @PathParam("role") int role) {
-        if (!authService.isAdmin(authHeader)) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (!authService.isAdmin(authHeader) ) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -217,7 +226,11 @@ public class UserManagementController {
             @HeaderParam("authorization") String authHeader,
             @PathParam("id") int userId) {
 
-        if (!authService.isAdmin(authHeader)) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (!authService.isAdmin(authHeader) ) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }

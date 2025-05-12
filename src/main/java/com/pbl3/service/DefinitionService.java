@@ -28,8 +28,8 @@ public class DefinitionService implements ServiceInterface<Definition>{
     }
 
     @Override
-    public int delete(int wid) {
-        return 0;
+    public int delete(int id) {
+        return definitionDAO.delete(id);
     }
 
     @Override

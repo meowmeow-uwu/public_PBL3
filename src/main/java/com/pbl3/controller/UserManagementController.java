@@ -183,7 +183,7 @@ public class UserManagementController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        if (!authService.isAdmin(authHeader) && !authService.isContentManager(authHeader)) {
+        if (!authService.isContentManagerOrAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }

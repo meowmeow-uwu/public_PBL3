@@ -15,6 +15,8 @@ let vocabularyList = [
 let selectedWords = [];
 let editingId = null;
 const currentUser = "admin"; // hoặc "staff1" để test phân quyền
+let currentPage = 1;
+const itemsPerPage = 10;
 
 function renderTable() {
     const tbody = document.getElementById('collectionTableBody');
@@ -32,7 +34,12 @@ function renderTable() {
             <td>${c.desc}</td>
             <td>${c.count} ${c.type === "Reading" ? "bài đọc" : c.type === "Ngữ pháp" ? "mẫu" : "từ"}</td>
             <td>
-                <button class="action-btn" title="Sửa" onclick="showEditForm(${c.id})"><i class="fas fa-edit"></i></button>
+                <button class="action-btn" title="Xem danh sách" onclick="showVocabularyList(${c.id})">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button class="action-btn" title="Sửa" onclick="showEditForm(${c.id})">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="action-btn" title="Xoá" onclick="deleteCollection(${c.id})"
                     ${currentUser !== "admin" && c.createdBy !== currentUser ? "disabled style='opacity:0.5;cursor:not-allowed;'" : ""}>
                     <i class="fas fa-trash"></i>
@@ -248,3 +255,68 @@ function closeModal() {
     document.getElementById('collectionModal').style.display = 'none';
 }
 window.closeModal = closeModal;
+
+function showVocabularyList(collectionId) {
+    const collection = collections.find(c => c.id === collectionId);
+    if (!collection) return;
+
+    // Get vocabulary items for this collection (in real app, this would be an API call)
+    const vocabItems = vocabularyList.filter(v => v.collectionId === collectionId);
+    const totalPages = Math.ceil(vocabItems.length / itemsPerPage);
+    
+    document.getElementById('modalFormContent').innerHTML = `
+        <h2>Danh sách từ vựng - ${collection.topic}</h2>
+        <div class="vocabulary-list-container">
+            <table class="vocabulary-list-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Từ</th>
+                        <th>Nghĩa</th>
+                        <th>Loại từ</th>
+                        <th>Cấp độ</th>
+                    </tr>
+                </thead>
+                <tbody id="vocabularyListBody"></tbody>
+            </table>
+            <div class="pagination">
+                <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''}>«</button>
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>
+                <span>Trang ${currentPage} / ${totalPages}</span>
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>
+                <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>»</button>
+            </div>
+        </div>
+        <div style="margin-top:1.2rem;">
+            <button type="button" onclick="closeModal()" class="btn-cancel">Đóng</button>
+        </div>
+    `;
+    
+    document.getElementById('collectionModal').style.display = 'flex';
+    renderVocabularyListPage(vocabItems);
+}
+
+function renderVocabularyListPage(vocabItems) {
+    const tbody = document.getElementById('vocabularyListBody');
+    if (!tbody) return;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageItems = vocabItems.slice(startIndex, endIndex);
+
+    tbody.innerHTML = pageItems.map((item, idx) => `
+        <tr>
+            <td>${startIndex + idx + 1}</td>
+            <td>${item.word}</td>
+            <td>${item.meaning}</td>
+            <td>${item.type}</td>
+            <td>${item.level}</td>
+        </tr>
+    `).join('');
+}
+
+function changePage(newPage) {
+    currentPage = newPage;
+    const collectionId = parseInt(document.querySelector('.vocabulary-list-container').dataset.collectionId);
+    showVocabularyList(collectionId);
+}

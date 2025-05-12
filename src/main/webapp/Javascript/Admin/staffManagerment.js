@@ -1,33 +1,39 @@
-let staff = [
-    {
-        id: 1,
-        code: "NV001",
-        name: "Nguyễn Văn A",
-        email: "nv.a@example.com",
-        phone: "0123456789",
-        role: "Nhân viên",
-        status: "active",
-        created: "2024-12-10",
-        createdBy: "Admin1"
-    },
-    {
-        id: 2,
-        code: "NV002",
-        name: "Trần Thị B",
-        email: "tran.b@example.com",
-        phone: "0987654321",
-        role: "Nhân viên",
-        status: "locked",
-        created: "2024-12-11",
-        createdBy: "Admin1"
-    }
-];
+let staff = [];
+let staffPerPage = 10;
+let currentStaffPage = 1;
 
-function renderTable(data = staff) {
+// Lấy danh sách nhân viên từ API (role_id = 3)
+async function loadStaff() {
+    try {
+        const data = await getUserListByRole(3); // 3 là role_id của nhân viên
+        staff = data.map((item, idx) => ({
+            id: item.user.user_id,
+            code: item.user.code || `NV${String(idx + 1).padStart(3, '0')}`,
+            name: item.user.name,
+            email: item.account ? item.account.email : '(chưa có tài khoản)',
+            username: item.account ? item.account.username : '(chưa có tài khoản)',
+            phone: item.user.phone || '',
+            role: 'Nhân viên', // hoặc lấy từ item.user.role nếu có
+            status: item.user.status || 'active',
+            created: item.user.created || '',
+            createdBy: item.user.createdBy || ''
+        }));
+        renderStaffTable();
+        renderStaffPagination();
+    } catch (err) {
+        alert('Không thể tải danh sách nhân viên!');
+    }
+}
+
+function renderStaffTable() {
     const tbody = document.querySelector('#staffTable tbody');
-    tbody.innerHTML = data.map((s, idx) => `
+    const start = (currentStaffPage - 1) * staffPerPage;
+    const end = start + staffPerPage;
+    const pageData = staff.slice(start, end);
+
+    tbody.innerHTML = pageData.map((s, idx) => `
         <tr>
-            <td>${idx + 1}</td>
+            <td>${start + idx + 1}</td>
             <td>${s.code}</td>
             <td>${s.name}</td>
             <td>${s.email}</td>
@@ -87,13 +93,6 @@ function showAdd() {
                 <input type="tel" id="addPhone" required>
             </div>
             <div class="form-group">
-                <label>Quyền:</label>
-                <select id="addRole" required>
-                    <option value="Nhân viên">Nhân viên</option>
-                    <option value="Quản lý">Quản lý</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Mật khẩu:</label>
                 <input type="password" id="addPassword" required>
             </div>
@@ -103,22 +102,29 @@ function showAdd() {
     document.getElementById('editModal').style.display = 'flex';
 }
 
-function saveAdd(e) {
+async function saveAdd(e) {
     e.preventDefault();
-    const newStaff = {
-        id: staff.length + 1,
-        code: `NV${String(staff.length + 1).padStart(3, '0')}`,
-        name: document.getElementById('addName').value,
+    const data = {
+        username: document.getElementById('addEmail').value,
+        password: document.getElementById('addPassword').value,
         email: document.getElementById('addEmail').value,
-        phone: document.getElementById('addPhone').value,
-        role: document.getElementById('addRole').value,
-        status: "active",
-        created: new Date().toISOString().slice(0,10),
-        createdBy: "Admin1" // Thay bằng tên admin đang đăng nhập
+        name: document.getElementById('addName').value,
+        role_id: 3, // role_id nhân viên
+        avatar: '',
+        phone: document.getElementById('addPhone').value
     };
-    staff.push(newStaff);
-    closeModal('editModal');
-    renderTable();
+    try {
+        const res = await createUser(data);
+        if (res.message) {
+            closeModal('editModal');
+            loadStaff();
+            alert('Thêm nhân viên thành công!');
+        } else {
+            alert(res.error || 'Có lỗi xảy ra!');
+        }
+    } catch (err) {
+        alert('Lỗi khi thêm nhân viên!');
+    }
 }
 
 function showEdit(id) {
@@ -191,9 +197,15 @@ function toggleLock(id) {
 
 function deleteStaff(id) {
     if (confirm('Bạn chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác.')) {
+        // Nếu muốn gọi API xóa thì gọi ở đây, ví dụ: await deleteStaffAPI(id);
         const idx = staff.findIndex(x => x.id === id);
         if (idx > -1) staff.splice(idx, 1);
-        renderTable();
+        // Nếu xóa hết trang hiện tại thì lùi về trang trước
+        if ((currentStaffPage - 1) * staffPerPage >= staff.length && currentStaffPage > 1) {
+            currentStaffPage--;
+        }
+        renderStaffTable();
+        renderStaffPagination();
     }
 }
 
@@ -201,7 +213,28 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
+function renderStaffPagination() {
+    const totalPages = Math.ceil(staff.length / staffPerPage);
+    const pagination = document.getElementById('staffPagination');
+    if (!pagination) return;
+
+    let html = '';
+    html += `<button onclick="changeStaffPage(-1)" ${currentStaffPage === 1 ? 'disabled' : ''}>Trước</button>`;
+    html += ` Trang ${currentStaffPage} / ${totalPages} `;
+    html += `<button onclick="changeStaffPage(1)" ${currentStaffPage === totalPages ? 'disabled' : ''}>Sau</button>`;
+    pagination.innerHTML = html;
+}
+
+function changeStaffPage(delta) {
+    const totalPages = Math.ceil(staff.length / staffPerPage);
+    currentStaffPage += delta;
+    if (currentStaffPage < 1) currentStaffPage = 1;
+    if (currentStaffPage > totalPages) currentStaffPage = totalPages;
+    renderStaffTable();
+    renderStaffPagination();
+}
+
 // Khởi tạo bảng khi load trang
 document.addEventListener('DOMContentLoaded', () => {
-    renderTable();
+    loadStaff();
 });

@@ -48,7 +48,7 @@
         <!-- Thanh tìm kiếm và bộ lọc -->
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Tìm theo tên, email, mã học viên...">
-            <select id="courseFilter">
+            <!-- <select id="courseFilter">
                 <option value="">Tất cả khóa học</option>
                 <option>Tiếng Anh A1</option>
                 <option>Tiếng Anh B1</option>
@@ -57,8 +57,10 @@
                 <option value="">Tất cả trạng thái</option>
                 <option value="active">Đang học</option>
                 <option value="inactive">Nghỉ</option>
-            </select>
+            </select> -->
             <button onclick="searchUser()" class=" btn "><i class="fas fa-search"></i> Tìm kiếm</button>
+            <!-- <button onclick="showAddUserModal()" class="add-btn"><i class="fas fa-plus"></i> Thêm mới</button> -->
+
         </div>
         <!-- Bảng danh sách học viên -->
         <table class="user-table" id="userTable">
@@ -77,6 +79,7 @@
                 <!-- Dữ liệu sẽ được render bằng JS -->
             </tbody>
         </table>
+        <div id="userPagination" style="margin-top: 1rem; text-align: right;"></div>
     </div>
 
     <!-- Modal chi tiết học viên -->
@@ -94,37 +97,100 @@
             <div id="editContent"></div>
         </div>
     </div>
+
+    <!-- Modal thêm người dùng -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('addUserModal')">&times;</span>
+            <div id="addUserContent"></div>
+        </div>
+    </div>
     <script src="/Javascript/GetAPI/getInfor.js"></script>
     <script src="/Javascript/components/sideBar.js"></script>
+    <script src="/Javascript/GetAPI/userManagermentAPI.js"></script>
     <script>
-        // Dữ liệu mẫu
-        const users = [
-            {id: 1, name: "Nguyễn Văn A", email: "a@gmail.com", course: "Tiếng Anh A1", progress: 70, created: "2025-04-01", status: "active", dob: "2000-01-01", avatar: "https://randomuser.me/api/portraits/men/1.jpg"},
-            {id: 2, name: "Trần Thị B", email: "b@gmail.com", course: "Tiếng Anh B1", progress: 85, created: "2025-03-15", status: "active", dob: "2001-02-02", avatar: "https://randomuser.me/api/portraits/women/2.jpg"},
-            {id: 3, name: "Lê Văn C", email: "c@gmail.com", course: "Tiếng Anh A1", progress: 40, created: "2025-02-20", status: "inactive", dob: "2002-03-03", avatar: "https://randomuser.me/api/portraits/men/3.jpg"},
-        ];
+        let users = [];
+        let usersPerPage = 10;
+        let currentUserPage = 1;
 
         // Lấy role từ localStorage
         const role = localStorage.getItem('Role');
 
-        function renderTable(data) {
+        // Lấy danh sách user từ API khi load trang
+        async function loadUsers() {
+            try {
+                const data = await getUserListByRole(2); // 2 là role_id của học viên
+                users = data.map((item, idx) => ({
+                    id: item.user.user_id,
+                    code: item.user.code || `HV${String(idx + 1).padStart(3, '0')}`,
+                    name: item.user.name,
+                    email: item.account ? item.account.email : '(chưa có tài khoản)',
+                    username: item.account ? item.account.username : '(chưa có tài khoản)',
+                    status: item.user.status || 'active',
+                    created: item.user.created || '',
+                    createdBy: item.user.createdBy || ''
+                }));
+                renderUserTable();
+                renderUserPagination();
+            } catch (err) {
+                alert('Không thể tải danh sách học viên!');
+            }
+        }
+
+        function renderUserTable() {
             const tbody = document.querySelector('#userTable tbody');
-            tbody.innerHTML = data.map((u, idx) => `
+            const start = (currentUserPage - 1) * usersPerPage;
+            const end = start + usersPerPage;
+            const pageData = users.slice(start, end);
+
+            tbody.innerHTML = pageData.map((u, idx) => `
                 <tr>
-                    <td>${idx + 1}</td>
+                    <td>${start + idx + 1}</td>
+                    <td>${u.code}</td>
                     <td>${u.name}</td>
                     <td>${u.email}</td>
-                    <td>${u.course}</td>
-                    <td>${u.progress}%</td>
-                    <td>${u.created}</td>
+                    <td>${u.username}</td>
                     <td>
-                        <button class="action-btn" title="Xem chi tiết" onclick="showDetail(${u.id})"><i class="fas fa-eye"></i></button>
-                        <button class="action-btn" title="Chỉnh sửa" onclick="showEdit(${u.id})"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn" title="Gửi thông báo" onclick="alert('Gửi thông báo cho ${u.name}')"><i class="fas fa-envelope"></i></button>
-                        <button class="action-btn" title="Xóa" ${role !== '1' ? 'disabled' : ''} onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>
+                        <span class="status-badge ${u.status === 'active' ? 'status-active' : 'status-locked'}">
+                            ${u.status === 'active' ? 'Hoạt động' : 'Đã khóa'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="action-btn" title="Chỉnh sửa" onclick="showEditUser(${u.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn ${u.status === 'active' ? 'lock' : 'unlock'}" 
+                                title="${u.status === 'active' ? 'Khóa' : 'Mở khóa'}" 
+                                onclick="toggleLockUser(${u.id})">
+                            <i class="fas fa-${u.status === 'active' ? 'lock' : 'unlock'}"></i>
+                        </button>
+                        <button class="action-btn delete" title="Xóa" onclick="deleteUser(${u.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function renderUserPagination() {
+            const totalPages = Math.ceil(users.length / usersPerPage);
+            const pagination = document.getElementById('userPagination');
+            if (!pagination) return;
+
+            let html = '';
+            html += `<button onclick="changeUserPage(-1)" ${currentUserPage === 1 ? 'disabled' : ''}>Trước</button>`;
+            html += ` Trang ${currentUserPage} / ${totalPages} `;
+            html += `<button onclick="changeUserPage(1)" ${currentUserPage === totalPages ? 'disabled' : ''}>Sau</button>`;
+            pagination.innerHTML = html;
+        }
+
+        function changeUserPage(delta) {
+            const totalPages = Math.ceil(users.length / usersPerPage);
+            currentUserPage += delta;
+            if (currentUserPage < 1) currentUserPage = 1;
+            if (currentUserPage > totalPages) currentUserPage = totalPages;
+            renderUserTable();
+            renderUserPagination();
         }
 
         function searchUser() {
@@ -133,41 +199,27 @@
             const status = document.getElementById('statusFilter').value;
             let filtered = users.filter(u =>
                 (u.name.toLowerCase().includes(keyword) || u.email.toLowerCase().includes(keyword) || u.id.toString().includes(keyword)) &&
-                (course === "" || u.course === course) &&
+                (course === "" || u.code.includes(course)) &&
                 (status === "" || u.status === status)
             );
-            renderTable(filtered);
+            users = filtered;
+            renderUserTable();
+            renderUserPagination();
         }
 
-        function showDetail(id) {
+        function showEditUser(id) {
             const u = users.find(x => x.id === id);
-            document.getElementById('detailContent').innerHTML = `
-                <div style="display:flex;gap:1rem;align-items:center;">
-                    <img src="${u.avatar}" alt="avatar" style="width:80px;height:80px;border-radius:50%;">
-                    <div>
-                        <h2>${u.name}</h2>
-                        <p><b>Email:</b> ${u.email}</p>
-                        <p><b>Ngày sinh:</b> ${u.dob}</p>
-                        <p><b>Khóa học:</b> ${u.course}</p>
-                        <p><b>Tiến độ:</b> ${u.progress}%</p>
-                        <p><b>Ngày tạo:</b> ${u.created}</p>
-                        <p><b>Trạng thái:</b> ${u.status === 'active' ? 'Đang học' : 'Nghỉ'}</p>
-                        <p><b>Lịch sử học tập:</b> ...</p>
-                    </div>
-                </div>
-            `;
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function showEdit(id) {
-            const u = users.find(x => x.id === id);
+            if (!u) return;
             document.getElementById('editContent').innerHTML = `
                 <h2>Chỉnh sửa học viên</h2>
                 <form onsubmit="saveEdit(event,${u.id})">
                     <label>Họ tên: <input type="text" id="editName" value="${u.name}"></label><br><br>
                     <label>Email: <input type="email" id="editEmail" value="${u.email}"></label><br><br>
-                    <label>Khóa học: <input type="text" id="editCourse" value="${u.course}"></label><br><br>
-                    <label>Tiến độ: <input type="number" id="editProgress" value="${u.progress}"></label><br><br>
+                    <label>Khóa học: <input type="text" id="editCode" value="${u.code}"></label><br><br>
+                    <label>Trạng thái: <select id="editStatus">
+                        <option value="active" ${u.status === 'active' ? 'selected' : ''}>Hoạt động</option>
+                        <option value="inactive" ${u.status === 'inactive' ? 'selected' : ''}>Đã khóa</option>
+                    </select></label><br><br>
                     <button type="submit">Lưu</button>
                 </form>
             `;
@@ -179,17 +231,31 @@
             const u = users.find(x => x.id === id);
             u.name = document.getElementById('editName').value;
             u.email = document.getElementById('editEmail').value;
-            u.course = document.getElementById('editCourse').value;
-            u.progress = document.getElementById('editProgress').value;
+            u.code = document.getElementById('editCode').value;
+            u.status = document.getElementById('editStatus').value;
             closeModal('editModal');
-            renderTable(users);
+            renderUserTable();
         }
 
         function deleteUser(id) {
-            if (role === '1' && confirm('Bạn chắc chắn muốn xóa học viên này?')) {
+            if (confirm('Bạn chắc chắn muốn xóa học viên này? Hành động này không thể hoàn tác.')) {
+                // Nếu muốn gọi API xóa thì gọi ở đây, ví dụ: await deleteUserAPI(id);
                 const idx = users.findIndex(x => x.id === id);
                 if (idx > -1) users.splice(idx, 1);
-                renderTable(users);
+                // Nếu xóa hết trang hiện tại thì lùi về trang trước
+                if ((currentUserPage - 1) * usersPerPage >= users.length && currentUserPage > 1) {
+                    currentUserPage--;
+                }
+                renderUserTable();
+                renderUserPagination();
+            }
+        }
+
+        function toggleLockUser(id) {
+            const u = users.find(x => x.id === id);
+            if (u) {
+                u.status = u.status === 'active' ? 'inactive' : 'active';
+                renderUserTable();
             }
         }
 
@@ -197,9 +263,51 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
+        function showAddUserModal() {
+            document.getElementById('addUserContent').innerHTML = `
+                <h2>Thêm người dùng mới</h2>
+                <form onsubmit="saveAddUser(event)">
+                    <label>Username: <input type="text" id="addUsername" required></label><br><br>
+                    <label>Password: <input type="password" id="addPassword" required></label><br><br>
+                    <label>Email: <input type="email" id="addEmail" required></label><br><br>
+                    <label>Họ tên: <input type="text" id="addName" required></label><br><br>
+                    <label>Role ID: <input type="number" id="addRoleId" value="2" required></label><br><br>
+                    <label>Avatar: <input type="text" id="addAvatar"></label><br><br>
+                    <button type="submit">Thêm</button>
+                </form>
+            `;
+            document.getElementById('addUserModal').style.display = 'flex';
+        }
+
+        async function saveAddUser(e) {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('addUsername').value,
+                password: document.getElementById('addPassword').value,
+                email: document.getElementById('addEmail').value,
+                name: document.getElementById('addName').value,
+                role_id: document.getElementById('addRoleId').value,
+                avatar: document.getElementById('addAvatar').value
+            };
+            try {
+                const res = await createUser(data);
+                if (res.message) {
+                    closeModal('addUserModal');
+                    loadUsers();
+                    alert('Thêm người dùng thành công!');
+                } else {
+                    alert(res.error || 'Có lỗi xảy ra!');
+                }
+            } catch (err) {
+                alert('Lỗi khi thêm người dùng!');
+            }
+        }
+
         // Khởi tạo bảng khi load trang
-        renderTable(users);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+        });
     </script>
-       <script src="/Javascript/components/theme.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
 </body>
 </html>

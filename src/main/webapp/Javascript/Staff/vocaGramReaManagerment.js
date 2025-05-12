@@ -1,17 +1,11 @@
 // Javascript/Staff/vocaGramReaManagerment.js
 // Dữ liệu mẫu
-let vocabulary = [
-    {
-        id: 1,
-        word: "apple",
-        pronunciation: "/ˈæp.əl/",
-        type: "danh từ",
-        meaning: "quả táo",
-        example: "I eat an apple every morning.",
-        level: "A1",
-        course: "A1 - Bài 1"
-    }
-];
+let vocabulary = [];
+let vocabPage = 1;
+let vocabSize = 10;
+let vocabTotal = 0;
+let vocabKeyword = '';
+let vocabLang = 1; // hoặc lấy từ select nếu có
 
 let grammar = [
     {
@@ -45,6 +39,62 @@ let readings = [
 
 let currentTab = 'vocabulary';
 
+async function loadVocabulary() {
+    try {
+        const data = await getWordList({ page: vocabPage, size: vocabSize, language_id: vocabLang, keyword: vocabKeyword });
+        vocabulary = data.words || data; // Tùy backend trả về
+        vocabTotal = data.total || vocabulary.length;
+        renderVocabularyTable();
+        renderVocabPagination();
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+function renderVocabularyTable() {
+    const tbody = document.querySelector('#dataTable tbody');
+    tbody.innerHTML = vocabulary.map((v, idx) => `
+        <tr>
+            <td>${(vocabPage - 1) * vocabSize + idx + 1}</td>
+            <td>${v.word}</td>
+            <td>${v.pronunciation || ''}</td>
+            <td>${v.meaning}</td>
+            <td>${v.type}</td>
+            <td>${v.example || ''}</td>
+            <td>${v.level}</td>
+            <td>
+                <button class="action-btn" title="Chỉnh sửa" onclick="showEdit('vocabulary', ${v.id})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Xóa" onclick="deleteItem('vocabulary', ${v.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderVocabPagination() {
+    const totalPages = Math.ceil(vocabTotal / vocabSize);
+    // Thêm HTML phân trang vào đâu đó, ví dụ:
+    // <div id="vocabPagination"></div>
+    const pag = document.getElementById('vocabPagination');
+    if (!pag) return;
+    let html = '';
+    html += `<button onclick="changeVocabPage(-1)" ${vocabPage === 1 ? 'disabled' : ''}>Trước</button>`;
+    html += ` Trang ${vocabPage} / ${totalPages} `;
+    html += `<button onclick="changeVocabPage(1)" ${vocabPage === totalPages ? 'disabled' : ''}>Sau</button>`;
+    pag.innerHTML = html;
+}
+
+function changeVocabPage(delta) {
+    const totalPages = Math.ceil(vocabTotal / vocabSize);
+    vocabPage += delta;
+    if (vocabPage < 1) vocabPage = 1;
+    if (vocabPage > totalPages) vocabPage = totalPages;
+    loadVocabulary();
+}
+
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-button').forEach(btn => {
@@ -60,25 +110,7 @@ function renderTable() {
 
     switch(currentTab) {
         case 'vocabulary':
-            html = vocabulary.map((v, idx) => `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${v.word}</td>
-                    <td>${v.pronunciation}</td>
-                    <td>${v.meaning}</td>
-                    <td>${v.type}</td>
-                    <td>${v.example}</td>
-                    <td>${v.level}</td>
-                    <td>
-                        <button class="action-btn" title="Chỉnh sửa" onclick="showEdit('vocabulary', ${v.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn" title="Xóa" onclick="deleteItem('vocabulary', ${v.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            loadVocabulary();
             break;
 
         case 'grammar':
@@ -297,8 +329,7 @@ function saveAdd(e) {
 
     switch(currentTab) {
         case 'vocabulary':
-            newItem = {
-                id: vocabulary.length + 1,
+            const vocabularyData = {
                 word: document.getElementById('addWord').value,
                 pronunciation: document.getElementById('addPronunciation').value,
                 type: document.getElementById('addType').value,
@@ -307,8 +338,17 @@ function saveAdd(e) {
                 level: document.getElementById('addLevel').value,
                 course: document.getElementById('addCourse').value
             };
-            vocabulary.push(newItem);
-            break;
+
+            // Gọi API thêm từ vựng
+            createWord(vocabLang, vocabularyData)
+                .then(response => {
+                    closeModal('editModal');
+                    loadVocabulary();
+                })
+                .catch(error => {
+                    alert('Error adding vocabulary: ' + error.message);
+                });
+            return;
 
         case 'grammar':
             newItem = {
@@ -587,25 +627,31 @@ function saveEdit(e, id) {
     renderTable();
 }
 
-function deleteItem(type, id) {
-    if (!confirm('Bạn chắc chắn muốn xóa mục này?')) return;
+async function deleteItem(type, id) {
+    if (type === 'vocabulary') {
+        if (!confirm('Bạn chắc chắn muốn xóa từ này?')) return;
+        try {
+            await deleteWord(id);
+            loadVocabulary();
+        } catch (e) {
+            alert(e.message);
+        }
+    } else {
+        if (!confirm('Bạn chắc chắn muốn xóa mục này?')) return;
 
-    switch(type) {
-        case 'vocabulary':
-            const vIdx = vocabulary.findIndex(v => v.id === id);
-            if (vIdx > -1) vocabulary.splice(vIdx, 1);
-            break;
-        case 'grammar':
-            const gIdx = grammar.findIndex(g => g.id === id);
-            if (gIdx > -1) grammar.splice(gIdx, 1);
-            break;
-        case 'reading':
-            const rIdx = readings.findIndex(r => r.id === id);
-            if (rIdx > -1) readings.splice(rIdx, 1);
-            break;
+        switch(type) {
+            case 'grammar':
+                const gIdx = grammar.findIndex(g => g.id === id);
+                if (gIdx > -1) grammar.splice(gIdx, 1);
+                break;
+            case 'reading':
+                const rIdx = readings.findIndex(r => r.id === id);
+                if (rIdx > -1) readings.splice(rIdx, 1);
+                break;
+        }
+
+        renderTable();
     }
-
-    renderTable();
 }
 
 function closeModal(modalId) {

@@ -17,7 +17,7 @@
         <!-- Search bar -->
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Tìm theo tên, email, mã nhân viên...">
-            <select id="statusFilter">
+            <!-- <select id="statusFilter">
                 <option value="">Tất cả trạng thái</option>
                 <option value="active">Đang hoạt động</option>
                 <option value="locked">Đã khóa</option>
@@ -26,15 +26,12 @@
                 <option value="">Tất cả vai trò</option>
                 <option value="Nhân viên">Nhân viên</option>
                 <option value="Quản lý">Quản lý</option>
-            </select>
+            </select> -->
             <button onclick="searchStaff()" class="action-btn">
                 <i class="fas fa-search"></i> Tìm kiếm
             </button>
-            <button onclick="showAdd()" class="add-btn">
-                <i class="fas fa-plus"></i> Thêm nhân viên
-            </button>
         </div>
-
+        
         <!-- Staff table -->
         <table class="staff-table" id="staffTable">
             <thead>
@@ -52,6 +49,7 @@
                 <!-- Data sẽ được render bằng JS -->
             </tbody>
         </table>
+        <div id="staffPagination" style="margin-top: 1rem; text-align: right;"></div>
     </div>
 
     <!-- Modal thêm/sửa -->
@@ -63,7 +61,13 @@
     </div>
     <script src="/Javascript/GetAPI/getInfor.js"></script>
     <script src="/Javascript/components/sideBar.js"></script>
+    <script src="/Javascript/GetAPI/userManagermentAPI.js"></script>
     <script src="/Javascript/components/theme.js"></script>
     <script src="/Javascript/Admin/staffManagerment.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadStaff();
+    });
+    </script>
 </body>
 </html>

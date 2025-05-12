@@ -1,63 +1,57 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    // Đảm bảo đã load getInfor.js
-    function waitForFetchUserInfo(cb, tries = 10) {
-        if (typeof window.fetchUserInfo === 'function') {
-            cb();
-        } else if (tries > 0) {
-            setTimeout(() => waitForFetchUserInfo(cb, tries - 1), 100);
-        }
-    }
-    waitForFetchUserInfo(async () => {
-        const userInfo = await window.fetchUserInfo();
-        if (!userInfo || !userInfo.group_user_id) return;
-        // Gán thông tin lên form
-        document.getElementById('avatarImg').src = userInfo.avatar || '/assets/images/default-avatar.png';
-        document.getElementById('fullName').value = userInfo.name || '';
-        document.getElementById('email').value = userInfo.email || '';
-        document.getElementById('phone').value = userInfo.phone || '';
-        document.getElementById('dob').value = userInfo.dob || '';
-        document.getElementById('gender').value = userInfo.gender || '';
-        // Ẩn/hiện các trường chỉ dành cho user
-        document.querySelectorAll('.only-user').forEach(el => {
-            el.style.display = (userInfo.group_user_id === 2) ? '' : 'none';
-        });
-        // Nếu là user (2): chỉ hiện header/footer, ẩn sidebar
-        if (userInfo.group_user_id === 2) {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.style.display = 'none';
-        } else {
-            // Nếu là admin/staff: hiện sidebar, ẩn header/footer nếu muốn
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.style.display = '';
-        }
-        if (userInfo.group_user_id !== 2) {
-            document.getElementById('header').style.display = 'none';
-            document.getElementById('footer').style.display = 'none';
-        }
-    });
+    try {
+        // Lấy thông tin tài khoản
+        const accountInfo = await getAccountInfo();
+        
+        // Cập nhật thông tin lên form
+        document.getElementById('email').value = accountInfo.email || '';
+        document.getElementById('username').value = accountInfo.username || '';
 
-    // Đổi ảnh đại diện (giả lập preview)
-    document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                document.getElementById('avatarImg').src = evt.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+        // Xử lý form đổi mật khẩu
+        document.getElementById('changePasswordForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const oldPassword = this.querySelector('input[placeholder="Mật khẩu hiện tại"]').value;
+            const newPassword = this.querySelector('input[placeholder="Mật khẩu mới"]').value;
+            const confirmPassword = this.querySelector('input[placeholder="Nhập lại mật khẩu mới"]').value;
 
-    // Đổi mật khẩu modal
-    window.openChangePassword = function() {
-        document.getElementById('changePasswordModal').style.display = 'block';
+            if (newPassword !== confirmPassword) {
+                alert('Mật khẩu mới không khớp!');
+                return;
+            }
+
+            try {
+                await updatePassword(oldPassword, newPassword);
+                alert('Đổi mật khẩu thành công!');
+                closeChangePassword();
+            } catch (error) {
+                alert(error.message || 'Có lỗi xảy ra khi đổi mật khẩu');
+            }
+        };
+
+        // Xử lý form cập nhật email
+        document.getElementById('profileForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const newEmail = document.getElementById('email').value;
+
+            try {
+                await updateEmail(newEmail);
+                alert('Cập nhật email thành công!');
+            } catch (error) {
+                alert(error.message || 'Có lỗi xảy ra khi cập nhật email');
+            }
+        };
+
+    } catch (error) {
+        console.error('Lỗi khi khởi tạo trang profile:', error);
+        alert('Có lỗi xảy ra khi tải thông tin tài khoản');
     }
-    window.closeChangePassword = function() {
-        document.getElementById('changePasswordModal').style.display = 'none';
-    }
-    document.getElementById('changePasswordForm').onsubmit = function(e) {
-        e.preventDefault();
-        alert('Đổi mật khẩu thành công (giả lập)');
-        window.closeChangePassword();
-    };
 });
+
+// Hàm mở/đóng modal đổi mật khẩu
+function openChangePassword() {
+    document.getElementById('changePasswordModal').style.display = 'block';
+}
+
+function closeChangePassword() {
+    document.getElementById('changePasswordModal').style.display = 'none';
+}

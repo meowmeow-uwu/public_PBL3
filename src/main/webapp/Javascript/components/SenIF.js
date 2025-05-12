@@ -137,6 +137,12 @@ async function handleRegister(event) {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const name = document.getElementById('name').value;
 
+    // Kiểm tra định dạng username - không cho phép dấu cách
+    if (!/^[a-z0-9_]+$/.test(username) || username.includes(' ')) {
+        alert('Username chỉ được chứa chữ thường, số và dấu gạch dưới, không được chứa dấu cách!');
+        return;
+    }
+
     // Kiểm tra mật khẩu khớp
     if (password !== confirmPassword) {
         alert('Mật khẩu không khớp!');
@@ -184,11 +190,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
+        // Thêm xử lý username chữ thường và không cho phép dấu cách
+        const usernameInput = document.getElementById('username');
+        if (usernameInput) {
+            usernameInput.addEventListener('input', function() {
+                this.value = this.value.toLowerCase().replace(/\s+/g, '');
+            });
+        }
     }
 
     // Add event listener for registration form
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
+        // Thêm xử lý username chữ thường và không cho phép dấu cách
+        const usernameInput = document.getElementById('username');
+        if (usernameInput) {
+            usernameInput.addEventListener('input', function() {
+                this.value = this.value.toLowerCase().replace(/\s+/g, '');
+            });
+        }
     }
 });

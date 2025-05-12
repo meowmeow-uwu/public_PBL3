@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý câu trả lời</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="/Assets/Css/Staff/answerManagerment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div id="sidebar"></div>
+    <div class="main-container">
+        <div class="page-header">
+            <h2>Quản lý câu trả lời</h2>
+            <button class="btn btn-primary" onclick="openAddAnswerModal()">
+                <i class="fas fa-plus"></i> Thêm câu hỏi mới
+            </button>
+        </div>
+
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm câu hỏi...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="filter-group">
+                <select id="topicFilter">
+                    <option value="">Tất cả chủ đề</option>
+                    <option value="grammar">Ngữ pháp</option>
+                    <option value="vocabulary">Từ vựng</option>
+                    <option value="reading">Đọc hiểu</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="">Tất cả loại</option>
+                    <option value="1">Câu hỏi thường</option>
+                    <option value="2">Câu hỏi đọc hiểu</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="answers-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Câu hỏi</th>
+                        <th>Chủ đề</th>
+                        <th>Loại</th>
+                        <th>Đáp án đúng</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="answersTableBody">
+                    <!-- Data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button class="btn" id="prevPage" disabled>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span id="pageInfo">Trang 1 / 1</span>
+            <button class="btn" id="nextPage" disabled>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal thêm/sửa câu hỏi -->
+    <div id="answerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm câu hỏi mới</h3>
+                <span class="close" onclick="closeAnswerModal()">&times;</span>
+            </div>
+            <form id="answerForm">
+                <div class="form-group">
+                    <label>Câu hỏi <span class="required">*</span></label>
+                    <textarea id="questionText" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Chủ đề <span class="required">*</span></label>
+                        <select id="topic" required>
+                            <option value="grammar">Ngữ pháp</option>
+                            <option value="vocabulary">Từ vựng</option>
+                            <option value="reading">Đọc hiểu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Loại câu hỏi <span class="required">*</span></label>
+                        <select id="type" required>
+                            <option value="1">Câu hỏi thường</option>
+                            <option value="2">Câu hỏi đọc hiểu</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Các lựa chọn <span class="required">*</span></label>
+                    <div id="optionsContainer">
+                        <div class="option-item">
+                            <input type="text" placeholder="Lựa chọn A" required>
+                            <input type="radio" name="correctAnswer" value="0" required>
+                        </div>
+                        <div class="option-item">
+                            <input type="text" placeholder="Lựa chọn B" required>
+                            <input type="radio" name="correctAnswer" value="1" required>
+                        </div>
+                        <div class="option-item">
+                            <input type="text" placeholder="Lựa chọn C" required>
+                            <input type="radio" name="correctAnswer" value="2" required>
+                        </div>
+                        <div class="option-item">
+                            <input type="text" placeholder="Lựa chọn D" required>
+                            <input type="radio" name="correctAnswer" value="3" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Giải thích <span class="required">*</span></label>
+                    <textarea id="explanation" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="button" class="btn" onclick="closeAnswerModal()">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal xác nhận xóa -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Xác nhận xóa</h3>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <p>Bạn có chắc chắn muốn xóa câu hỏi này?</p>
+            <div class="form-actions">
+                <button class="btn btn-danger" onclick="confirmDelete()">Xóa</button>
+                <button class="btn" onclick="closeDeleteModal()">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/sideBar.js"></script>
+    <script src="/Javascript/GetAPI/answerManagementAPI.js"></script>
+    <script src="/Javascript/Staff/answerManagerment.js"></script>
+</body>
+</html>

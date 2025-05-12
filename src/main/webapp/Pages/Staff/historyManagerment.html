@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý lịch sử</title>
+    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="/Assets/Css/Staff/historyManagerment.css">
+</head>
+<body>
+    <div id="side-bar"></div>
+    <div class="history-manager-container">
+        <h1>Quản lý lịch sử</h1>
+        <div class="toolbar">
+            <select id="typeFilter">
+                <option value="1">Lịch sử từ vựng</option>
+                <option value="2">Lịch sử bài viết</option>
+                <option value="3">Lịch sử làm bài</option>
+            </select>
+            <button onclick="openAddModal()">Thêm mới</button>
+        </div>
+        <table class="history-table" id="historyTable">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>User ID</th>
+                    <th>Loại</th>
+                    <th>Tiêu đề</th>
+                    <th>Ngày</th>
+                    <th>Kết quả/Điểm</th>
+                    <th>Tác vụ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Render bằng JS -->
+            </tbody>
+        </table>
+        <div id="historyPagination"></div>
+    </div>
+    <!-- Modal thêm/sửa -->
+    <div class="modal" id="historyModal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <form id="historyForm">
+                <input type="hidden" id="historyId">
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="number" id="userId" required>
+                </div>
+                <div class="form-group">
+                    <label>Tiêu đề</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Ngày</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Kết quả/Điểm</label>
+                    <input type="text" id="result">
+                </div>
+                <button type="submit">Lưu</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/Javascript/GetAPI/getInfor.js"></script>
+    <script src="/Javascript/components/sideBar.js"></script>
+    <script src="/Javascript/components/theme.js"></script>
+    <script src="/Javascript/GetAPI/historyManagermentAPI.js"></script>
+    <script src="/Javascript/Staff/historyManagerment.js"></script>
+</body>
+</html>

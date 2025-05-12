@@ -16,7 +16,7 @@ import com.pbl3.util.JwtUtil;
  */
 public class UserService implements ServiceInterface<User>{
   
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO = UserDAO.getInstance();
   
     @Override
     public int insert(User t) {
@@ -26,8 +26,7 @@ public class UserService implements ServiceInterface<User>{
 
     @Override
     public int update(User user) {
-        UserDAO dao = new UserDAO();
-        int result = dao.update(user);
+        int result = userDAO.update(user);
         if (result > 0) {
             System.out.println("User updated successfully.");
         } else {
@@ -39,8 +38,7 @@ public class UserService implements ServiceInterface<User>{
 
     @Override
     public int delete(int uid) {
-        UserDAO dao = new UserDAO();
-        int result = dao.delete(uid);
+        int result = userDAO.delete(uid);
         if (result > 0) {
             System.out.println("User deleted successfully.");
         } else {
@@ -52,22 +50,19 @@ public class UserService implements ServiceInterface<User>{
 
     @Override
     public ArrayList<User> selectAll() {
-        UserDAO dao = new UserDAO();
-        ArrayList<User> users = dao.selectAll();
+        ArrayList<User> users = userDAO.selectAll();
         
         return users;
     }
     public ArrayList<User> selectAllByGroupUserId(int groupUserId) {
-        UserDAO dao = new UserDAO();
-        ArrayList<User> users = dao.selectAll();
+        ArrayList<User> users = userDAO.selectAllByGroupUserId(groupUserId);
         
         return users;
     }
 
     @Override
     public User selectByID(int id) {
-        UserDAO dao = new UserDAO();
-        User u = dao.selectByID(id);
+        User u = userDAO.selectByID(id);
         if(u != null){
             return u;
         }

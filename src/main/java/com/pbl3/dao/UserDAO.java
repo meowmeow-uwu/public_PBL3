@@ -18,12 +18,17 @@ import java.sql.Statement;
  * @author Danh
  */
 public class UserDAO implements DAOInterface<User> {
+    private static UserDAO instance;
 
-    public static void main(String[] args) {
-        UserDAO d = new UserDAO();
-        User u = d.selectByID(1);
-        System.out.println("Kết quả là: " + u);
+    private UserDAO() {}
+
+    public static synchronized UserDAO getInstance() {
+        if (instance == null) {
+            instance = new UserDAO();
+        }
+        return instance;
     }
+
 
     @Override
     public int insert(User t) {
@@ -51,7 +56,7 @@ public class UserDAO implements DAOInterface<User> {
         } finally {
             DBUtil.closeConnection(c);
         }
-        return userId;
+        return -1;
     }
 
     @Override

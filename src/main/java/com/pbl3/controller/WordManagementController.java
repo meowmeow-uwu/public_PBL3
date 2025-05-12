@@ -19,7 +19,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,7 +73,7 @@ public class WordManagementController {
         if (keyword == null || keyword.equalsIgnoreCase("null")) {
             keyword = "";
         }
-        List<Map<String, Word>> list = wordService.getWordsByPageLanguageKeyword(pageNumber, pageSize, languageId, keyword);
+        Map<String,Object> list = wordService.getWordsByPage(pageNumber, pageSize, languageId, keyword);
         if (list == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\":\"Word not found\"}")

@@ -21,6 +21,7 @@ import java.util.Map;
  * @author Danh
  */
 public class UserDAO implements DAOInterface<User> {
+    private static UserDAO instance;
 
     public static void main(String[] args) {
         UserDAO d = new UserDAO();
@@ -30,6 +31,15 @@ public class UserDAO implements DAOInterface<User> {
         System.out.println(d.getNumberPage(1, 2, ""));
         System.out.println(e.get("users"));
     }
+    private UserDAO() {}
+
+    public static synchronized UserDAO getInstance() {
+        if (instance == null) {
+            instance = new UserDAO();
+        }
+        return instance;
+    }
+
 
     @Override
     public int insert(User t) {
@@ -59,7 +69,7 @@ public class UserDAO implements DAOInterface<User> {
         } finally {
             DBUtil.closeConnection(c);
         }
-        return userId;
+        return -1;
     }
 
     @Override
@@ -149,7 +159,8 @@ public class UserDAO implements DAOInterface<User> {
             PreparedStatement s = c.prepareStatement(query);
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
-                listUser.add(new User(rs.getInt("user_id"),
+                listUser.add(new User(
+                        rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
                         rs.getInt("group_user_id"),

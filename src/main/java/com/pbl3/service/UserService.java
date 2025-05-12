@@ -15,9 +15,10 @@ import java.util.Map;
  *
  * @author Danh
  */
+
 public class UserService implements ServiceInterface<User> {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO = UserDAO.getInstance();
 
     @Override
     public int insert(User t) {
@@ -43,6 +44,7 @@ public class UserService implements ServiceInterface<User> {
         if (existingUser != null && existingUser.getUser_id() != user.getUser_id()) {
             throw new IllegalArgumentException("Email đã tồn tại");
         }
+
         int result = userDAO.update(user);
         return result;
     }
@@ -76,10 +78,8 @@ public class UserService implements ServiceInterface<User> {
     @Override
     public User selectByID(int id) {
         User u = userDAO.selectByID(id);
-        if (u != null) {
-            return u;
-        }
-        return null;
+        
+        return u;
     }
 
     @Override

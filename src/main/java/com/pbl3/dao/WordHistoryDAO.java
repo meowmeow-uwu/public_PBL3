@@ -6,19 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.pbl3.dto.Topic;
+import com.pbl3.dto.History;
 import com.pbl3.util.DBUtil;
 
-public class TopicDAO implements DAOInterface<Topic>{
+public class WordHistoryDAO implements HistoryDAOInterface{
 
     @Override
-    public int insert(Topic t) {
+    public int insert(History t) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "INSERT INTO topics (name) VALUES (?)";
+            String sql = "INSERT INTO word_history (user_id, word_id, word_history_date) VALUES (?, ?, ?)";
             PreparedStatement pstmt = c.prepareStatement(sql);
-            pstmt.setString(1, t.getName());
+            pstmt.setInt(1, t.getUser_id());
+            pstmt.setInt(2, t.getKey_id());
+            pstmt.setDate(3, new java.sql.Date(t.getHistory_date().getTime()));
             int result = pstmt.executeUpdate();
             return result;
         } catch (SQLException e) {
@@ -30,14 +32,16 @@ public class TopicDAO implements DAOInterface<Topic>{
 }
 
     @Override
-    public int update(Topic t) {
+    public int update(History t) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "UPDATE topic SET name = ? WHERE topic_id = ?";
+            String sql = "UPDATE word_history SET user_id = ?, word_id = ?, word_history_date = ? WHERE word_history_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
-            pstmt.setString(1, t.getName());
-            pstmt.setInt(2, t.getTopic_id());
+            pstmt.setInt(1, t.getUser_id());
+            pstmt.setInt(2, t.getKey_id());
+            pstmt.setDate(3, new java.sql.Date(t.getHistory_date().getTime()));
+            pstmt.setInt(4, t.getHistory_id());
             int result = pstmt.executeUpdate();
             return result;
         } catch (SQLException e) {
@@ -49,19 +53,15 @@ public class TopicDAO implements DAOInterface<Topic>{
 }
 
     @Override
-    public int delete(int id) {
+    public int delete(int id, int userId) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql;
-            sql = "update sub_topic set topic_id = 0 where topic_id = ?";
+            String sql = "DELETE FROM word_history WHERE word_history_id = ? AND user_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
+            pstmt.setInt(2, userId);
             int result = pstmt.executeUpdate();
-            sql = "DELETE FROM topic WHERE topic_id = ?";
-            pstmt = c.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            result = Math.min(result, pstmt.executeUpdate());
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -72,21 +72,24 @@ public class TopicDAO implements DAOInterface<Topic>{
 }
 
     @Override
-    public ArrayList<Topic> selectAll() {
+    public ArrayList<History> selectAll(int userId) {
         Connection c = null;
-        ArrayList<Topic> topics = new ArrayList<>();
+        ArrayList<History> histories = new ArrayList<>();
         try {
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM topic";
+            String sql = "SELECT * FROM word_history WHERE user_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
+            pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                Topic t = new Topic();
-                t.setTopic_id(rs.getInt("topic_id"));
-                t.setName(rs.getString("name"));
-                topics.add(t);
+                History t = new History();
+                t.setHistory_id(rs.getInt("history_id"));
+                t.setUser_id(rs.getInt("user_id"));
+                t.setKey_id(rs.getInt("key_id"));
+                t.setHistory_date(rs.getDate("history_date"));
+                histories.add(t);
             }
-            return topics;
+            return histories;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -96,19 +99,22 @@ public class TopicDAO implements DAOInterface<Topic>{
 }
 
     @Override
-    public Topic selectByID(int id) {
+    public History selectByID(int id, int userId) {
         Connection c = null;
-        Topic t = null;
+        History t = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM topic WHERE topic_id = ?";
+            String sql = "SELECT * FROM word_history WHERE word_history_id = ? AND user_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
+            pstmt.setInt(2, userId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                t = new Topic();
-                t.setTopic_id(rs.getInt("topic_id"));
-                t.setName(rs.getString("name"));
+                t = new History();
+                t.setHistory_id(rs.getInt("history_id"));
+                t.setUser_id(rs.getInt("user_id"));
+                t.setKey_id(rs.getInt("key_id"));
+                t.setHistory_date(rs.getDate("history_date"));
             }
             return t;
         } catch (SQLException e) {
@@ -120,8 +126,8 @@ public class TopicDAO implements DAOInterface<Topic>{
 }
 
     @Override
-    public Topic selectByCondition(String condition) {
+    public History selectByCondition(String condition) {
         return null;
 }
-    
 }
+    

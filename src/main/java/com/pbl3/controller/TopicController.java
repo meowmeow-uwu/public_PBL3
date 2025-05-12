@@ -99,6 +99,8 @@ public class TopicController {
         }
 
         int result = topicService.delete(id);
+        if(result == -1) 
+            return Response.status(400).entity("Can't delete default topic").build();
         if (result == 0) {
             return Response.status(400).entity("Failed to delete topic").build();
         }

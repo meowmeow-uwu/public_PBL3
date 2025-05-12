@@ -6,7 +6,6 @@ import com.pbl3.dto.Post;
 import com.pbl3.service.PostService;
 import com.pbl3.util.JwtUtil;
 
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -89,16 +88,16 @@ public class PostController {
         return Response.status(200).entity("Post updated successfully").build();
     }
     
-    @DELETE
-    @Path("/{id}")
+    @PUT
+    @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteSubTopic(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response deleteSubTopic(@HeaderParam("Authorization") String token, @PathParam("id") int id, Post post) {
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(401).entity("Unauthorized").build();
         }
-
-        int result = postService.delete(id);
+        post.set_deleted(true);
+        int result = postService.update(post);
         if (result == 0) {
             return Response.status(400).entity("Failed to delete post").build();
         }

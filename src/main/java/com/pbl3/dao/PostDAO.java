@@ -62,28 +62,6 @@ public class PostDAO implements DAOInterface<Post>{
 
     @Override
     public int delete(int id) {
-        Connection c = null;
-        try{
-            c = DBUtil.makeConnection();
-            String sql = "DELETE FROM post WHERE post_id = ?";
-            PreparedStatement pstmt = c.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            int result = pstmt.executeUpdate();
-            if(result > 0){
-                sql = "update post set sub_topic_id = null where post_id = ?";
-                pstmt = c.prepareStatement(sql);
-                pstmt.setInt(1, id);
-                pstmt.executeUpdate();
-            }
-            pstmt.close();
-            return result;
-        }
-        catch(SQLException e){
-            e.printStackTrace();
-        } 
-        finally{
-            DBUtil.closeConnection(c);
-        }
         return 0;
     }
 

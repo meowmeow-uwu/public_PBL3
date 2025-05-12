@@ -24,6 +24,9 @@ public class SubTopicService implements ServiceInterface<SubTopic>{
 
     @Override
     public int delete(int id) {
+        if(id == 0) {
+            return -1;
+        }
         return subTopicDAO.delete(id);
     } 
 

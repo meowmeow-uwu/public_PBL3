@@ -61,16 +61,15 @@ public class SubTopicDAO implements DAOInterface<SubTopic>{
         Connection c = null;
         try{
             c = DBUtil.makeConnection();
-            String sql = "DELETE FROM sub_topic WHERE sub_topic_id = ?";
+            String sql;
+            sql = "update post set sub_topic_id = 0 where sub_topic_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
             int result = pstmt.executeUpdate();
-            if(result > 0){
-                sql = "update post set sub_topic_id = null where sub_topic_id = ?";
-                pstmt = c.prepareStatement(sql);
-                pstmt.setInt(1, id);
-                pstmt.executeUpdate();
-            }
+            sql = "DELETE FROM sub_topic WHERE sub_topic_id = ?";
+            pstmt = c.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            result = Math.min(result, pstmt.executeUpdate());
             pstmt.close();
             return result;
         }

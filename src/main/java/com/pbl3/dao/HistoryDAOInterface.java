@@ -1,0 +1,14 @@
+package com.pbl3.dao;
+
+import java.util.ArrayList;
+
+import com.pbl3.dto.History;
+
+public interface HistoryDAOInterface {
+    public int insert(History t);
+    public int update(History t);
+    public int delete(int id, int userId);
+    public ArrayList<History> selectAll(int userId);
+    public History selectByID(int id, int userId);
+    public History selectByCondition(String condition);
+}

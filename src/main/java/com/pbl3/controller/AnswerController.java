@@ -22,16 +22,20 @@ import jakarta.ws.rs.core.Response;
 @Path("/answers")
 public class AnswerController {
     private AnswerServiceInterface answerService;
-    
+    private ReadingAnswerService readingAnswerService;
+    private AnswerService answerServices;
+
     public AnswerController() {
         this.answerService = new AnswerService();
+        this.readingAnswerService = new ReadingAnswerService();
+        this.answerServices = new AnswerService();
     }
 
     private void chooseAnswerService(int type) {
         if (type == 1) {
-            answerService = new ReadingAnswerService();
+            answerService = readingAnswerService;
         } else {
-            answerService = new AnswerService();
+            answerService = answerServices;
         }
     }
 

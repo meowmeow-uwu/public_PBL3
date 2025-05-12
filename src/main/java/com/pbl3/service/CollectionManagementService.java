@@ -6,16 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.pbl3.dto.Collection;
-import com.pbl3.dto.User;
 
 public class CollectionManagementService extends CollectionService{
-        private UserService userService;
         private static CollectionManagementService instance;
         
-        // Private constructor
-        private CollectionManagementService() {
-            userService = new UserService();
-        }
+
         
         // Method để lấy instance
         public static synchronized CollectionManagementService getInstance() {
@@ -25,11 +20,7 @@ public class CollectionManagementService extends CollectionService{
             return instance;
         }
     
-        // Kiểm tra xem user có phải là content manager không
-        public boolean isAccessed(int userId) {
-            User user = userService.selectByID(userId);
-            return user != null && user.getGroup_user_id() != 2;
-        }
+        
     
         // Lấy tất cả các bộ sưu tập công khai (dành cho content manager)
         public List<Map<String, Object>> getAllPublicCollections() {

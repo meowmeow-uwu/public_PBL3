@@ -10,24 +10,28 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Danh
  */
+public class WordDAO implements DAOInterface<Word> {
 
-public class WordDAO implements DAOInterface<Word>{
     private static WordDAO instance;
-    
-    private WordDAO() {}
-    
+
+    private WordDAO() {
+    }
+
     public static synchronized WordDAO getInstance() {
         if (instance == null) {
             instance = new WordDAO();
         }
         return instance;
     }
-    
+
     @Override
     public int insert(Word word) {
         Connection c = null;
@@ -250,13 +254,63 @@ public class WordDAO implements DAOInterface<Word>{
         return null;
     }
 
+    public List<Map<String, Word>> getWordsByPageLanguageKeyword(int pageNumber, int pageSize, int languageId, String keyword) {
+        Connection c = null;
+        int offset = (pageNumber - 1) * pageSize;
+
+        try {
+            List<Map<String, Word>> words = new ArrayList<>();
+            c = DBUtil.makeConnection();
+            String sql = "SELECT * FROM word "
+                    + "WHERE language_id = ? AND is_deleted = 0 "
+                    + "AND (? IS NULL OR ? = '' OR word_name LIKE ?) "
+                    + "ORDER BY word_id "
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+
+            PreparedStatement s = c.prepareStatement(sql);
+            s.setInt(1, languageId);
+            s.setString(2, keyword);   // for IS NULL
+            s.setString(3, keyword);   // for = ''
+            s.setString(4, keyword+"%");   // for LIKE
+            s.setInt(5, offset);       // OFFSET
+            s.setInt(6, pageSize);     // FETCH NEXT
+
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                Word word = new Word(
+                        rs.getInt("word_id"),
+                        rs.getInt("language_id"),
+                        rs.getString("word_name"),
+                        rs.getString("pronunciation"),
+                        rs.getString("sound"),
+                        rs.getBoolean("is_deleted")
+                );
+                Map<String, Word> wordMap = new HashMap<>();
+                wordMap.put("word", word); // Thêm đối tượng word vào Map với khóa là "word"
+
+                // Thêm Map vào danh sách
+                words.add(wordMap);
+            }
+
+            rs.close();
+            s.close();
+            return words;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return new ArrayList<>();
+    }
+
     public static void main(String s[]) {
         WordDAO d = new WordDAO();
-        ArrayList<Word> li = d.findByWordNamePrefixAndLanguage("h", 1, 11);
+        List<Map<String,Word>> li = d.getWordsByPageLanguageKeyword(1, 20, 1,"a");
         int j = 1;
-        for (Word i : li) {
+        for (Map<String,Word> i : li) {
 
-            System.out.println(i.getWord_name() + j);
+            System.out.println(j + i.get("word").getWord_name());
             j++;
         }
     }

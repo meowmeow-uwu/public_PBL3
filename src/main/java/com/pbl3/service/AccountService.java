@@ -30,7 +30,11 @@ public class AccountService implements ServiceInterface<Account> {
         return JwtUtil.generateToken(account.getUser_id());
     }
 
-    public Account selectByUserId(int id) {
+    public Account getAccountByToken(String token) {
+        int id = JwtUtil.getUserIdFromToken(token);
+        if (id == -1) {
+            throw new RuntimeException("Token không hợp lệ hoặc đã hết hạn.");
+        }
         return accountDAO.selectByUserId(id);
     }
 
@@ -81,5 +85,10 @@ public class AccountService implements ServiceInterface<Account> {
     @Override
     public Account selectByCondition(String condition) {
         return null;
+    }
+    
+    public Account selectByUserId(int id)
+    {
+        return accountDAO.selectByUserId(id);
     }
 }

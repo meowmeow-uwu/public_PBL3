@@ -6,7 +6,6 @@ package com.pbl3.controller;
 
 import com.pbl3.dto.Account;
 import com.pbl3.service.AccountService;
-import com.pbl3.util.JwtUtil;
 import com.pbl3.util.PasswordUtil;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
@@ -35,13 +34,13 @@ public class AccountController {
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
         String token = authHeader.substring("Bearer ".length()).trim();
-        int id = JwtUtil.getUserIdFromToken(token);
-
-        if (id == -1) {
+        Account account;
+        try {
+            account = accountService.getAccountByToken(token);
+        } catch (RuntimeException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid token\"}").build();
         }
-        Account account = accountService.selectByUserId(id);
         if (account == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\":\"account info not found\"}").build();
@@ -72,17 +71,16 @@ public class AccountController {
         }
 
         String token = authHeader.substring("Bearer ".length()).trim();
-        int id = JwtUtil.getUserIdFromToken(token);
-
-        if (id == -1) {
+        Account account;
+        try {
+            account = accountService.getAccountByToken(token);
+        } catch (RuntimeException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid token\"}").build();
         }
-
-        Account account = accountService.selectByUserId(id);
         if (account == null) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"error\":\"User not found\"}").build();
+                    .entity("{\"error\":\"Account not found\"}").build();
         }
 
         // Kiểm tra mật khẩu cũ
@@ -128,14 +126,13 @@ public class AccountController {
         }
 
         String token = authHeader.substring("Bearer ".length()).trim();
-        int id = JwtUtil.getUserIdFromToken(token);
-
-        if (id == -1) {
+        Account account;
+        try {
+            account = accountService.getAccountByToken(token);
+        } catch (RuntimeException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid token\"}").build();
         }
-
-        Account account = accountService.selectByUserId(id);
         if (account == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\":\"User not found\"}").build();

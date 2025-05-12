@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.pbl3.dto.Collection;
+import com.pbl3.service.AuthService;
 import com.pbl3.service.CollectionManagementService;
+import com.pbl3.service.UserService;
 import com.pbl3.util.JwtUtil;
-
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
@@ -23,23 +23,29 @@ import jakarta.ws.rs.core.Response;
 @Path("collections")
 public class CollectionManagementController {
     private CollectionManagementService collectionService = CollectionManagementService.getInstance();
+    private final AuthService authService = new AuthService();
+    private final UserService userService = new UserService();
     private final int CID = -1;
     private static boolean Public = true;
     // Tạo bộ sưu tập mới
     @POST
-    @Path("create")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCollection(
-        @HeaderParam("Authorization") String token,
+        @HeaderParam("authorization") String authHeader,
         @FormParam("name") String name,
         @FormParam("isPublic") boolean isPublic
     ) {
-        int userId = JwtUtil.getUserIdFromToken(token);
-        if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        if(!collectionService.isAccessed(userId)){
+        if (!authService.isAdmin(authHeader) && !authService.isContentManager(authHeader)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        
+        if(!collectionService.isAccessed(userService.getUserIdByAuthHeader(authHeader))){
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
@@ -116,7 +122,6 @@ public class CollectionManagementController {
     // Cập nhật bộ sưu tập
     @PUT
     @Path("{collectionId}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCollection(
         @HeaderParam("Authorization") String token,

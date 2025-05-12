@@ -33,10 +33,9 @@ public class UserController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        String token = authHeader.substring("Bearer ".length()).trim();
         User user;
         try {
-            user = userService.getUserByToken(token);
+            user = userService.getUserByAuthHeader(authHeader);
         } catch (RuntimeException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid token\"}").build();
@@ -65,10 +64,9 @@ public class UserController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        String token = authHeader.substring("Bearer ".length()).trim();
         User user;
         try {
-            user = userService.getUserByToken(token);
+            user = userService.getUserByAuthHeader(authHeader);
         } catch (RuntimeException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid token\"}").build();
@@ -92,5 +90,3 @@ public class UserController {
                     .entity("{\"error\":\"Failed to update profile\"}").build();
         }
     }
-
-}

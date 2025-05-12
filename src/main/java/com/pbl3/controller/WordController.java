@@ -1,13 +1,10 @@
 package com.pbl3.controller;
 
-import com.pbl3.dto.User;
 import com.pbl3.dto.Word;
 import com.pbl3.service.AuthService;
 import com.pbl3.service.UserService;
 import com.pbl3.service.WordService;
 import com.pbl3.util.JwtUtil;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -44,7 +41,5 @@ public class WordController {
                     .build();
         }
     }
-
-    
 
 }

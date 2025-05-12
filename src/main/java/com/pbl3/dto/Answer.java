@@ -25,5 +25,5 @@ public class Answer implements Serializable{
     private int answer_id;
     private int question_id;
     private String content;
-    private boolean is_corrected;
+    private boolean isCorrect;
 }

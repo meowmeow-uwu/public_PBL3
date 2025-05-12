@@ -22,9 +22,9 @@ import lombok.ToString;
 @Setter
 @ToString
 
-public class PostHistory implements Serializable{
-    private int post_history_id;
+public class History implements Serializable{
+    private int history_id;
     private int user_id;
-    private int post_id;
-    private Date date;
+    private int key_id;
+    private Date history_date;
 }

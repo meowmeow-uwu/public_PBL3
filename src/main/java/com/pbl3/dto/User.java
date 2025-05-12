@@ -4,6 +4,7 @@
  */
 package com.pbl3.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,9 @@ public class User implements Serializable{
     private int user_id;
     private String name;
     private String avatar;
-    //Foreign key UserGroup
     private int group_user_id;
+    private String username;
+    private String email;
+    @JsonIgnore
+    private String password;
 }

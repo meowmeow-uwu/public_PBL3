@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>➕ Thêm người dùng mới</title>
-    <link rel="stylesheet" href="/Assets/Css/main.css">
-    <link rel="stylesheet" href="/Assets/Css/Staff/userManagerment.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="../../Assets/Css/main.css">
+    <link rel="stylesheet" href="../../Assets/Css/Staff/userManagerment.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .main-container {
@@ -108,9 +108,13 @@
             </form>
         </div>
     </div>
-    <script src="/Javascript/GetAPI/userManagermentAPI.js"></script>
-    <script src="/Javascript/GetAPI/getInfor.js"></script>
-    <script src="/Javascript/components/sideBar.js"></script>
+    <script src="../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG.BASE_PATH = '../../';
+    </script>
+    <script src="../../Javascript/GetAPI/userManagermentAPI.js"></script>
+    <script src="../../Javascript/GetAPI/getInfor.js"></script>
+    <script src="../../Javascript/components/sideBar.js"></script>
     <script>
                 // Set ngày tạo mặc định là hôm nay
                 document.getElementById('created').value = new Date().toISOString().slice(0,10);
@@ -174,6 +178,6 @@
             }
         }
     </script>
-    <script src="/Javascript/components/theme.js"></script>
+    <script src="../../Javascript/components/theme.js"></script>
 </body>
 </html> 

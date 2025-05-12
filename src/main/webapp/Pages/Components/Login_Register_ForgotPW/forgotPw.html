@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
-    <link rel="stylesheet" href="/Assets/Css/main.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/forgotPw.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="../../../Assets/Css/main.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/forgotPw.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
 </head>
 <body>
     <!-- Header -->
@@ -28,7 +28,7 @@
                 
                 <div class="btn-container">
                     <button type="submit" class="btn">Gửi liên kết đặt lại</button>
-                    <a href="/Pages/Components/Login_Register_ForgotPW/login.html" class="btn-secondary">Quay lại đăng nhập</a>
+                    <a href="../../../Pages/Components/Login_Register_ForgotPW/login.html" class="btn-secondary">Quay lại đăng nhập</a>
                 </div>
             </form>
         </div>
@@ -37,9 +37,11 @@
 
     <!-- Footer -->
     <div id="footer"></div>
-
-    <!-- Scripts -->
-    <script src="/Javascript/components/header_footer.js"></script>
-    <script src="/Javascript/components/theme.js"></script>
+    <script src="../../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG.BASE_PATH = '../../../';
+    </script>
+    <script src="../../../Javascript/components/header_footer.js"></script>
+    <script src="../../../Javascript/components/theme.js"></script>
 </body>
 </html> 

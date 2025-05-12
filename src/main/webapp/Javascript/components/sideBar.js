@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Chỉ load sidebar cho admin (1) và staff (3)
         if (userInfo.group_user_id === 1 || userInfo.group_user_id === 3) {
-            fetch('/Pages/Components/Layouts/sideBar.html')
+            fetch(window.APP_CONFIG.BASE_PATH + 'Pages/Components/Layouts/sideBar.html')
                 .then(response => response.text())
                 .then(data => {
                     sidebarDiv.innerHTML = data;
@@ -62,5 +62,5 @@ function updateSidebarContent(userInfo) {
 
 function logOut() {
     localStorage.clear();
-    window.location.href = '/Pages/Components/Login_Register_ForgotPW/login.html';
+    window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
 }

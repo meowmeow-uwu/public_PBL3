@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    fetch('/Pages/Components/Layouts/header.html')
+    fetch(window.APP_CONFIG.BASE_PATH + 'Pages/Components/Layouts/header.html')
         .then(response => response.text())
         .then(data => {
             document.getElementById('header').innerHTML = data;
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }, 10);
         });
 
-    fetch('/Pages/Components/Layouts/footer.html')
+    fetch(window.APP_CONFIG.BASE_PATH + 'Pages/Components/Layouts/footer.html')
         .then(response => response.text())
         .then(data => document.getElementById('footer').innerHTML = data);
 });
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Xử lý đăng xuất
 function logOut() {
     localStorage.clear();
-    window.location.href = '/Pages/Components/Login_Register_ForgotPW/login.html';
+    window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
 }
 
 // Xử lý form đăng ký

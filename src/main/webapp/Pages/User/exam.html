@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Quiz</title>
-    <link rel="stylesheet" href="/Assets/Css/main.css">
+    <link rel="stylesheet" href="../../Assets/Css/main.css">
     <link rel="stylesheet" href="../../Assets/Css/User/exam.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -102,9 +102,13 @@
     </div>
 
     <div id="footer"></div>
-    <script src="/Javascript/GetAPI/getInfor.js"></script>
-    <script src="/Javascript/components/header_footer.js"></script>
+    <script src="../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG.BASE_PATH = '../../';
+    </script>
+    <script src="../../Javascript/GetAPI/getInfor.js"></script>
+    <script src="../../Javascript/components/header_footer.js"></script>
     <script src="../../Javascript/User/exam.js"></script>
-    <script src="/Javascript/components/theme.js"></script>
+    <script src="../../Javascript/components/theme.js"></script>
 </body>
 </html>

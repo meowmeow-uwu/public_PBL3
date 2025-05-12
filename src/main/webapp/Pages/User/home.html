@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Trang chủ - Học tiếng Anh</title>
-    <link rel="stylesheet" href="/Assets/Css/main.css">
-    <link rel="stylesheet" href="/Assets/Css/User/home.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/theme.css">
+    <link rel="stylesheet" href="../../Assets/Css/main.css">
+    <link rel="stylesheet" href="../../Assets/Css/User/home.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+    <link rel="stylesheet" href="../../Assets/Css/Components/theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -154,9 +154,13 @@
         </div>
     </div>
     <div id="footer"></div>
-    <script src="/Javascript/components/header_footer.js"></script>
-    <script src="/Javascript/GetAPI/getInfor.js"></script>
-    <script src="/Javascript/components/theme.js"></script>
+    <script src="../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG.BASE_PATH = '../../';
+    </script>
+    <script src="../../Javascript/components/header_footer.js"></script>
+    <script src="../../Javascript/GetAPI/getInfor.js"></script>
+    <script src="../../Javascript/components/theme.js"></script>
     <script>
         // Xử lý checkbox trong Today's Goal
         document.querySelectorAll('.goal-checkbox').forEach(checkbox => {

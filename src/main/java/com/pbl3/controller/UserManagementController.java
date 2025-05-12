@@ -18,6 +18,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -196,7 +197,7 @@ public class UserManagementController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        if (!authService.isAdmin(authHeader) ) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -219,6 +220,38 @@ public class UserManagementController {
                 .build();
     }
 
+    @GET
+    @Path("/list/{page_number}/{pagesize}/{group_user_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWordsByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @PathParam("group_user_id") int groupUserId,
+            @QueryParam("keyword") String keyword) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (!authService.isAdmin(authHeader) && !authService.isContentManager(authHeader)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+        
+        // Tạo Map kết quả
+        Map<String, Object> result = userService.getUsersByPage(pageNumber, pageSize, groupUserId, keyword);
+        if(result == null)
+        {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}")
+                    .build();
+        }
+
+        return Response.ok(result).build();
+    }
+
     @DELETE
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -230,7 +263,7 @@ public class UserManagementController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        if (!authService.isAdmin(authHeader) ) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
@@ -240,9 +273,9 @@ public class UserManagementController {
             return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"Not found account\"}").build();
         }
         // Xóa cả thông tin người dùng và tài khoản
-        int userResult = userService.delete(userId);
-
         int accountResult = accountService.delete(account.getAccount_id());
+
+        int userResult = userService.delete(userId);
 
         if (userResult > 0 && accountResult > 0) {
             return Response.ok()

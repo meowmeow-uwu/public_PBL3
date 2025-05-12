@@ -4,6 +4,7 @@
  */
 package com.pbl3.dao;
 
+import com.pbl3.dto.Account;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +13,9 @@ import java.util.ArrayList;
 import com.pbl3.dto.User;
 import com.pbl3.util.DBUtil;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -22,7 +26,10 @@ public class UserDAO implements DAOInterface<User> {
     public static void main(String[] args) {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
-        System.out.println("Kết quả là: " + u);
+        Map<String, Object> e = d.getUsersByPage(1, 20, 2, "");
+
+        System.out.println(d.getNumberPage(1, 2, ""));
+        System.out.println(e.get("users"));
     }
 
     @Override
@@ -180,4 +187,110 @@ public class UserDAO implements DAOInterface<User> {
         return null;
     }
 
+    public int getNumberPage(int pageSize, int groupUserId, String keyword) {
+        Connection c = null;
+
+        try {
+            List<Map<String, User>> users = new ArrayList<>();
+            c = DBUtil.makeConnection();
+
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM _user "
+                    + "WHERE group_user_id = ?  "
+                    + "AND (? IS NULL OR ? = '' OR name LIKE ?)";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, groupUserId);
+            countStmt.setString(2, keyword);
+            countStmt.setString(3, keyword);
+            countStmt.setString(4, keyword + "%");
+
+            ResultSet countRs = countStmt.executeQuery();
+            int totalRecords = 0;
+            if (countRs.next()) {
+                totalRecords = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+            return (int) Math.ceil((double) totalRecords / pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return 0;
+    }
+
+    public Map<String, Object> getUsersByPage(int pageNumber, int pageSize, int groupUserId, String keyword) {
+        Connection c = null;
+        int offset = (pageNumber - 1) * pageSize;
+
+        try {
+            List<Map<String, Object>> userDetails = new ArrayList<>();
+            c = DBUtil.makeConnection();
+
+            // Truy vấn lấy dữ liệu phân trang
+            String sql = "SELECT u.*, a.* FROM _user u "
+                    + "LEFT JOIN account a ON u.user_id = a.user_id "
+                    + "WHERE u.group_user_id = ?  "
+                    + "AND (? IS NULL OR ? = '' OR u.name LIKE ? ) "
+                    + "ORDER BY u.user_id "
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+
+            PreparedStatement s = c.prepareStatement(sql);
+            s.setInt(1, groupUserId);
+            s.setString(2, keyword);
+            s.setString(3, keyword);
+            s.setString(4, keyword + "%");
+            s.setInt(5, offset);
+            s.setInt(6, pageSize);
+
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> userMap = new HashMap<>();
+
+                // Tạo đối tượng User
+                User user = new User(
+                        rs.getInt("user_id"),
+                        rs.getString("name"),
+                        rs.getString("avatar"),
+                        rs.getInt("group_user_id")
+                );
+
+                // Tạo đối tượng Account
+                Account account = new Account(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        "",
+                        rs.getInt("user_id")
+                );
+
+                userMap.put("user", user);
+                userMap.put("account", account);
+                userDetails.add(userMap);
+            }
+
+            rs.close();
+            s.close();
+
+            // Lấy tổng số bản ghi
+            int totalRecords = getNumberPage(pageSize, groupUserId, keyword);
+
+            // Tạo Map kết quả
+            Map<String, Object> result = new HashMap<>();
+            result.put("users", userDetails);
+            result.put("totalPages", getNumberPage(pageSize, groupUserId, keyword));
+
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return new HashMap<>();
+    }
 }

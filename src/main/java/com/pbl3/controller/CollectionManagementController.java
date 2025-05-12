@@ -6,6 +6,7 @@ import java.util.Map;
 import com.pbl3.dto.Collection;
 import com.pbl3.service.AuthService;
 import com.pbl3.service.CollectionManagementService;
+import com.pbl3.service.UserService;
 import com.pbl3.util.JwtUtil;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -23,6 +24,7 @@ import jakarta.ws.rs.core.Response;
 public class CollectionManagementController {
     private CollectionManagementService collectionService = CollectionManagementService.getInstance();
     private final AuthService authService = new AuthService();
+    private final UserService userService = new UserService();
     private final int CID = -1;
     private static boolean Public = true;
     // Tạo bộ sưu tập mới
@@ -43,7 +45,7 @@ public class CollectionManagementController {
                     .entity("{\"error\":\"Access denied\"}").build();
         }
         
-        if(!collectionService.isAccessed(authService.getUserIdByAuthHeader(authHeader))){
+        if(!collectionService.isAccessed(userService.getUserIdByAuthHeader(authHeader))){
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 

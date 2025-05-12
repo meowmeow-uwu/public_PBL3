@@ -90,3 +90,4 @@ public class UserController {
                     .entity("{\"error\":\"Failed to update profile\"}").build();
         }
     }
+}

@@ -37,11 +37,6 @@ public class WordService implements ServiceInterface<Word> {
     @Override
     public int update(Word Word) {
         int result = wordDAO.update(Word);
-        if (result > 0) {
-            System.out.println("Word updated successfully.");
-        } else {
-            System.out.println("Failed to update Word.");
-        }
         return result;
     }
 
@@ -100,5 +95,9 @@ public class WordService implements ServiceInterface<Word> {
         }
 
         return result;
+    }
+
+    public List<Map<String, Word>> getWordsByPageLanguageKeyword(int pageNumber, int pageSize, int languageId, String keyword) {
+        return wordDAO.getWordsByPageLanguageKeyword(pageNumber, pageSize, languageId, keyword);
     }
 }

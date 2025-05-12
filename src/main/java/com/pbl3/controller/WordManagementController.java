@@ -83,7 +83,7 @@ public class WordManagementController {
     }
 
     @POST
-    @Path("/search/{id}")
+    @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertWord(@HeaderParam("authorization") String authHeader,
             @FormParam("word_name") String wordName,

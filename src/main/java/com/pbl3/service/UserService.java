@@ -47,6 +47,15 @@ public class UserService implements ServiceInterface<User> {
         return result;
     }
 
+    public int updatePassword(User user) {
+        user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
+        return userDAO.update(user);
+    }
+
+    public boolean checkPassword(String oldPassword, User user) {
+        return PasswordUtil.checkPassword(oldPassword, user.getPassword());
+    }
+
     @Override
     public int delete(int uid) {
         int result = userDAO.delete(uid);

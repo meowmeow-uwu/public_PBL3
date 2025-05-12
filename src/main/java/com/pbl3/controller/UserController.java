@@ -45,11 +45,59 @@ public class UserController {
                     .entity("{\"error\":\"User info not found\"}").build();
         }
 
+        user.setPassword("");
         return Response.ok()
-                .entity("{\"name\":\"" + user.getName() + "\","
-                        + "\"avatar\":\"" + user.getAvatar() + "\","
-                        + "\"group_user_id\":" + user.getGroup_user_id() + "}")
+                .entity(user)
                 .build();
+    }
+
+    @PUT
+    @Path("/update/password")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changePassword(
+            @HeaderParam("authorization") String authHeader,
+            @FormParam("oldpassword") String oldPassword,
+            @FormParam("newpassword") String newPassword) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        if (oldPassword == null || newPassword == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"Old password and new password are required\"}").build();
+        }
+
+        User user;
+        try {
+            user = userService.getUserByAuthHeader(authHeader);
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid token\"}").build();
+        }
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}").build();
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (!userService.checkPassword(oldPassword, user)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"Old password is incorrect\"}").build();
+        }
+
+        // Cập nhật mật khẩu mới
+        user.setPassword(newPassword);
+        int result = userService.updatePassword(user);
+
+        if (result > 0) {
+            return Response.ok()
+                    .entity("{\"message\":\"Password updated successfully\"}").build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\":\"Failed to update password\"}").build();
+        }
     }
 
     @PUT
@@ -58,7 +106,8 @@ public class UserController {
     public Response updateProfile(
             @HeaderParam("authorization") String authHeader,
             @FormParam("name") String name,
-            @FormParam("avatar") String avatar) {
+            @FormParam("avatar") String avatar,
+            @FormParam("email") String newEmail) {
         // Kiểm tra token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
@@ -79,6 +128,7 @@ public class UserController {
         // Cập nhật thông tin
         user.setName(name);
         user.setAvatar(avatar);
+        user.setEmail(newEmail);
 
         int result = userService.update(user);
 

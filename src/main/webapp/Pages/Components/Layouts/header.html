@@ -1,3 +1,4 @@
+
 <header class="header">
     <nav class="navbar">
           <!-- Logo -->
@@ -5,7 +6,10 @@
               <img src="${window.APP_CONFIG.BASE_PATH}Assets/Logo/logoORCA_ver1.jpg" alt="logo">
               <a href="${window.APP_CONFIG.BASE_PATH}index.html">ORCA English</a>
           </div>
-  
+          <!-- Mobile Menu Button -->
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
           <!-- Điều hướng dành cho khách -->
           <div class="nav-center guest-only">
               <ul class="nav-links">
@@ -42,12 +46,14 @@
                       <span id="userName">Orca</span>
                       <i class="fa fa-caret-down"></i>
                       <div class="dropdown-menu">
-                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html">Hồ sơ</a>
-                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/collections.html">Bộ sưu tập</a>
-                          <button class="theme-btn" onclick="themeManager.toggleTheme()">
+                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html"><i class="fas fa-user"></i>Hồ sơ</a>
+                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/collections.html"><i class="fas fa-bookmark"></i>Bộ sưu tập</a>
+                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/history.html"><i class="fas fa-history"></i>Lịch sử</a>
+                          <a href="#" class="theme-btn" onclick="themeManager.toggleTheme()"  ><i class="fas fa-moon"></i><span>Chế độ tối</span></a>
+                          <!-- <button class="theme-btn" onclick="themeManager.toggleTheme()">
                             <i class="fas fa-moon"></i>
                             <span>Chế độ tối</span>
-                        </button>
+                        </button> -->
                           <a href="${window.APP_CONFIG.BASE_PATH}index.html" onclick="logOut()">Đăng xuất</a>
                       </div>
                   </div>
@@ -56,5 +62,4 @@
     </nav>
     
   </header>
-  <script src="/assets/js/SendIF.js"></script>
   

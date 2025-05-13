@@ -176,6 +176,7 @@
 
 .user-info:hover .dropdown-menu {
     display: block;
+
 }
 
 .dropdown-menu a {
@@ -214,5 +215,66 @@
     .auth-buttons {
         flex-direction: column;
         gap: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        padding: 0 1rem;
+    }
+
+    /* Ẩn nav-center trên mobile */
+    .nav-center {
+        display: none;
+    }
+
+    /* Ẩn buttons đăng nhập/đăng ký trên mobile */
+    .guest-only .login-button,
+    .guest-only .register-button {
+        display: none;
+    }
+
+    /* Thêm mobile menu button */
+    .header-container::after {
+        content: '\f0c9'; /* Font Awesome menu icon */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    /* Mobile menu */
+    .header-container::before {
+        content: '';
+        position: fixed;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .header-container:hover::before {
+        display: block;
+    }
+
+    /* Ẩn tên user trên mobile */
+    .user-info span {
+        display: none;
+    }
+
+    /* Điều chỉnh logo */
+    .logo img {
+        height: 32px; /* Giảm kích thước logo trên mobile */
+    }
+
+    /* Điều chỉnh user avatar */
+    .user-info .avatar {
+        width: 32px;
+        height: 32px;
     }
 }

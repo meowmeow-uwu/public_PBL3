@@ -1,5 +1,5 @@
 // API functions for vocabulary management
-const BASE_URL = window.APP_CONFIG.API_BASE_URL;
+const BASE_URL = window.APP_CONFIG.API_BASE_URL ;
 
 // Function to get JWT token from localStorage
 function getToken() {

@@ -1,4 +1,4 @@
-const API_COURSE_URL =  window.APP_CONFIG.API_BASE_URL + '/courses/';
+const API_COURSE_URL = window.APP_CONFIG.API_BASE_URL +'/courses/';
 
 // Lấy danh sách khóa học
 async function getCourses() {

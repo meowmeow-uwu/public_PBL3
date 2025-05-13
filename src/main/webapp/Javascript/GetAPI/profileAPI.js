@@ -1,4 +1,4 @@
-const API_ACCOUNT_URL =  window.APP_CONFIG.API_BASE_URL + '/account/';
+const API_ACCOUNT_URL = window.APP_CONFIG.API_BASE_URL +'/account/';
 
 // Lấy thông tin tài khoản
 async function getAccountInfo() {

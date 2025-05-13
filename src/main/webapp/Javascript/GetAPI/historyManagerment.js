@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:2005/PBL3/api';
+const BASE_URL = window.APP_CONFIG.API_BASE_URL ;
 
 function getToken() {
     return localStorage.getItem('token');

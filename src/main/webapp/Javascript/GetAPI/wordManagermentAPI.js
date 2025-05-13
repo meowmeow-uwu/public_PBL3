@@ -1,4 +1,4 @@
-const WORD_API_BASE = 'http://localhost:2005/PBL3/api/admin/words';
+const WORD_API_BASE = window.APP_CONFIG.API_BASE_URL +'/admin/words';
 
 function getToken() {
     return localStorage.getItem('token');

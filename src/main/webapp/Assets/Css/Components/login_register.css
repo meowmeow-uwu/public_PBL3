@@ -1,0 +1,101 @@
+/* Login/Register Form Modern Minimal Style */
+.login-container {
+    max-width: 600px;
+    margin: 10px auto 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 40px 32px 32px 32px;
+}
+.login-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 18px;
+    color: #111;
+}
+.login-desc {
+    color: #444;
+    margin-bottom: 28px;
+    font-size: 1.08rem;
+}
+.form-group {
+    margin-bottom: 22px;
+}
+.form-group label {
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 6px;
+    display: block;
+}
+.input-label-desc {
+    color: #888;
+    font-size: 0.97rem;
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+.login-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 7px;
+    font-size: 1rem;
+    outline: none;
+    background: #fafbfc;
+    margin-bottom: 2px;
+    transition: border 0.2s;
+}
+.login-input:focus {
+    border: 1.5px solid #111;
+    background: #fff;
+}
+.btn-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 18px;
+}
+.btn-login, .btn-forgot {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 8px;
+    font-size: 1.08rem;
+    font-weight: 600;
+    border: 2px solid #111;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+.btn-login {
+    color: #fff;
+}
+.btn-forgot {
+    background: #fff;
+    text-align: center;
+    text-decoration: none;
+    color: #111;
+}
+.btn-forgot:hover {
+    background: #f3f3f3;
+}
+.login-register-link {
+    text-align: center;
+    margin-top: 2rem;
+    color: #222;
+    font-size: 1rem;
+}
+.login-register-link a {
+    color:#1976d2;
+    font-weight: 600;
+    text-decoration: underline;
+    margin-left: 4px;
+    transition: color 0.18s;
+}
+.login-register-link a:hover {
+    color: #1976d2;
+}
+@media (max-width: 600px) {
+    .login-container {
+        padding: 18px 6px 18px 6px;
+    }
+    .login-title {
+        font-size: 1.3rem;
+    }
+}

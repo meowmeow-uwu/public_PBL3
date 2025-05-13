@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../../../Assets/Css/main.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/login_register.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="login-container">
+            <div class="login-title">Đăng ký</div>
+            <div class="login-desc">Tạo tài khoản của bạn</div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="userName">Tên đăng nhập</label>
+                    <input class="login-input" type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required>
+                    <div class="input-label-desc">Hãy chọn tên đăng nhập duy nhất</div>
+                </div>
+                <div class="form-group">
+                    <label for="name">Họ và tên</label>
+                    <input class="login-input" type="text" id="name" name="name" placeholder="Nhập họ và tên của bạn" required>
+                    <div class="input-label-desc">Tên hiển thị trong hệ thống</div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input class="login-input" type="email" id="email" name="email" placeholder="Nhập email của bạn" required>
+                    <div class="input-label-desc">Chúng tôi sẽ không chia sẻ email của bạn</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input class="login-input" type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+                    <div class="input-label-desc">Tối thiểu 6 ký tự</div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                    <input class="login-input" type="password" id="confirmPassword" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                    <div class="input-label-desc">Nhập lại mật khẩu để xác nhận</div>
+                </div>
+                <div class="btn-row">
+                    <button type="submit" class="btn btn-login">Đăng ký</button>
+                </div>
+            </form>
+            <div class="login-register-link">
+                Đã có tài khoản? <a href="../../../Pages/Components/Login_Register_ForgotPW/login.html">Đăng nhập tại đây</a>
+            </div>
+        </div>
+    </main>    
+
+    <!-- Footer -->
+    <div id="footer"></div>
+    <script src="../../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG.BASE_PATH = '../../../';
+    </script>
+    <!-- Scripts -->
+    <script src="../../../Javascript/components/header_footer.js"></script>
+    <script src="../../../Javascript/components/theme.js"></script>
+    <script src="../../../Javascript/components/SenIF.js"></script>
+</body>
+</html> 

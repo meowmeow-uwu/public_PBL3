@@ -1,0 +1,157 @@
+.lesson-manager-container {
+    margin-left: 280px;
+    padding: 2rem;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.search-bar input,
+.search-bar select {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    min-width: 200px;
+}
+
+.lesson-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.lesson-table th,
+.lesson-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.lesson-table th {
+    background: #f5f7fa;
+    font-weight: 600;
+}
+
+.lesson-table tr:hover {
+    background: #f0f8ff;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 6px;
+    font-size: 1.1rem;
+    color: #4a90e2;
+    transition: color 0.2s;
+}
+
+.action-btn:hover {
+    color: #357abd;
+}
+
+.action-btn[disabled] {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.2);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    min-width: 350px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    float: right;
+    cursor: pointer;
+    color: #888;
+    font-size: 1.5rem;
+}
+
+.add-btn {
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-btn:hover {
+    background: #357abd;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-card {
+    background: #f5f7fa;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0;
+    color: #4a90e2;
+}
+
+.stat-card p {
+    margin: 0.5rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}

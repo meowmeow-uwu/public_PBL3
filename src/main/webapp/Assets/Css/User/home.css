@@ -1,0 +1,267 @@
+/* Assets/Css/User/home.css */
+.home-container {
+    /* margin-left: 280px; */
+    padding: 2rem;
+}
+
+/* Quick Overview Section */
+.quick-overview {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+}
+
+.overview-card {
+    flex: 1;
+    min-width: 300px;
+    background: #eaf3ff;
+    border-radius: 18px;
+    padding: 2.2rem 2rem 2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 2px 12px rgba(80,120,200,0.08);
+    transition: box-shadow 0.2s, transform 0.2s;
+    border: 2px solid transparent;
+}
+
+
+.overview-icon {
+    font-size: 2.7rem;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.overview-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.overview-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.vocab-title, .grammar-title, .reading-title {
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 1.15em;
+    margin-right: 0.3em;
+}
+
+.vocab-number, .grammar-number, .reading-number {
+    color: #1e293b;
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-right: 0.5em;
+}
+
+.overview-desc {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-size: 1.05rem;
+    color: #555;
+    flex-wrap: wrap;
+}
+
+.vocab-streak, .grammar-quiz, .reading-last {
+    color: #2563eb;
+    font-size: 1em;
+    margin-left: 0.7em;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .quick-overview {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .overview-card {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+/* Continue Learning Section */
+.continue-learning {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.learning-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.learning-card h3 {
+    margin: 0 0 1rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.learning-card p {
+    margin: 0 0 1rem;
+    color: #666;
+}
+
+.continue-btn {
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.continue-btn:hover {
+    background: #357abd;
+}
+
+/* Dictionary & Collection Section */
+.dictionary-collection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dictionary-card,
+.collection-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-btn {
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+/* Today's Goal Section */
+.today-goal {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.goal-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+}
+
+.goal-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.goal-item:last-child {
+    border-bottom: none;
+}
+
+.goal-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4a90e2;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.goal-checkbox.checked {
+    background: #4a90e2;
+    position: relative;
+}
+
+.goal-checkbox.checked::after {
+    content: '✓';
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Recent Activity Section */
+.recent-activity {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+}
+
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-time {
+    color: #666;
+    font-size: 0.9rem;
+    min-width: 100px;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-icon {
+    color: #4a90e2;
+    font-size: 1.2rem;
+}

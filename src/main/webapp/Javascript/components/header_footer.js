@@ -9,37 +9,47 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    fetch(window.APP_CONFIG.BASE_PATH + 'Pages/Components/Layouts/header.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('header').innerHTML = data;
-            setTimeout(function() {
-                if (userInfo && userInfo.group_user_id) {
-                    // User đã đăng nhập
-                    document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
-                    document.querySelectorAll('.user-only').forEach(el => el.style.display = '');
-                    // Gán tên, avatar
-                    const userNameSpan = document.getElementById('userName');
-                    if (userNameSpan) userNameSpan.textContent = userInfo.name || 'User';
-                    const avatarImg = document.querySelector('.user-info .avatar');
-                    if (avatarImg && userInfo.avatar) avatarImg.src = userInfo.avatar;
-                } else {
-                    // Guest
-                    document.querySelectorAll('.guest-only').forEach(el => el.style.display = '');
-                    document.querySelectorAll('.user-only').forEach(el => el.style.display = 'none');
-                }
-            }, 10);
-        });
+    // Lấy đường dẫn hiện tại của trang
+    const basePath = window.APP_CONFIG.BASE_PATH || './';
 
-    fetch(window.APP_CONFIG.BASE_PATH + 'Pages/Components/Layouts/footer.html')
-        .then(response => response.text())
-        .then(data => document.getElementById('footer').innerHTML = data);
+    // Load header
+    const headerResponse = await fetch(basePath + 'Pages/Components/Layouts/header.html');
+    let headerHtml = await headerResponse.text();
+    
+    // Thay thế các đường dẫn trong header
+    headerHtml = headerHtml.replace(/\${window\.APP_CONFIG\.BASE_PATH}/g, basePath);
+    document.getElementById('header').innerHTML = headerHtml;
+
+    // Load footer
+    const footerResponse = await fetch(basePath + 'Pages/Components/Layouts/footer.html');
+    let footerHtml = await footerResponse.text();
+    
+    // Thay thế các đường dẫn trong footer
+    footerHtml = footerHtml.replace(/\${window\.APP_CONFIG\.BASE_PATH}/g, basePath);
+    document.getElementById('footer').innerHTML = footerHtml;
+
+    // Update UI based on user info
+    if (userInfo && userInfo.group_user_id) {
+        // User đã đăng nhập
+        document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.user-only').forEach(el => el.style.display = '');
+        // Gán tên, avatar
+        const userNameSpan = document.getElementById('userName');
+        if (userNameSpan) userNameSpan.textContent = userInfo.name || 'User';
+        const avatarImg = document.querySelector('.user-info .avatar');
+        if (avatarImg && userInfo.avatar) avatarImg.src = userInfo.avatar;
+    } else {
+        // Guest
+        document.querySelectorAll('.guest-only').forEach(el => el.style.display = '');
+        document.querySelectorAll('.user-only').forEach(el => el.style.display = 'none');
+    }
 });
 
 // Xử lý đăng xuất
 function logOut() {
     localStorage.clear();
-    window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
+    const basePath = window.APP_CONFIG.BASE_PATH || './';
+    window.location.href = basePath + 'Pages/Components/Login_Register_ForgotPW/login.html';
 }
 
 // Xử lý form đăng ký

@@ -8,43 +8,56 @@
     <link rel="stylesheet" href="./Assets/Css/index.css">
     <link rel="stylesheet" href="./Assets/Css/Components/header.css">
     <link rel="stylesheet" href="./Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
-    <div id="header"></div>
-
+    <header class="header">
+    <nav class="navbar">
+          <!-- Logo -->
+          <div class="logo guest-only">
+              <img src="./Assets/Logo/logoORCA_ver1.jpg" alt="logo">
+              <a href="./index.html">ORCA English</a>
+          </div>
+  
+          <!-- Điều hướng dành cho khách -->
+          <div class="nav-center guest-only">
+              <ul class="nav-links">
+                  <li><a href="./index.html">Trang chủ</a></li>
+                  <li><a href="./Pages/Components/Html/translate.html">Từ điển</a></li>
+                  <li><a href="#features">giới thiệu</a></li>
+                  <li><a href="#contact">Liên hệ</a></li> 
+              </ul> 
+          </div>
+  <!-- Nav right section -->
+          <div class="nav-right">
+              <!-- Nút đăng nhập / đăng ký -->
+              <div class="auth-buttons guest-only">
+                  <a href="./Pages/Components/Login_Register_ForgotPW/login.html" class="btn">Đăng nhập</a>
+                  <a href="./Pages/Components/Login_Register_ForgotPW/register.html" class="btn">Đăng ký</a>
+              </div>
+          </div>
+    </nav>
+    
+  </header>
     <!-- Trang chủ (Banner/Intro) -->
     <section class="hero" id="home">
-      <div class="hero-content">
-        <h1>Học Tiếng Anh trực tuyến miễn phí<br>
-          <span class="highlight" >cùng OrcaEnglish</span>
-        </h1>
-        <ul>
-          <li>Học Tiếng Anh căn bản cho người mới bắt đầu hoặc nâng cao trình độ cho người mất gốc.</li>
-          <li>Học Tiếng Anh cho học sinh, sinh viên, người đi làm.</li>
-          <li>Học Tiếng Anh giao tiếp, học thuật, online mỗi ngày.</li>
-          <li>Dễ sử dụng, vừa học vừa chơi, đồng bộ trên mọi thiết bị.</li>
-        </ul>
-        <a href="#dictionary" class="btn btn-primary">Bắt đầu ngay</a>
-      </div>
-      <div class="hero-image">
-        <img src="/Assets/Imgs/OrcaEnglish Mascot.jpg" alt="OrcaEnglish Mascot" style="max-width:350px;">
-      </div>
+        <div class="hero-content">
+            <h1>Học Tiếng Anh trực tuyến miễn phí<br>
+                <span class="highlight">cùng OrcaEnglish</span>
+            </h1>
+            <ul>
+                <li>Học Tiếng Anh căn bản cho người mới bắt đầu hoặc nâng cao trình độ cho người mất gốc.</li>
+                <li>Học Tiếng Anh cho học sinh, sinh viên, người đi làm.</li>
+                <li>Học Tiếng Anh giao tiếp, học thuật, online mỗi ngày.</li>
+                <li>Dễ sử dụng, vừa học vừa chơi, đồng bộ trên mọi thiết bị.</li>
+            </ul>
+            <a href="#dictionary" class="btn btn-primary">Bắt đầu ngay</a>
+        </div>
+        <div class="hero-image">
+            <img src="Assets/Images/OrcaEnglish Mascot.jpg" alt="OrcaEnglish Mascot" style="max-width:350px;">
+        </div>
     </section>
-
-    <!-- Từ điển -->
-    <!-- <section id="dictionary" class="dictionary-section">
-      <h2>Tra cứu từ điển Anh - Việt</h2>
-      <p>Nhập từ bạn muốn tra cứu:</p>
-      <form class="dictionary-form">
-        <input type="text" placeholder="Nhập từ tiếng Anh..." />
-        <a href="/Pages/Components/Html/translate.html" class="btn">Tra cứu</a>
-        <a href="/Pages/Components/Html/profile.html" class="btn">Hết cứu</a>
-        <a href="/Pages/Staff/home.html" class="btn">Hôm cứu SA</a>
-        <button onclick="localStorage.setItem('userRole','2'); location.reload();" class="btn">Test header user</button>
-        <a href="/Pages/User/home.html" class="btn">Hôm cứu USER</a> -->
-      <!-- </form>
-    </section> -->
 
     <!-- Giới thiệu -->
     <section id="features" class="features-section">
@@ -166,10 +179,12 @@
     <!-- Footer -->
     <div id="footer"></div>
 
-    <!-- Script -->
-    <script src="./Javascript/config.js"></script>
+    <!-- Scripts -->
+    <script src="Javascript/config.js"></script>
     <script>
-        window.APP_CONFIG.BASE_PATH = './';
+        window.APP_CONFIG = {
+            BASE_PATH: './'
+        };
     </script>
     <script src="./Javascript/components/header_footer.js"></script>
     <script src="./Javascript/components/theme.js"></script>

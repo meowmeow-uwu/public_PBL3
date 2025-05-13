@@ -42,7 +42,7 @@ public class WordService implements ServiceInterface<Word> {
 
     @Override
     public int delete(int wid) {
-        return 0;
+        return wordDAO.delete(wid);
     }
 
     @Override
@@ -83,21 +83,14 @@ public class WordService implements ServiceInterface<Word> {
 
             // Lấy tất cả định nghĩa
             ArrayList<Definition> definitions = definitionDAO.selectAllByWordID(wordId);
-            List<Map<String, String>> definitionsList = new ArrayList<>();
-            for (Definition def : definitions) {
-                Map<String, String> defMap = new HashMap<>();
-                defMap.put("meaning", def.getMeaning());
-                defMap.put("example", def.getExample());
-                defMap.put("word_type", def.getWord_type());
-                definitionsList.add(defMap);
-            }
-            result.put("definitions", definitionsList);
+            
+            result.put("definitions", definitions);
         }
 
         return result;
     }
 
-    public List<Map<String, Word>> getWordsByPageLanguageKeyword(int pageNumber, int pageSize, int languageId, String keyword) {
-        return wordDAO.getWordsByPageLanguageKeyword(pageNumber, pageSize, languageId, keyword);
+    public Map<String, Object> getWordsByPage(int pageNumber, int pageSize, int languageId, String keyword) {
+        return wordDAO.getWordsByPage(pageNumber, pageSize, languageId, keyword);
     }
 }

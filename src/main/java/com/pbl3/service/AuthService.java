@@ -15,7 +15,7 @@ public class AuthService {
 
     UserService userService = new UserService();
 
-    public boolean isContentManager(String authHeader) {
+    public boolean isContentManagerOrAdmin(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return false;
         }
@@ -25,7 +25,7 @@ public class AuthService {
             return false;
         }
         User user = userService.selectByID(id);
-        return user != null && user.getGroup_user_id() == 3;
+        return user != null && (user.getGroup_user_id() == 3 || user.getGroup_user_id() == 1);
     }
 
     public boolean isAdmin(String authHeader) {

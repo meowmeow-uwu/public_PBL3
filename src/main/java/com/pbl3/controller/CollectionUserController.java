@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.pbl3.service.CollectionUserService;
-import com.pbl3.util.JwtUtil;
+import com.pbl3.service.UserService;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -21,24 +21,31 @@ import jakarta.ws.rs.core.Response;
 
 @Path("user/collections")
 public class CollectionUserController {
+
     private static final boolean isPublic = false;
-        private CollectionUserService collectionService = CollectionUserService.getInstance();
-    
-        // Tạo bộ sưu tập mới
-        @POST
-        @Path("create")
-        @Consumes(MediaType.APPLICATION_JSON)
-        @Produces(MediaType.APPLICATION_JSON)
-        public Response createCollection(
-            @HeaderParam("Authorization") String token,
+    private final CollectionUserService collectionService = CollectionUserService.getInstance();
+
+    private final UserService userService = new UserService();
+
+    // Tạo bộ sưu tập mới
+    @POST
+    @Path("create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createCollection(
+            @HeaderParam("Authorization") String authHeader,
             @FormParam("name") String name
-        ) {
-            int userId = JwtUtil.getUserIdFromToken(token);
-            if (userId == -1) {
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
-    
-            int collectionId = collectionService.createCollection(name, isPublic, userId);
+    ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        int collectionId = collectionService.createCollection(name, isPublic, userId);
         if (collectionId > 0) {
             return Response.ok("{\"collectionId\": " + collectionId + "}").build();
         }
@@ -50,11 +57,15 @@ public class CollectionUserController {
     @Path("{collectionId}/words/{wordId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addWordToCollection(
-        @HeaderParam("Authorization") String token,
-        @PathParam("collectionId") int collectionId,
-        @PathParam("wordId") int wordId
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("collectionId") int collectionId,
+            @PathParam("wordId") int wordId
     ) {
-        int userId = JwtUtil.getUserIdFromToken(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -70,14 +81,17 @@ public class CollectionUserController {
     @Path("{collectionId}/words")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWordsInCollection(
-        @HeaderParam("Authorization") String token,
-        @PathParam("collectionId") int collectionId
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("collectionId") int collectionId
     ) {
-        int userId = JwtUtil.getUserIdFromToken(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-
         if (!collectionService.hasAccessToCollection(userId, collectionId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -91,10 +105,14 @@ public class CollectionUserController {
     @Path("user")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserCollections(
-        @HeaderParam("Authorization") String token
+            @HeaderParam("Authorization") String authHeader
     ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
         try {
-            int userId = JwtUtil.getUserIdFromToken(token);
+            int userId = userService.getUserIdByAuthHeader(authHeader);
             if (userId == -1) {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
@@ -104,8 +122,8 @@ public class CollectionUserController {
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                          .entity("{\"error\":\"" + e.getMessage() + "\"}")
-                          .build();
+                    .entity("{\"error\":\"" + e.getMessage() + "\"}")
+                    .build();
         }
     }
 
@@ -115,11 +133,15 @@ public class CollectionUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCollection(
-        @HeaderParam("Authorization") String token,
-        @PathParam("collectionId") int collectionId,
-        @FormParam("name") String name
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("collectionId") int collectionId,
+            @FormParam("name") String name
     ) {
-        int userId = JwtUtil.getUserIdFromToken(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -137,10 +159,14 @@ public class CollectionUserController {
     @Path("{collectionId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCollection(
-        @HeaderParam("Authorization") String token,
-        @PathParam("collectionId") int collectionId
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("collectionId") int collectionId
     ) {
-        int userId = JwtUtil.getUserIdFromToken(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -153,26 +179,30 @@ public class CollectionUserController {
         return success ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
     }
 
-        //Xóa 1 từ khỏi bộ sưu tập
-        @DELETE
-        @Path("{collectionId}/delete-word")
-        @Produces(MediaType.APPLICATION_JSON)
-        public Response deleteWordFromCollection(
-            @HeaderParam("Authorization") String token,
+    //Xóa 1 từ khỏi bộ sưu tập
+    @DELETE
+    @Path("{collectionId}/delete-word")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteWordFromCollection(
+            @HeaderParam("Authorization") String authHeader,
             @PathParam("collectionId") int collectionId,
             @FormParam("wordId") int wordId
-        ) {
-            int userId = JwtUtil.getUserIdFromToken(token);
-            if (userId == -1) {
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
-    
-            if (!collectionService.hasAccessToCollection(userId, collectionId)) {
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-    
-            int success = collectionService.deleteWordFromCollection(collectionId, wordId);
-            return success != 0 ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
+    ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-    
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        if (!collectionService.hasAccessToCollection(userId, collectionId)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+        int success = collectionService.deleteWordFromCollection(collectionId, wordId);
+        return success != 0 ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
 }

@@ -24,9 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Chỉ load sidebar cho admin (1) và staff (3)
         if (userInfo.group_user_id === 1 || userInfo.group_user_id === 3) {
-            fetch(window.APP_CONFIG.BASE_PATH + 'Pages/Components/Layouts/sideBar.html')
+            const basePath = window.APP_CONFIG.BASE_PATH || './';
+            fetch(basePath + 'Pages/Components/Layouts/sideBar.html')
                 .then(response => response.text())
                 .then(data => {
+                    // Thay thế các đường dẫn trong sidebar
+                    data = data.replace(/\${window\.APP_CONFIG\.BASE_PATH}/g, basePath);
                     sidebarDiv.innerHTML = data;
                     updateSidebarContent(userInfo);
                     sidebarDiv.style.display = '';
@@ -62,5 +65,6 @@ function updateSidebarContent(userInfo) {
 
 function logOut() {
     localStorage.clear();
-    window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
+    const basePath = window.APP_CONFIG.BASE_PATH || './';
+    window.location.href = basePath + 'Pages/Components/Login_Register_ForgotPW/login.html';
 }

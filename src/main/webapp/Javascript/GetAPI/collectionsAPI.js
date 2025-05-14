@@ -228,4 +228,55 @@ async function deleteWordFromCollection(collectionId, wordId) {
     }
 }
 
+// Thêm người dùng vào bộ sưu tập
+async function addUserToCollection(collectionId) {
+    try {
+        console.log('Đang thêm người dùng vào bộ sưu tập:', collectionId); // Debug log
+
+        const formData = new URLSearchParams();
+        formData.append('collectionId', collectionId);
+
+        const response = await fetch(`${USER_BASE_URL}/Add/${collectionId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        });
+
+        console.log('Response status:', response.status); // Debug log
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText); // Debug log
+
+            if (response.status === 401) {
+                throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+            }
+            if (response.status === 403) {
+                throw new Error('Forbidden: Bạn không có quyền thêm vào bộ sưu tập này');
+            }
+            throw new Error(`Có lỗi xảy ra khi thêm vào bộ sưu tập: ${errorText}`);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Lỗi khi thêm vào bộ sưu tập:', error);
+        throw error;
+    }
+}
+
+// Export các hàm để sử dụng ở các file khác
+window.collectionsAPI = {
+    getUserCollections,
+    deleteCollection,
+    createCollection,
+    addWordToCollection,
+    getWordsInCollection,
+    updateCollection,
+    deleteWordFromCollection,
+    addUserToCollection
+};
+
 

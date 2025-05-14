@@ -1,3 +1,237 @@
+// Khởi tạo biến lưu trữ dữ liệu
+let collectionsData = [];
+let currentCollectionId = null;
+
+// Load dữ liệu khi trang được tải
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Lấy thông tin user
+        if (typeof window.fetchUserInfo === 'function') {
+            const user = await window.fetchUserInfo();
+            if (user && user.name) {
+                document.getElementById('collections-username').textContent = '👤 ' + user.name;
+            }
+        }
+
+        // Lấy danh sách bộ sưu tập
+        collectionsData = await getUserCollections();
+        if (collectionsData && collectionsData.length > 0) {
+            renderCollectionsList(collectionsData);
+        } else {
+            document.getElementById('collections-list').innerHTML = 
+                '<div class="empty-message">Bạn chưa có bộ sưu tập nào. Hãy tạo bộ sưu tập mới!</div>';
+        }
+        
+        // Thêm sự kiện cho nút tạo bộ sưu tập mới
+        const createBtn = document.getElementById('create-collection-btn');
+        if (createBtn) {
+            createBtn.addEventListener('click', showCreateCollectionPopup);
+        }
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu:', error);
+        document.getElementById('collections-list').innerHTML = 
+            '<div class="error-message">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</div>';
+    }
+});
+
+// Render danh sách bộ sưu tập
+function renderCollectionsList(collections) {
+    const collectionsList = document.getElementById('collections-list');
+    if (!collectionsList) return;
+
+    if (!collections || collections.length === 0) {
+        collectionsList.innerHTML = `
+            <div class="empty-message">
+                <div style="font-size: 2em; margin-bottom: 10px;">📚</div>
+                <div>Bạn chưa có bộ sưu tập nào</div>
+                <div style="margin-top: 10px; color: #666;">Hãy tạo bộ sưu tập mới để bắt đầu học từ vựng!</div>
+            </div>
+        `;
+        return;
+    }
+
+    collectionsList.innerHTML = collections.map(collection => `
+        <div class="collection-card" data-collection-id="${collection.id}">
+            <div class="collection-header">
+                <h3>📚 ${collection.name}</h3>
+                <div class="collection-actions">
+                    <button onclick="editCollection('${collection.id}')" class="btn-icon">✏️</button>
+                    <button onclick="deleteCollection('${collection.id}')" class="btn-icon">🗑️</button>
+                </div>
+            </div>
+            <div class="collection-stats">
+                <span>📝 ${collection.wordCount || 0} từ</span>
+                <span>🕒 Cập nhật: ${formatDate(collection.updatedAt)}</span>
+            </div>
+            <div class="collection-words" id="words-${collection.id}">
+                <div class="loading">Đang tải...</div>
+            </div>
+        </div>
+    `).join('');
+
+    // Load từ vựng cho mỗi bộ sưu tập
+    collections.forEach(collection => {
+        loadCollectionWords(collection.id);
+    });
+}
+
+// Load từ vựng trong bộ sưu tập
+async function loadCollectionWords(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    const wordsContainer = document.getElementById(`words-${collectionId}`);
+    if (!wordsContainer) return;
+
+    try {
+        const words = await getWordsInCollection(collectionId);
+        
+        if (!words || words.length === 0) {
+            wordsContainer.innerHTML = `
+                <div class="empty-message" style="padding: 20px; text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">📝</div>
+                    <div>Bộ sưu tập này chưa có từ nào</div>
+                    <div style="margin-top: 10px; color: #666;">Hãy thêm từ vào để bắt đầu học!</div>
+                </div>
+            `;
+            return;
+        }
+
+        wordsContainer.innerHTML = words.map(word => `
+            <div class="word-item">
+                <div class="word-info">
+                    <span class="word-text">${word.word}</span>
+                    <span class="word-meaning">${word.meaning}</span>
+                </div>
+                <button onclick="removeWordFromCollection('${collectionId}', '${word.id}')" class="btn-icon">❌</button>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Lỗi khi tải từ vựng:', error);
+        wordsContainer.innerHTML = `
+            <div class="error-message" style="padding: 20px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 10px;">⚠️</div>
+                <div>Có lỗi xảy ra khi tải từ vựng</div>
+                <div style="margin-top: 10px; color: #666;">Vui lòng thử lại sau</div>
+            </div>
+        `;
+    }
+}
+
+// Hiển thị popup tạo bộ sưu tập mới
+function showCreateCollectionPopup() {
+    const popup = document.getElementById('popup');
+    if (!popup) return;
+
+    popup.innerHTML = `
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h3>📚 Tạo bộ sưu tập mới</h3>
+            <input type="text" id="new-collection-name" placeholder="Nhập tên bộ sưu tập" class="input-field">
+            <div class="popup-actions">
+                <button class="btn" onclick="createNewCollection()">Tạo mới</button>
+                <button class="btn" onclick="closePopup()">Hủy</button>
+            </div>
+        </div>
+    `;
+    popup.style.display = 'flex';
+}
+
+// Tạo bộ sưu tập mới
+async function createNewCollection() {
+    const nameInput = document.getElementById('new-collection-name');
+    if (!nameInput) return;
+
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert('Vui lòng nhập tên bộ sưu tập');
+        return;
+    }
+
+    try {
+        const collectionId = await createCollection(name);
+        if (collectionId) {
+            alert('Tạo bộ sưu tập thành công!');
+            closePopup();
+            // Tải lại danh sách bộ sưu tập
+            collectionsData = await getUserCollections();
+            renderCollectionsList(collectionsData);
+        }
+    } catch (error) {
+        console.error('Lỗi khi tạo bộ sưu tập:', error);
+        alert('Có lỗi xảy ra khi tạo bộ sưu tập');
+    }
+}
+
+// Xóa bộ sưu tập
+async function deleteCollection(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    if (!confirm('Bạn có chắc muốn xóa bộ sưu tập này?')) {
+        return;
+    }
+
+    try {
+        const success = await window.deleteCollection(collectionId);
+        if (success) {
+            alert('Xóa bộ sưu tập thành công!');
+            // Tải lại danh sách bộ sưu tập
+            collectionsData = await getUserCollections();
+            renderCollectionsList(collectionsData);
+        }
+    } catch (error) {
+        console.error('Lỗi khi xóa bộ sưu tập:', error);
+        alert(error.message || 'Có lỗi xảy ra khi xóa bộ sưu tập');
+    }
+}
+
+// Xóa từ khỏi bộ sưu tập
+async function removeWordFromCollection(collectionId, wordId) {
+    if (!collectionId || !wordId) {
+        console.error('ID bộ sưu tập hoặc từ không hợp lệ');
+        return;
+    }
+
+    if (!confirm('Bạn có chắc muốn xóa từ này khỏi bộ sưu tập?')) {
+        return;
+    }
+
+    try {
+        const success = await deleteWordFromCollection(collectionId, wordId);
+        if (success) {
+            // Tải lại danh sách từ trong bộ sưu tập
+            loadCollectionWords(collectionId);
+        }
+    } catch (error) {
+        console.error('Lỗi khi xóa từ:', error);
+        alert('Có lỗi xảy ra khi xóa từ khỏi bộ sưu tập');
+    }
+}
+
+// Đóng popup
+function closePopup() {
+    const popup = document.getElementById('popup');
+    if (popup) {
+        popup.style.display = 'none';
+    }
+}
+
+// Format ngày tháng
+function formatDate(dateString) {
+    if (!dateString) return 'Chưa cập nhật';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
 // Dữ liệu mẫu (bạn sẽ thay bằng API thực tế)
 const vocabData = [
   {
@@ -269,3 +503,64 @@ window.closeTopicDetail = function() {
   document.getElementById('topic-detail').style.display = 'none';
   document.querySelector('.collections-topics').style.display = '';
 };
+
+// Chỉnh sửa bộ sưu tập
+async function editCollection(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    const collection = collectionsData.find(c => c.id === collectionId);
+    if (!collection) {
+        console.error('Không tìm thấy bộ sưu tập');
+        return;
+    }
+
+    const popup = document.getElementById('popup');
+    if (!popup) return;
+
+    popup.innerHTML = `
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h3>✏️ Chỉnh sửa bộ sưu tập</h3>
+            <input type="text" id="edit-collection-name" value="${collection.name}" class="input-field">
+            <div class="popup-actions">
+                <button class="btn" onclick="updateCollectionName('${collectionId}')">Cập nhật</button>
+                <button class="btn" onclick="closePopup()">Hủy</button>
+            </div>
+        </div>
+    `;
+    popup.style.display = 'flex';
+}
+
+// Cập nhật bộ sưu tập
+async function updateCollectionName(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    const nameInput = document.getElementById('edit-collection-name');
+    if (!nameInput) return;
+
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert('Vui lòng nhập tên bộ sưu tập');
+        return;
+    }
+
+    try {
+        const success = await window.updateCollection(collectionId, name);
+        if (success) {
+            alert('Cập nhật bộ sưu tập thành công!');
+            closePopup();
+            // Tải lại danh sách bộ sưu tập
+            collectionsData = await getUserCollections();
+            renderCollectionsList(collectionsData);
+        }
+    } catch (error) {
+        console.error('Lỗi khi cập nhật bộ sưu tập:', error);
+        alert('Có lỗi xảy ra khi cập nhật bộ sưu tập');
+    }
+}

@@ -51,28 +51,21 @@ function renderCollectionsList(collections) {
     }
 
     collectionsList.innerHTML = collections.map(collection => `
-        <div class="collection-card" data-collection-id="${collection.id}">
+        <div class="collection-card" data-collection-id="${collection.id}" onclick="showCollectionWords('${collection.id}')">
             <div class="collection-header">
                 <h3>📚 ${collection.name}</h3>
                 <div class="collection-actions">
-                    <button onclick="editCollection('${collection.id}')" class="btn-icon">✏️</button>
-                    <button onclick="deleteCollection('${collection.id}')" class="btn-icon">🗑️</button>
+                    <button onclick="event.stopPropagation(); editCollection('${collection.id}')" class="btn-icon">✏️</button>
+                    <button onclick="event.stopPropagation(); deleteCollection('${collection.id}')" class="btn-icon">🗑️</button>
                 </div>
             </div>
             <div class="collection-stats">
                 <span>📝 ${collection.wordCount || 0} từ</span>
+                <span>${collection.isPublic ? '🌐 Công khai' : '🔒 Riêng tư'}</span>
                 <span>🕒 Cập nhật: ${formatDate(collection.updatedAt)}</span>
-            </div>
-            <div class="collection-words" id="words-${collection.id}">
-                <div class="loading">Đang tải...</div>
             </div>
         </div>
     `).join('');
-
-    // Load từ vựng cho mỗi bộ sưu tập
-    collections.forEach(collection => {
-        loadCollectionWords(collection.id);
-    });
 }
 
 // Load từ vựng trong bộ sưu tập
@@ -103,9 +96,12 @@ async function loadCollectionWords(collectionId) {
             <div class="word-item">
                 <div class="word-info">
                     <span class="word-text">${word.word}</span>
-                    <span class="word-meaning">${word.meaning}</span>
+                    <span class="word-pronunciation">${word.pronunciation}</span>
                 </div>
-                <button onclick="removeWordFromCollection('${collectionId}', '${word.id}')" class="btn-icon">❌</button>
+                <div class="word-actions">
+                    <button onclick="playWordSound('${word.sound}')" class="btn-icon">🔊</button>
+                    <button onclick="removeWordFromCollection('${collectionId}', '${word.wordId}')" class="btn-icon">❌</button>
+                </div>
             </div>
         `).join('');
     } catch (error) {
@@ -118,6 +114,15 @@ async function loadCollectionWords(collectionId) {
             </div>
         `;
     }
+}
+
+// Thêm hàm phát âm từ
+function playWordSound(soundFile) {
+    if (!soundFile) return;
+    const audio = new Audio(`${window.APP_CONFIG.BASE_PATH}Assets/Sounds/${soundFile}`);
+    audio.play().catch(error => {
+        console.error('Lỗi khi phát âm:', error);
+    });
 }
 
 // Hiển thị popup tạo bộ sưu tập mới
@@ -165,6 +170,83 @@ async function createNewCollection() {
     }
 }
 
+// Chỉnh sửa bộ sưu tập
+async function editCollection(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    const collection = collectionsData.find(c => c.id === collectionId);
+    if (!collection) {
+        console.error('Không tìm thấy bộ sưu tập');
+        return;
+    }
+
+    const popup = document.getElementById('popup');
+    if (!popup) return;
+
+    popup.innerHTML = `
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h3>✏️ Chỉnh sửa bộ sưu tập</h3>
+            <div class="edit-form">
+                <div class="form-group">
+                    <label for="edit-collection-name">Tên bộ sưu tập:</label>
+                    <input type="text" id="edit-collection-name" value="${collection.name}" class="input-field">
+                </div>
+                <div class="form-group">
+                    <label for="edit-collection-public">Quyền truy cập:</label>
+                    <select id="edit-collection-public" class="input-field">
+                        <option value="false" ${!collection.isPublic ? 'selected' : ''}>🔒 Riêng tư</option>
+                        <option value="true" ${collection.isPublic ? 'selected' : ''}>🌐 Công khai</option>
+                    </select>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <button class="btn" onclick="updateCollection('${collectionId}')">Cập nhật</button>
+                <button class="btn btn-secondary" onclick="closePopup()">Hủy</button>
+            </div>
+        </div>
+    `;
+    popup.style.display = 'flex';
+}
+
+// Cập nhật bộ sưu tập
+async function updateCollection(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    const nameInput = document.getElementById('edit-collection-name');
+    const publicSelect = document.getElementById('edit-collection-public');
+    
+    if (!nameInput || !publicSelect) return;
+
+    const name = nameInput.value.trim();
+    const isPublic = publicSelect.value === 'true';
+
+    if (!name) {
+        alert('Vui lòng nhập tên bộ sưu tập');
+        return;
+    }
+
+    try {
+        const success = await updateCollection(collectionId, name, isPublic);
+        if (success) {
+            alert('Cập nhật bộ sưu tập thành công!');
+            closePopup();
+            // Tải lại danh sách bộ sưu tập
+            collectionsData = await getUserCollections();
+            renderCollectionsList(collectionsData);
+        }
+    } catch (error) {
+        console.error('Lỗi khi cập nhật bộ sưu tập:', error);
+        alert(error.message || 'Có lỗi xảy ra khi cập nhật bộ sưu tập');
+    }
+}
+
 // Xóa bộ sưu tập
 async function deleteCollection(collectionId) {
     if (!collectionId) {
@@ -172,14 +254,33 @@ async function deleteCollection(collectionId) {
         return;
     }
 
-    if (!confirm('Bạn có chắc muốn xóa bộ sưu tập này?')) {
-        return;
-    }
+    const popup = document.getElementById('popup');
+    if (!popup) return;
 
+    popup.innerHTML = `
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h3>🗑️ Xóa bộ sưu tập</h3>
+            <div class="delete-confirmation">
+                <p>Bạn có chắc chắn muốn xóa bộ sưu tập này?</p>
+                <p class="warning-text">⚠️ Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="popup-actions">
+                <button class="btn btn-danger" onclick="confirmDeleteCollection('${collectionId}')">Xóa</button>
+                <button class="btn btn-secondary" onclick="closePopup()">Hủy</button>
+            </div>
+        </div>
+    `;
+    popup.style.display = 'flex';
+}
+
+// Xác nhận xóa bộ sưu tập
+async function confirmDeleteCollection(collectionId) {
     try {
-        const success = await window.deleteCollection(collectionId);
+        const success = await deleteCollection(collectionId);
         if (success) {
             alert('Xóa bộ sưu tập thành công!');
+            closePopup();
             // Tải lại danh sách bộ sưu tập
             collectionsData = await getUserCollections();
             renderCollectionsList(collectionsData);
@@ -503,64 +604,3 @@ window.closeTopicDetail = function() {
   document.getElementById('topic-detail').style.display = 'none';
   document.querySelector('.collections-topics').style.display = '';
 };
-
-// Chỉnh sửa bộ sưu tập
-async function editCollection(collectionId) {
-    if (!collectionId) {
-        console.error('ID bộ sưu tập không hợp lệ');
-        return;
-    }
-
-    const collection = collectionsData.find(c => c.id === collectionId);
-    if (!collection) {
-        console.error('Không tìm thấy bộ sưu tập');
-        return;
-    }
-
-    const popup = document.getElementById('popup');
-    if (!popup) return;
-
-    popup.innerHTML = `
-        <div class="popup-content">
-            <span class="popup-close" onclick="closePopup()">&times;</span>
-            <h3>✏️ Chỉnh sửa bộ sưu tập</h3>
-            <input type="text" id="edit-collection-name" value="${collection.name}" class="input-field">
-            <div class="popup-actions">
-                <button class="btn" onclick="updateCollectionName('${collectionId}')">Cập nhật</button>
-                <button class="btn" onclick="closePopup()">Hủy</button>
-            </div>
-        </div>
-    `;
-    popup.style.display = 'flex';
-}
-
-// Cập nhật bộ sưu tập
-async function updateCollectionName(collectionId) {
-    if (!collectionId) {
-        console.error('ID bộ sưu tập không hợp lệ');
-        return;
-    }
-
-    const nameInput = document.getElementById('edit-collection-name');
-    if (!nameInput) return;
-
-    const name = nameInput.value.trim();
-    if (!name) {
-        alert('Vui lòng nhập tên bộ sưu tập');
-        return;
-    }
-
-    try {
-        const success = await window.updateCollection(collectionId, name);
-        if (success) {
-            alert('Cập nhật bộ sưu tập thành công!');
-            closePopup();
-            // Tải lại danh sách bộ sưu tập
-            collectionsData = await getUserCollections();
-            renderCollectionsList(collectionsData);
-        }
-    } catch (error) {
-        console.error('Lỗi khi cập nhật bộ sưu tập:', error);
-        alert('Có lỗi xảy ra khi cập nhật bộ sưu tập');
-    }
-}

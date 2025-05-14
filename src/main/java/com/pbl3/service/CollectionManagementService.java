@@ -60,4 +60,8 @@ public class CollectionManagementService extends CollectionService {
         
         return collectionOfWordDAO.deleteWordFromCollection(collection_id, word_id);
     }
+    public boolean deleteCollection(int collectionId) {
+        CollectionOfWordDAO.getInstance().deleteByCollectionID(collectionId);
+        return delete(collectionId) > 0;
+    }
 }

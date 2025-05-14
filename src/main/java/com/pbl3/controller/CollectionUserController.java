@@ -19,7 +19,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("user/collections")
+@Path("collections")
 public class CollectionUserController {
 
     private static final boolean isPublic = false;
@@ -30,10 +30,9 @@ public class CollectionUserController {
     // Tạo bộ sưu tập mới
     @POST
     @Path("create")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCollection(
-            @HeaderParam("Authorization") String authHeader,
+            @HeaderParam("authorization") String authHeader,
             @FormParam("name") String name
     ) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

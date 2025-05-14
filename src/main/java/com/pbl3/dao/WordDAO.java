@@ -37,13 +37,30 @@ public class WordDAO implements DAOInterface<Word> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "INSERT INTO word (language_id, word_name, pronunciation, sound, is_deleted) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement s = c.prepareStatement(query);
-            s.setInt(1, word.getLanguage_id());
-            s.setString(2, word.getWord_name());
-            s.setString(3, word.getPronunciation());
-            s.setString(4, word.getSound());
-            s.setBoolean(5, word.is_deleted());
+            String queryCheck = "SELECT * FROM  word WHERE word_name = ? and is_delete = 1";
+            PreparedStatement s1 = c.prepareStatement(queryCheck);
+            s1.setString(1, word.getWord_name());
+            ResultSet hasWord = s1.executeQuery();
+            PreparedStatement s;
+            if (hasWord.next()) {
+                String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=? WHERE word_id=?";
+                s = c.prepareStatement(query);
+                s.setInt(1, word.getLanguage_id());
+                s.setString(2, word.getWord_name());
+                s.setString(3, word.getPronunciation());
+                s.setString(4, word.getSound());
+                s.setBoolean(5, word.is_deleted());
+                s.setInt(6, hasWord.getInt("word_id"));
+            } else {
+                String query = "INSERT INTO word (language_id, word_name, pronunciation, sound, is_deleted) VALUES (?, ?, ?, ?, ?)";
+                s = c.prepareStatement(query);
+                s.setInt(1, word.getLanguage_id());
+                s.setString(2, word.getWord_name());
+                s.setString(3, word.getPronunciation());
+                s.setString(4, word.getSound());
+                s.setBoolean(5, word.is_deleted());
+            }
+            s1.close();
 
             int result = s.executeUpdate();
             s.close();
@@ -83,6 +100,43 @@ public class WordDAO implements DAOInterface<Word> {
 
     @Override
     public int delete(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+
+            // 1. Xóa collection_has_word
+            String deleteCollectionHasWord = "DELETE FROM collection_has_word WHERE word_id = ?";
+            PreparedStatement s1 = c.prepareStatement(deleteCollectionHasWord);
+            s1.setInt(1, id);
+            s1.executeUpdate();
+            s1.close();
+
+            // 2. Xóa translate
+            String deleteTranslate = "DELETE FROM translate WHERE word_id = ?";
+            PreparedStatement s2 = c.prepareStatement(deleteTranslate);
+            s2.setInt(1, id);
+            s2.executeUpdate();
+            s2.close();
+
+            // 3. Xóa definition
+            String deleteDefinition = "DELETE FROM definition WHERE word_id = ?";
+            PreparedStatement s3 = c.prepareStatement(deleteDefinition);
+            s3.setInt(1, id);
+            s3.executeUpdate();
+            s3.close();
+
+            String query = "UPDATE word SET  is_deleted=1 WHERE word_id=?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+
+            int result = s.executeUpdate();
+            s.close();
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
         return 0;
     }
 
@@ -122,7 +176,7 @@ public class WordDAO implements DAOInterface<Word> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM word WHERE word_id = ? and is_deleted = 0";
+            String query = "SELECT * FROM word WHERE word_id = ? ";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, wordId);
             ResultSet rs = s.executeQuery();

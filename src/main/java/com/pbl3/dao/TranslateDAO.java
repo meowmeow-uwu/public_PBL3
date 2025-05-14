@@ -217,7 +217,7 @@ public class TranslateDAO implements DAOInterface<Translate> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM translate WHERE source_word_id = ? AND type_translate_id = ? LIMIT 1";
+            String query = "SELECT * FROM translate WHERE source_word_id = ? AND type_translate_id = ? ";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, wordId);
             s.setInt(2, typeTranslateId);

@@ -72,7 +72,7 @@ public class WordService implements ServiceInterface<Word> {
     public Word selectByCondition(String condition) {
         return null;
     }
-    
+
     public Map<String, Object> getWordDetail(int wordId) {
         Map<String, Object> result = new HashMap<>();
 
@@ -86,7 +86,7 @@ public class WordService implements ServiceInterface<Word> {
 
             // Lấy tất cả định nghĩa
             ArrayList<Definition> definitions = definitionDAO.selectAllByWordID(wordId);
-            
+
             result.put("definitions", definitions);
         }
 
@@ -96,19 +96,48 @@ public class WordService implements ServiceInterface<Word> {
     public Map<String, Object> getWordsByPage(int pageNumber, int pageSize, int languageId, String keyword) {
         return wordDAO.getWordsByPage(pageNumber, pageSize, languageId, keyword);
     }
-    public Map<String , Object> getFlashcard(int wordId,int typeTranslate)
-    {
+
+    /**
+     * Lấy thông tin flashcard bao gồm từ source, từ target và định nghĩa
+     *
+     * @param wordId ID của từ cần lấy thông tin
+     * @param typeTranslate ID của loại dịch
+     * @return Map chứa thông tin flashcard
+     */
+    public Map<String, Object> getFlashcard(int wordId, int typeTranslate) {
         Map<String, Object> result = new HashMap<>();
-        
-        Translate translate = translateDAO.selectByWordIDAndType(wordId, typeTranslate);
-        Word word = wordDAO.selectByID(wordId);
-        result.put("sourceWord", word);
-        Definition definition = definitionDAO.selectByWordID(wordId);
-        result.put("sourceDefinition", word);
-        Word wordTrans = wordDAO.selectByID(translate.getTrans_word_id());
-        result.put("targetWord", wordTrans);
-        Definition definitionTrans = definitionDAO.selectByWordID(wordTrans.getWord_id());
-        result.put("targetDefinition", word);
+
+        try {
+
+            Word word = wordDAO.selectByID(wordId);
+            if (word == null) {
+                System.out.println("Debug - Không tìm thấy từ gốc với ID: " + wordId);
+                return result;
+            }
+            result.put("sourceWord", word);
+            Definition definition = definitionDAO.selectByWordID(wordId);
+            if (definition != null) {
+                result.put("sourceDefinition", definition);
+            }
+            Translate translate = translateDAO.selectByWordIDAndType(wordId, typeTranslate);
+            if (translate == null) {
+                return result;
+            }
+
+            Word wordTrans = wordDAO.selectByID(translate.getTrans_word_id());
+            if (wordTrans != null) {
+                result.put("targetWord", wordTrans);
+
+                Definition definitionTrans = definitionDAO.selectByWordID(wordTrans.getWord_id());
+                if (definitionTrans != null) {
+                    result.put("targetDefinition", definitionTrans);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Debug - Có lỗi xảy ra: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         return result;
     }
 }

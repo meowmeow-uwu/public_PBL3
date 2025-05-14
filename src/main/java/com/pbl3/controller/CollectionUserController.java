@@ -135,7 +135,6 @@ public class CollectionUserController {
     // Cập nhật bộ sưu tập
     @PUT
     @Path("{collectionId}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCollection(
             @HeaderParam("Authorization") String authHeader,

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../../Assets/Css/Components/login_register.css">
     <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
     <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -27,7 +28,7 @@
                 <div class="form-group">
                     <label for="password">Mật khẩu</label>
                     <input class="login-input" type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
-                    <div class="input-label-desc">Hãy giữ mật khẩu an toàn</div>
+                    <div class="input-label-desc"><a href="#" id="eye" onclick="ShowPW()">Hiển thị mật khẩu</a></div>
                 </div>
                 <div class="btn-row">
                     <a href="../../../Pages/Components/Login_Register_ForgotPW/forgotPw.html" class="btn-forgot">Quên mật khẩu?</a>
@@ -45,6 +46,18 @@
     <script src="../../../Javascript/config.js"></script>
     <script>
         window.APP_CONFIG.BASE_PATH = '../../../';
+        function ShowPW(){
+            const pwInput = document.getElementById('password');
+            const eyeText = document.getElementById('eye');
+            if(pwInput.type == "password"){
+                pwInput.type =Text;
+                eyeText.innerText = "Ẳn mật khẩu";
+
+            }else{
+                pwInput.type ="password";
+                eyeText.innerHTML="Hiển thị mật khẩu";
+            }
+        }
     </script>
     <script src="../../../Javascript/components/header_footer.js"></script>
     

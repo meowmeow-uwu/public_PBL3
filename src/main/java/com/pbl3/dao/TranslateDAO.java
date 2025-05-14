@@ -207,4 +207,38 @@ public class TranslateDAO implements DAOInterface<Translate> {
         return null;
     }
 
+    /**
+     * Lấy một bản dịch theo word ID và type translate
+     * @param wordId ID của từ cần dịch
+     * @param typeTranslateId ID của loại dịch
+     * @return Translate object nếu tìm thấy, null nếu không tìm thấy
+     */
+    public Translate selectByWordIDAndType(int wordId, int typeTranslateId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM translate WHERE source_word_id = ? AND type_translate_id = ? ";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, wordId);
+            s.setInt(2, typeTranslateId);
+            ResultSet rs = s.executeQuery();
+
+            if (rs.next()) {
+                return new Translate(
+                        rs.getInt("translate_id"),
+                        rs.getInt("source_word_id"),
+                        rs.getInt("trans_word_id"),
+                        rs.getInt("type_translate_id")
+                );
+            }
+            rs.close();
+            s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
 }

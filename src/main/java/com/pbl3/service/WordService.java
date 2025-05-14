@@ -5,10 +5,12 @@
 package com.pbl3.service;
 
 import com.pbl3.dao.DefinitionDAO;
+import com.pbl3.dao.TranslateDAO;
 import java.util.ArrayList;
 
 import com.pbl3.dao.WordDAO;
 import com.pbl3.dto.Definition;
+import com.pbl3.dto.Translate;
 import com.pbl3.dto.Word;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ public class WordService implements ServiceInterface<Word> {
 
     private final DefinitionDAO definitionDAO = new DefinitionDAO();
     private final WordDAO wordDAO = WordDAO.getInstance();
+    private final TranslateDAO translateDAO = new TranslateDAO();
 
     @Override
     public int insert(Word Word) {
@@ -83,7 +86,7 @@ public class WordService implements ServiceInterface<Word> {
 
             // Lấy tất cả định nghĩa
             ArrayList<Definition> definitions = definitionDAO.selectAllByWordID(wordId);
-            
+
             result.put("definitions", definitions);
         }
 
@@ -92,5 +95,49 @@ public class WordService implements ServiceInterface<Word> {
 
     public Map<String, Object> getWordsByPage(int pageNumber, int pageSize, int languageId, String keyword) {
         return wordDAO.getWordsByPage(pageNumber, pageSize, languageId, keyword);
+    }
+
+    /**
+     * Lấy thông tin flashcard bao gồm từ source, từ target và định nghĩa
+     *
+     * @param wordId ID của từ cần lấy thông tin
+     * @param typeTranslate ID của loại dịch
+     * @return Map chứa thông tin flashcard
+     */
+    public Map<String, Object> getFlashcard(int wordId, int typeTranslate) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+
+            Word word = wordDAO.selectByID(wordId);
+            if (word == null) {
+                System.out.println("Debug - Không tìm thấy từ gốc với ID: " + wordId);
+                return result;
+            }
+            result.put("sourceWord", word);
+            Definition definition = definitionDAO.selectByWordID(wordId);
+            if (definition != null) {
+                result.put("sourceDefinition", definition);
+            }
+            Translate translate = translateDAO.selectByWordIDAndType(wordId, typeTranslate);
+            if (translate == null) {
+                return result;
+            }
+
+            Word wordTrans = wordDAO.selectByID(translate.getTrans_word_id());
+            if (wordTrans != null) {
+                result.put("targetWord", wordTrans);
+
+                Definition definitionTrans = definitionDAO.selectByWordID(wordTrans.getWord_id());
+                if (definitionTrans != null) {
+                    result.put("targetDefinition", definitionTrans);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Debug - Có lỗi xảy ra: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

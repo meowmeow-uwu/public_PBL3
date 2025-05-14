@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Lấy danh sách bộ sưu tập
         collectionsData = await getUserCollections();
+        console.log('Danh sách bộ sưu tập:', collectionsData); // Debug log
         if (collectionsData && collectionsData.length > 0) {
             renderCollectionsList(collectionsData);
         } else {
@@ -39,6 +40,8 @@ function renderCollectionsList(collections) {
     const collectionsList = document.getElementById('collections-list');
     if (!collectionsList) return;
 
+    console.log('Collections data:', collections);
+
     if (!collections || collections.length === 0) {
         collectionsList.innerHTML = `
             <div class="empty-message">
@@ -50,22 +53,38 @@ function renderCollectionsList(collections) {
         return;
     }
 
-    collectionsList.innerHTML = collections.map(collection => `
-        <div class="collection-card" data-collection-id="${collection.id}" onclick="showCollectionWords('${collection.id}')">
-            <div class="collection-header">
-                <h3>📚 ${collection.name}</h3>
-                <div class="collection-actions">
-                    <button onclick="event.stopPropagation(); editCollection('${collection.id}')" class="btn-icon">✏️</button>
-                    <button onclick="event.stopPropagation(); deleteCollection('${collection.id}')" class="btn-icon">🗑️</button>
+    collectionsList.innerHTML = collections.map(collection => {
+        const collectionId = collection.collectionId;
+        console.log('Processing collection:', collection);
+
+        if (!collectionId) {
+            console.error('Không tìm thấy ID bộ sưu tập trong dữ liệu:', collection);
+            return '';
+        }
+
+        return `
+            <div class="collection-card" data-collection-id="${collectionId}" onclick="showCollectionWords('${collectionId}')">
+                <div class="collection-header">
+                    <h3>📚 ${collection.name}</h3>
+                    <div class="collection-actions">
+                        <button type="button" class="btn-icon" onclick="event.stopPropagation(); handleEditClick('${collectionId}')">✏️</button>
+                        <button type="button" class="btn-icon" onclick="event.stopPropagation(); showDeleteCollectionPopup('${collectionId}')">🗑️</button>
+                    </div>
+                </div>
+                <div class="collection-stats">
+                    <span>📝 ${collection.wordCount || 0} từ</span>
+                    <span>${collection.isPublic ? '🌐 Công khai' : '🔒 Riêng tư'}</span>
+                    <span>🕒 Cập nhật: ${formatDate(collection.updatedAt)}</span>
                 </div>
             </div>
-            <div class="collection-stats">
-                <span>📝 ${collection.wordCount || 0} từ</span>
-                <span>${collection.isPublic ? '🌐 Công khai' : '🔒 Riêng tư'}</span>
-                <span>🕒 Cập nhật: ${formatDate(collection.updatedAt)}</span>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+}
+
+// Xử lý sự kiện click nút sửa
+function handleEditClick(collectionId) {
+    console.log('handleEditClick called with ID:', collectionId);
+    editCollection(parseInt(collectionId));
 }
 
 // Load từ vựng trong bộ sưu tập
@@ -170,70 +189,39 @@ async function createNewCollection() {
     }
 }
 
-// Chỉnh sửa bộ sưu tập
-async function editCollection(collectionId) {
-    if (!collectionId) {
-        console.error('ID bộ sưu tập không hợp lệ');
-        return;
-    }
-
-    const collection = collectionsData.find(c => c.id === collectionId);
-    if (!collection) {
-        console.error('Không tìm thấy bộ sưu tập');
-        return;
-    }
-
-    const popup = document.getElementById('popup');
-    if (!popup) return;
-
-    popup.innerHTML = `
-        <div class="popup-content">
-            <span class="popup-close" onclick="closePopup()">&times;</span>
-            <h3>✏️ Chỉnh sửa bộ sưu tập</h3>
-            <div class="edit-form">
-                <div class="form-group">
-                    <label for="edit-collection-name">Tên bộ sưu tập:</label>
-                    <input type="text" id="edit-collection-name" value="${collection.name}" class="input-field">
-                </div>
-                <div class="form-group">
-                    <label for="edit-collection-public">Quyền truy cập:</label>
-                    <select id="edit-collection-public" class="input-field">
-                        <option value="false" ${!collection.isPublic ? 'selected' : ''}>🔒 Riêng tư</option>
-                        <option value="true" ${collection.isPublic ? 'selected' : ''}>🌐 Công khai</option>
-                    </select>
-                </div>
-            </div>
-            <div class="popup-actions">
-                <button class="btn" onclick="updateCollection('${collectionId}')">Cập nhật</button>
-                <button class="btn btn-secondary" onclick="closePopup()">Hủy</button>
-            </div>
-        </div>
-    `;
-    popup.style.display = 'flex';
-}
-
 // Cập nhật bộ sưu tập
-async function updateCollection(collectionId) {
+async function handleUpdateCollection(collectionId) {
     if (!collectionId) {
         console.error('ID bộ sưu tập không hợp lệ');
         return;
     }
 
     const nameInput = document.getElementById('edit-collection-name');
-    const publicSelect = document.getElementById('edit-collection-public');
-    
-    if (!nameInput || !publicSelect) return;
+    if (!nameInput) {
+        console.error('Không tìm thấy trường input tên');
+        return;
+    }
 
     const name = nameInput.value.trim();
-    const isPublic = publicSelect.value === 'true';
 
     if (!name) {
         alert('Vui lòng nhập tên bộ sưu tập');
         return;
     }
 
+    if (name.length < 3) {
+        alert('Tên bộ sưu tập phải có ít nhất 3 ký tự');
+        return;
+    }
+
+    if (name.length > 50) {
+        alert('Tên bộ sưu tập không được vượt quá 50 ký tự');
+        return;
+    }
+
     try {
-        const success = await updateCollection(collectionId, name, isPublic);
+        // Gọi API từ collectionsAPI.js
+        const success = await updateCollection(collectionId, name);
         if (success) {
             alert('Cập nhật bộ sưu tập thành công!');
             closePopup();
@@ -247,8 +235,65 @@ async function updateCollection(collectionId) {
     }
 }
 
+// Chỉnh sửa bộ sưu tập
+async function editCollection(collectionId) {
+    console.log('editCollection called with ID:', collectionId);
+    
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
+    // Tìm collection trong mảng collectionsData
+    const collection = collectionsData.find(c => c.collectionId === collectionId);
+
+    if (!collection) {
+        console.error('Không tìm thấy bộ sưu tập với ID:', collectionId);
+        return;
+    }
+
+    // Kiểm tra nếu là bộ sưu tập công khai
+    if (collection.isPublic) {
+        alert('Không thể chỉnh sửa bộ sưu tập công khai');
+        return;
+    }
+
+    const popup = document.getElementById('popup');
+    if (!popup) {
+        console.error('Không tìm thấy element popup');
+        return;
+    }
+
+    popup.innerHTML = `
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h3>✏️ Chỉnh sửa bộ sưu tập</h3>
+            <div class="edit-form">
+                <div class="form-group">
+                    <label for="edit-collection-name">Tên bộ sưu tập:</label>
+                    <input type="text" 
+                           id="edit-collection-name" 
+                           value="${collection.name}" 
+                           class="input-field"
+                           required
+                           minlength="3"
+                           maxlength="50"
+                           placeholder="Nhập tên bộ sưu tập">
+                </div>
+                <div class="popup-actions">
+                    <button type="button" class="btn" onclick="handleUpdateCollection('${collectionId}')">Lưu thay đổi</button>
+                    <button type="button" class="btn btn-secondary" onclick="closePopup()">Hủy</button>
+                </div>
+            </div>
+        </div>
+    `;
+    popup.style.display = 'flex';
+}
+
 // Xóa bộ sưu tập
-async function deleteCollection(collectionId) {
+async function showDeleteCollectionPopup(collectionId) {
+    console.log('showDeleteCollectionPopup called with ID:', collectionId); // Debug log
+    
     if (!collectionId) {
         console.error('ID bộ sưu tập không hợp lệ');
         return;
@@ -276,7 +321,13 @@ async function deleteCollection(collectionId) {
 
 // Xác nhận xóa bộ sưu tập
 async function confirmDeleteCollection(collectionId) {
+    if (!collectionId) {
+        console.error('ID bộ sưu tập không hợp lệ');
+        return;
+    }
+
     try {
+        console.log('Đang xóa bộ sưu tập với ID:', collectionId); // Debug log
         const success = await deleteCollection(collectionId);
         if (success) {
             alert('Xóa bộ sưu tập thành công!');
@@ -298,19 +349,73 @@ async function removeWordFromCollection(collectionId, wordId) {
         return;
     }
 
-    if (!confirm('Bạn có chắc muốn xóa từ này khỏi bộ sưu tập?')) {
-        return;
-    }
-
     try {
         const success = await deleteWordFromCollection(collectionId, wordId);
         if (success) {
+            alert('Xóa từ khỏi bộ sưu tập thành công!');
             // Tải lại danh sách từ trong bộ sưu tập
-            loadCollectionWords(collectionId);
+            showCollectionWords(collectionId);
         }
     } catch (error) {
         console.error('Lỗi khi xóa từ:', error);
-        alert('Có lỗi xảy ra khi xóa từ khỏi bộ sưu tập');
+        alert(error.message || 'Có lỗi xảy ra khi xóa từ khỏi bộ sưu tập');
+    }
+}
+
+// Hiển thị danh sách từ trong bộ sưu tập
+async function showCollectionWords(collectionId) {
+    const popup = document.getElementById('popup');
+    if (!popup) return;
+
+    popup.innerHTML = `
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <div class="words-list-container">
+                <h3>Danh sách từ vựng</h3>
+                <div id="words-list" class="words-list">
+                    <div class="loading">Đang tải...</div>
+                </div>
+            </div>
+        </div>
+    `;
+    popup.style.display = 'flex';
+
+    try {
+        const words = await getWordsInCollection(collectionId);
+        const wordsList = document.getElementById('words-list');
+        
+        if (!words || words.length === 0) {
+            wordsList.innerHTML = `
+                <div class="empty-message">
+                    <div style="font-size: 2em; margin-bottom: 10px;">📝</div>
+                    <div>Bộ sưu tập này chưa có từ nào</div>
+                    <div style="margin-top: 10px; color: #666;">Hãy thêm từ vào để bắt đầu học!</div>
+                </div>
+            `;
+            return;
+        }
+
+        wordsList.innerHTML = words.map(word => `
+            <div class="word-item">
+                <div class="word-info">
+                    <span class="word-text">${word.word}</span>
+                    <span class="word-pronunciation">${word.pronunciation}</span>
+                </div>
+                <div class="word-actions">
+                    <button onclick="playWordSound('${word.sound}')" class="btn-icon">🔊</button>
+                    <button onclick="removeWordFromCollection('${collectionId}', '${word.wordId}')" class="btn-icon">❌</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Lỗi khi tải từ vựng:', error);
+        document.getElementById('words-list').innerHTML = `
+            <div class="error-message">
+                <div style="font-size: 2em; margin-bottom: 10px;">⚠️</div>
+                <div>Có lỗi xảy ra khi tải từ vựng</div>
+                <div style="margin-top: 10px; color: #666;">Vui lòng thử lại sau</div>
+            </div>
+        `;
     }
 }
 
@@ -489,7 +594,7 @@ window.showVocabPopup = function(word) {
     <div class="popup-content">
       <span class="popup-close" onclick="closePopup()">&times;</span>
       <h3>🍎 ${item.word} <span class="vocab-phonetic">${item.phonetic}</span></h3>
-      <div>🧠 <b>${item.type}</b> | 🇻🇳 <b>${item.meaning}</b></div>
+      <div> <b>${item.type}</b> | 🇻🇳 <b>${item.meaning}</b></div>
       <div>📘 <b>${item.level}</b> – <b>${item.course}</b></div>
       <div>📖 <b>Ví dụ:</b> <i>${item.example}</i></div>
       <textarea placeholder="Thêm ghi chú cá nhân..." style="width:100%;margin:12px 0;"></textarea>

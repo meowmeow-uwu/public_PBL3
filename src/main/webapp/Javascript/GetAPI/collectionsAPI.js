@@ -22,6 +22,7 @@ async function getUserCollections() {
         }
 
         const data = await response.json();
+        console.log('Dữ liệu bộ sưu tập từ API:', data); // Debug log
         return data;
     } catch (error) {
         console.error('Lỗi khi lấy danh sách bộ sưu tập:', error);
@@ -31,7 +32,12 @@ async function getUserCollections() {
 
 // Xóa bộ sưu tập theo ID
 async function deleteCollection(collectionId) {
+    if (!collectionId) {
+        throw new Error('ID bộ sưu tập không hợp lệ');
+    }
+
     try {
+        console.log('Đang gọi API xóa bộ sưu tập với ID:', collectionId); // Debug log
         const response = await fetch(`${USER_BASE_URL}/${collectionId}`, {
             method: 'DELETE',
             headers: {
@@ -151,25 +157,37 @@ async function getWordsInCollection(collectionId) {
 // Cập nhật bộ sưu tập
 async function updateCollection(collectionId, name) {
     try {
-        const formData = new FormData();
+        console.log('Đang cập nhật bộ sưu tập:', { collectionId, name }); // Debug log
+
+        const formData = new URLSearchParams();
         formData.append('name', name);
 
-        const response = await fetch(`${USER_BASE_URL}/${collectionId}`, {
+        const url = `${USER_BASE_URL}/${collectionId}`;
+        console.log('URL cập nhật:', url); // Debug log
+        console.log('Dữ liệu gửi đi:', formData.toString()); // Debug log
+
+        const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${getToken()}`
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            body: formData.toString()
         });
 
+        console.log('Response status:', response.status); // Debug log
+
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText); // Debug log
+
             if (response.status === 401) {
                 throw new Error('Unauthorized: Vui lòng đăng nhập lại');
             }
             if (response.status === 403) {
                 throw new Error('Forbidden: Bạn không có quyền cập nhật bộ sưu tập này');
             }
-            throw new Error('Có lỗi xảy ra khi cập nhật bộ sưu tập');
+            throw new Error(`Có lỗi xảy ra khi cập nhật bộ sưu tập: ${errorText}`);
         }
 
         return true;

@@ -291,8 +291,7 @@ public class UserDAO implements DAOInterface<User> {
             c = DBUtil.makeConnection();
 
             // Truy vấn lấy dữ liệu phân trang
-            String sql = "SELECT u.*, a.* FROM _user u "
-                    + "LEFT JOIN account a ON u.user_id = a.user_id "
+            String sql = "SELECT u.* FROM _user u "
                     + "WHERE u.group_user_id = ?  "
                     + "AND (? IS NULL OR ? = '' OR u.name LIKE ? ) "
                     + "ORDER BY u.user_id "

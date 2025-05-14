@@ -5,10 +5,12 @@
 package com.pbl3.service;
 
 import com.pbl3.dao.DefinitionDAO;
+import com.pbl3.dao.TranslateDAO;
 import java.util.ArrayList;
 
 import com.pbl3.dao.WordDAO;
 import com.pbl3.dto.Definition;
+import com.pbl3.dto.Translate;
 import com.pbl3.dto.Word;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ public class WordService implements ServiceInterface<Word> {
 
     private final DefinitionDAO definitionDAO = new DefinitionDAO();
     private final WordDAO wordDAO = WordDAO.getInstance();
+    private final TranslateDAO translateDAO = new TranslateDAO();
 
     @Override
     public int insert(Word Word) {
@@ -69,7 +72,7 @@ public class WordService implements ServiceInterface<Word> {
     public Word selectByCondition(String condition) {
         return null;
     }
-
+    
     public Map<String, Object> getWordDetail(int wordId) {
         Map<String, Object> result = new HashMap<>();
 
@@ -92,5 +95,20 @@ public class WordService implements ServiceInterface<Word> {
 
     public Map<String, Object> getWordsByPage(int pageNumber, int pageSize, int languageId, String keyword) {
         return wordDAO.getWordsByPage(pageNumber, pageSize, languageId, keyword);
+    }
+    public Map<String , Object> getFlashcard(int wordId,int typeTranslate)
+    {
+        Map<String, Object> result = new HashMap<>();
+        
+        Translate translate = translateDAO.selectByWordIDAndType(wordId, typeTranslate);
+        Word word = wordDAO.selectByID(wordId);
+        result.put("sourceWord", word);
+        Definition definition = definitionDAO.selectByWordID(wordId);
+        result.put("sourceDefinition", word);
+        Word wordTrans = wordDAO.selectByID(translate.getTrans_word_id());
+        result.put("targetWord", wordTrans);
+        Definition definitionTrans = definitionDAO.selectByWordID(wordTrans.getWord_id());
+        result.put("targetDefinition", word);
+        return result;
     }
 }

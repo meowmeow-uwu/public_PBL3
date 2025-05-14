@@ -2,4 +2,3 @@
 target/
 *.war
 *.class
-src/main/java/com/pbl3/util/DBUtil.java

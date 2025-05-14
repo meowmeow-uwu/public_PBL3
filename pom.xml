@@ -21,9 +21,8 @@
     <version>8.0.33</version> </dependency>
         
  <dependency>
-=======
-        <dependency>
->>>>>>> 746850f45a171ba430b2cc2d51e2bb4bb2aa5656
+
+
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>11.0.0-RC1</version>

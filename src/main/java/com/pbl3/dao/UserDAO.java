@@ -26,6 +26,7 @@ public class UserDAO implements DAOInterface<User> {
     public static void main(String[] args) {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
+        System.out.print(u);
         Map<String, Object> e = d.getUsersByPage(1, 20, 2, "");
 
         System.out.println(d.getNumberPage(1, 2, ""));
@@ -47,7 +48,7 @@ public class UserDAO implements DAOInterface<User> {
         int userId = -1;
         try {
             c = DBUtil.makeConnection();
-            String query = "INSERT INTO _user (name, avatar, group_user_id, username, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO users (name, avatar, group_user_id, username, email, password) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             s.setString(1, t.getName());
             s.setString(2, t.getAvatar());
@@ -78,7 +79,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "UPDATE _user SET name = ?, avatar = ?, group_user_id = ?, username = ?, email = ?, password = ? WHERE user_id = ?";
+            String query = "UPDATE users SET name = ?, avatar = ?, group_user_id = ?, username = ?, email = ?, password = ? WHERE user_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, t.getName());
             s.setString(2, t.getAvatar());
@@ -134,7 +135,7 @@ public class UserDAO implements DAOInterface<User> {
             s4.close();
 
             // 5. Xóa user
-            String deleteUser = "DELETE FROM _user WHERE user_id = ?";
+            String deleteUser = "DELETE FROM users WHERE user_id = ?";
             PreparedStatement s5 = c.prepareStatement(deleteUser);
             s5.setInt(1, id);
             int result = s5.executeUpdate();
@@ -155,19 +156,17 @@ public class UserDAO implements DAOInterface<User> {
         try {
             ArrayList<User> listUser = new ArrayList<User>();
             c = DBUtil.makeConnection();
-            String query = "select * from _user ";
+            String query = "select * from users ";
             PreparedStatement s = c.prepareStatement(query);
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
-                listUser.add(new User(
-                        rs.getInt("user_id"),
+                listUser.add(new User(rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
+                        rs.getInt("group_user_id"),
                         rs.getString("username"),
                         rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getInt("group_user_id")
-                ));
+                        rs.getString("password")));
             }
             rs.close();
             s.close();
@@ -186,20 +185,18 @@ public class UserDAO implements DAOInterface<User> {
         try {
             ArrayList<User> listUser = new ArrayList<User>();
             c = DBUtil.makeConnection();
-            String query = "select * from _user where group_user_id = ? ";
+            String query = "select * from users where group_user_id = ? ";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, groupUserId);
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
-                listUser.add(new User(
-                        rs.getInt("user_id"),
+                listUser.add(new User(rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
+                        rs.getInt("group_user_id"),
                         rs.getString("username"),
                         rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getInt("group_user_id")
-                ));
+                        rs.getString("password")));
             }
             rs.close();
             s.close();
@@ -219,7 +216,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "select * from _user where user_id = ?";
+            String query = "select * from users where user_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
@@ -227,12 +224,10 @@ public class UserDAO implements DAOInterface<User> {
                 return new User(rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
+                        rs.getInt("group_user_id"),
                         rs.getString("username"),
                         rs.getString("email"),
-                        rs.getString("password"),
-                                        rs.getInt("group_user_id")
-
-                );
+                        rs.getString("password"));
             }
 
             rs.close();
@@ -260,7 +255,7 @@ public class UserDAO implements DAOInterface<User> {
             c = DBUtil.makeConnection();
 
             // Truy vấn đếm tổng số bản ghi
-            String countSql = "SELECT COUNT(*) as total FROM _user "
+            String countSql = "SELECT COUNT(*) as total FROM users "
                     + "WHERE group_user_id = ?  "
                     + "AND (? IS NULL OR ? = '' OR name LIKE ?)";
 
@@ -296,12 +291,11 @@ public class UserDAO implements DAOInterface<User> {
             c = DBUtil.makeConnection();
 
             // Truy vấn lấy dữ liệu phân trang
-            String sql = "SELECT u.*, a.* FROM _user u "
-                    + "LEFT JOIN account a ON u.user_id = a.user_id "
-                    + "WHERE u.group_user_id = ?  "
-                    + "AND (? IS NULL OR ? = '' OR u.name LIKE ? ) "
+            String sql = "SELECT u.* FROM `users` u " 
+                    + "WHERE u.group_user_id = ? "
+                    + "AND (? IS NULL OR ? = '' OR u.name LIKE ?) "
                     + "ORDER BY u.user_id "
-                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+                    + "LIMIT ?, ?";
 
             PreparedStatement s = c.prepareStatement(sql);
             s.setInt(1, groupUserId);
@@ -319,11 +313,10 @@ public class UserDAO implements DAOInterface<User> {
                 User user = new User(rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
+                        rs.getInt("group_user_id"),
                         rs.getString("username"),
                         rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getInt("group_user_id")
-                        );
+                        rs.getString("password"));
 
                 userMap.put("user", user);
                 userDetails.add(userMap);
@@ -352,7 +345,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM _user WHERE username = ?";
+            String query = "SELECT * FROM users WHERE username = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, username);
             ResultSet rs = s.executeQuery();
@@ -360,10 +353,10 @@ public class UserDAO implements DAOInterface<User> {
                 return new User(rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
+                        rs.getInt("group_user_id"),
                         rs.getString("username"),
                         rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getInt("group_user_id"));
+                        rs.getString("password"));
             }
             rs.close();
             s.close();
@@ -379,7 +372,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM _user WHERE email = ?";
+            String query = "SELECT * FROM users WHERE email = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
@@ -388,10 +381,10 @@ public class UserDAO implements DAOInterface<User> {
                 return new User(rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("avatar"),
+                        rs.getInt("group_user_id"),
                         rs.getString("username"),
                         rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getInt("group_user_id")
+                        rs.getString("password")
 );
             }
             rs.close();

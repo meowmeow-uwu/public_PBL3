@@ -41,8 +41,7 @@ public class UserDAO implements DAOInterface<User> {
         return instance;
     }
 
-
-    @Override
+@Override
     public int insert(User t) {
         Connection c = null;
         int userId = -1;

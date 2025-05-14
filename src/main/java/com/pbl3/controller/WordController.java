@@ -22,10 +22,10 @@ import java.util.Map;
  */
 @Path("word")
 public class WordController {
+
     private final UserService userService = new UserService();
     private final AuthService authService = new AuthService();
     private final WordService wordService = new WordService();
-
 
     @GET
     @Path("/{wordId}")
@@ -33,6 +33,20 @@ public class WordController {
     public Response getWordDetail(@PathParam("wordId") int wordId) {
         Map<String, Object> result = wordService.getWordDetail(wordId);
 
+        if (result != null && !result.isEmpty()) {
+            return Response.ok(result).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"Word not found\"}")
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/flashcard/{wordId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCardWord(@PathParam("wordId") int wordId) {
+        Map<String, Object> result = wordService.getFlashcard(wordId,1);
         if (result != null && !result.isEmpty()) {
             return Response.ok(result).build();
         } else {

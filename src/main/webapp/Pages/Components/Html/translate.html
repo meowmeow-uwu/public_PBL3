@@ -19,15 +19,9 @@
     <form class="search-bar" autocomplete="off" onsubmit="return false;">
       <input type="text" id="searchInput" placeholder="Nhập từ..." />
       <div class="lang-select-group">
-        <select id="fromLang">
-          <option value="en">Tiếng Anh</option>
-          <option value="vi">Tiếng Việt</option>
-        </select>
+        <span id="fromLang" data-value="en" class="lang-label">Tiếng Anh</span>
         <button type="button" id="swapLang" title="Đổi chiều dịch" style="background:none;border:none;font-size:1.3rem;cursor:pointer;">&#8646;</button>
-        <select id="toLang">
-          <option value="vi">Tiếng Việt</option>
-          <option value="en">Tiếng Anh</option>
-        </select>
+        <span id="toLang" data-value="vi" class="lang-label">Tiếng Việt</span>
       </div>
       <button type="button" id="searchBtn" class="btn">Dịch</button>
       <div class="suggestions" id="suggestions"></div>

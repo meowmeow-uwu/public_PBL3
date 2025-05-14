@@ -200,10 +200,29 @@
         justify-content: center;
     }
     .auth-buttons {
-        flex-direction: column;
+        flex-direction: row;
         gap: 8px;
     }
     
+    .login-button, .register-button {
+        padding: 0.4rem 1rem;  /* Giảm padding */
+        font-size: 0.9rem;     /* Giảm font size */
+    }
+
+    .register-button {
+        padding: 8px 16px;     /* Giảm padding cho nút đăng ký */
+        font-size: 0.9rem;     /* Giảm font size */
+    }
+
+    .auth-buttons .btn,
+    .auth-buttons .login-button,
+    .auth-buttons .register-button {
+        padding: 6px 14px !important;
+        font-size: 1rem !important;
+        min-width: 80px;
+        min-height: 36px;
+        box-sizing: border-box;
+    }
 }
 
 @media (max-width: 900px) {
@@ -231,9 +250,7 @@
         flex-direction: row;
     
     }
-    .a.btn{
-        padding: 0;
-    }
+    
     .auth-buttons{
         display: flex;
         flex-direction: row;

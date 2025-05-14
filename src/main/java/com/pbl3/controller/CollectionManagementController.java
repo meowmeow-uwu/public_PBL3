@@ -26,7 +26,7 @@ public class CollectionManagementController {
     private final AuthService authService = new AuthService();
     private final UserService userService = new UserService();
     private final int CID = -1;
-    private static boolean Public = true;
+    private static final boolean Public = true;
 
     // Tạo bộ sưu tập mới
     @POST
@@ -34,8 +34,7 @@ public class CollectionManagementController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCollection(
             @HeaderParam("authorization") String authHeader,
-            @FormParam("name") String name,
-            @FormParam("isPublic") boolean isPublic
+            @FormParam("name") String name
     ) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
@@ -50,7 +49,6 @@ public class CollectionManagementController {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        Public = isPublic;
         Collection collection = new Collection(CID, name, Public);
         int collectionId = collectionService.insert(collection);
         if (collectionId > 0) {
@@ -83,7 +81,7 @@ public class CollectionManagementController {
 
     // Lấy danh sách từ trong bộ sưu tập
     // /api/user/collections/{collectionId}/words
-    // Lấy danh sách bộ sưu tập
+    // Lấy danh sách bộ sưu tập công khai
     @GET
     @Path("all") // sửa lại lấy theo page
     @Produces(MediaType.APPLICATION_JSON)

@@ -13,82 +13,28 @@
 <body>
   <div id="header"></div>
   <div class="collections-container">
-    <!-- <div class="collections-header">
+    <div class="collections-header">
       <div class="user-info">
         <span id="collections-username">👤 User</span>
-        <span id="collections-date">📅 Hôm nay</span>
       </div>
-      <div class="collections-goal">
-        <span>🎯 Mục tiêu hôm nay: <b>10 từ mới</b> | <b>1 đoạn reading</b></span>
-      </div>
-    </div> -->
-    <div class="collections-topics">
-      <div class="topic-card" data-topic="food">
-        🍽️ Đồ ăn & Đồ uống <span class="topic-arrow">▶</span>
-      </div>
-      <div class="topic-card" data-topic="transport">
-        🚌 Giao thông <span class="topic-arrow">▶</span>
-      </div>
-      <div class="topic-card" data-topic="daily">
-        💬 Giao tiếp hàng ngày <span class="topic-arrow">▶</span>
-      </div>
-      <div class="topic-card" data-topic="school">
-        🏫 Trường học <span class="topic-arrow">▶</span>
-      </div>
+      <button id="create-collection-btn" class="btn">➕ Tạo bộ sưu tập mới</button>
     </div>
-    <div class="collections-tabs">
-      <button class="tab-btn active" id="tab-vocab">📘 Từ vựng</button>
-      <button class="tab-btn" id="tab-reading">📕 Đọc hiểu</button>
-    </div>
-    <div class="collections-search-filter">
-      <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm từ...">
-      <select id="levelFilter">
-        <option value="">Cấp độ</option>
-        <option value="A1">A1</option>
-        <option value="A2">A2</option>
-        <option value="B1">B1</option>
-        <option value="B2">B2</option>
-      </select>
-      <select id="typeFilter">
-        <option value="">Loại từ</option>
-        <option value="noun">Danh từ</option>
-        <option value="verb">Động từ</option>
-        <option value="adj">Tính từ</option>
-        <option value="adv">Trạng từ</option>
-      </select>
-      <select id="courseFilter">
-        <option value="">Khóa học</option>
-        <option value="Bài 1">Bài 1</option>
-        <option value="Bài 2">Bài 2</option>
-      </select>
-    </div>
-    <div id="vocab-list" class="tab-content"></div>
-    <div id="reading-list" class="tab-content" style="display:none;"></div>
-    <div class="collections-suggest">
-      <h3>🧩 Gợi ý học tiếp</h3>
-      <ul>
-        <li>🔁 Học lại từ chưa thành thạo</li>
-        <li>➕ Thêm từ từ bài mới</li>
-        <li>📌 Lưu ngữ pháp đang học</li>
-        <li>📖 Đọc đoạn văn tương tự</li>
-      </ul>
-    </div>
-    <div class="collections-actions">
-      <button class="btn">✅ Đánh dấu đã học</button>
-      <button class="btn">🗑️ Gỡ khỏi bộ sưu tập</button>
-      <button class="btn">📥 Tải xuống</button>
-      <button class="btn">🌙 Dark mode</button>
-      <button class="btn">📅 Lên lịch ôn lại</button>
+
+    <div id="collections-list" class="collections-grid">
+      <!-- Danh sách bộ sưu tập sẽ được render ở đây -->
     </div>
   </div>
+
   <div id="popup" class="popup-modal" style="display:none;"></div>
   <div id="footer"></div>
+
   <div id="topic-detail" style="display:none;"></div>
   <script src="../../Javascript/config.js"></script>
     <script>
         window.APP_CONFIG.BASE_PATH = '../../';
     </script>
   <script src="../../Javascript/GetAPI/getInfor.js"></script>
+  <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
   <script src="../../Javascript/components/header_footer.js"></script>
   <script src="../../Javascript/User/collections.js"></script>
 </body>

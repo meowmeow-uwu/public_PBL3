@@ -23,17 +23,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Kiểm tra đăng nhập
         let userInfo = null;
-        if (typeof window.fetchUserInfo === 'function') {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    userInfo = await window.fetchUserInfo();
-                } catch (error) {
-                    console.error('Error fetching user info:', error);
-                    // Nếu có lỗi khi lấy thông tin user, xử lý như guest
-                    handleGuestView();
-                    return;
-                }
+        const token = localStorage.getItem('token');
+        
+        // Chỉ thử lấy thông tin user nếu có token và hàm fetchUserInfo tồn tại
+        if (token && typeof window.fetchUserInfo === 'function') {
+            try {
+                userInfo = await window.fetchUserInfo();
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+                // Nếu có lỗi khi lấy thông tin user, xử lý như guest
+                handleGuestView();
+                return;
             }
         }
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             handleGuestView();
         }
 
-        // Hiển thị header và footer sau khi đã xử lý xong
+        // Hiển thị header và footer
         if (headerDiv) headerDiv.style.display = '';
         if (footerDiv) footerDiv.style.display = '';
 
@@ -52,7 +52,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         addHeaderEventListeners();
     } catch (error) {
         console.error('Error loading header/footer:', error);
-        // Hiển thị thông báo lỗi nếu cần
+        // Nếu có lỗi, hiển thị giao diện guest
+        handleGuestView();
+        if (headerDiv) headerDiv.style.display = '';
+        if (footerDiv) footerDiv.style.display = '';
     }
 });
 
@@ -92,7 +95,9 @@ function handleUserView(userInfo) {
 
 // Xử lý hiển thị cho guest
 function handleGuestView() {
+    // Hiển thị các phần tử guest
     document.querySelectorAll('.guest-only').forEach(el => el.style.display = '');
+    // Ẩn các phần tử user
     document.querySelectorAll('.user-only').forEach(el => el.style.display = 'none');
 }
 

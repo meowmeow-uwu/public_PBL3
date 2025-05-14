@@ -33,6 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     sidebarDiv.innerHTML = data;
                     updateSidebarContent(userInfo);
                     sidebarDiv.style.display = '';
+
+                    // Thêm class cho container khi có sidebar
+                    const container = document.querySelector('.profile-container, .collection-container, .history-manager-container');
+                    if (container) {
+                        container.classList.add('has-sidebar');
+                    }
                 });
         } else {
             sidebarDiv.style.display = 'none';

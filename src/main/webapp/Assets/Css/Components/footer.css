@@ -4,6 +4,12 @@
     color: var(--text-color);
     padding: 3rem 0 1.5rem;
     margin: 12px auto 0;
+    transition: margin-left 0.3s;
+}
+
+/* Thêm class mới cho footer khi có sidebar */
+.footer-has-sidebar {
+    margin-left: 280px !important;
 }
 
 .footer-container {
@@ -138,8 +144,10 @@
 }
 
 @media (max-width: 768px) {
-    .footer {
-        padding: 3rem 0 1.5rem;
+    .footer,
+    .footer-has-sidebar {
+        margin-left: 0 !important;
+        padding: 2rem 0 1rem;
     }
 
     .footer-content {

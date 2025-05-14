@@ -1,12 +1,26 @@
+
 <header class="header">
     <nav class="navbar">
           <!-- Logo -->
           <div class="logo guest-only">
               <img src="${window.APP_CONFIG.BASE_PATH}Assets/Logo/logoORCA_ver1.jpg" alt="logo">
-              <a href="${window.APP_CONFIG.BASE_PATH}index.html">ORCA English</a>
+              <a id="logo-text" href="${window.APP_CONFIG.BASE_PATH}index.html">ORCA English</a>
           </div>
-  
-          <!-- Điều hướng dành cho khách -->
+          <!-- Mobile Menu Button -->
+        <div class="mobile-menu-btn" >
+            <i class="fas fa-bars"></i>
+            <div class="dropdown-menu guest-only">
+                <a href="${window.APP_CONFIG.BASE_PATH}index.html">Trang chủ</a>
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/translate.html">Từ điển</a>
+            </div>
+            <div class="dropdown-menu user-only">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/home.html">Trang Chủ</a>
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/translate.html">Từ Điển</a>
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/grammar.html">Ngữ Pháp</a>
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/vocabulary.html">Từ Vựng</a>
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/exam_selection.html">Kiểm tra</a>
+            </div>
+        </div>          <!-- Điều hướng dành cho khách -->
           <div class="nav-center guest-only">
               <ul class="nav-links">
                   <li><a href="${window.APP_CONFIG.BASE_PATH}index.html">Trang chủ</a></li>
@@ -38,17 +52,14 @@
               <!-- Menu người dùng -->
               <div class="user-menu user-only" style="display: none;">
                   <div class="user-info">
-                      <img src="${window.APP_CONFIG.BASE_PATH}Assets/Images/user-avatar.png" class="avatar" alt="avatar">
+                      <img src="${window.APP_CONFIG.BASE_PATH}Assets/Imgs/avatarUser" class="avatar" alt="avatar">
                       <span id="userName">Orca</span>
                       <i class="fa fa-caret-down"></i>
                       <div class="dropdown-menu">
-                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html">Hồ sơ</a>
-                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/collections.html">Bộ sưu tập</a>
-                          <button class="theme-btn" onclick="themeManager.toggleTheme()">
-                            <i class="fas fa-moon"></i>
-                            <span>Chế độ tối</span>
-                        </button>
-                          <a href="${window.APP_CONFIG.BASE_PATH}index.html" onclick="logOut()">Đăng xuất</a>
+                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html"><i class="fas fa-user"></i>Hồ sơ</a>
+                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/collections.html"><i class="fas fa-bookmark"></i>Bộ sưu tập</a>
+                          <a href="${window.APP_CONFIG.BASE_PATH}Pages/User/history.html"><i class="fas fa-history"></i>Lịch sử</a>
+                          <a href="${window.APP_CONFIG.BASE_PATH}index.html"id="logoutBtn">Đăng xuất</a>
                       </div>
                   </div>
               </div>
@@ -56,5 +67,4 @@
     </nav>
     
   </header>
-  <script src="/assets/js/SendIF.js"></script>
   

@@ -1,4 +1,4 @@
-const API_ANSWER_URL = window.APP_CONFIG.API_BASE_URL + '/answers/';
+const API_ANSWER_URL = window.APP_CONFIG.API_BASE_URL +'/answers/';
 
 // Lấy danh sách câu trả lời
 async function getAnswers(type = null) {

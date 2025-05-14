@@ -21,16 +21,19 @@ import java.util.Map;
  * @author Danh
  */
 public class UserDAO implements DAOInterface<User> {
+
     private static UserDAO instance;
 
     public static void main(String[] args) {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
         System.out.print(u);
-        
+
         System.out.println(d.getNumberPage(1, 2, ""));
-     }
-    private UserDAO() {}
+    }
+
+    private UserDAO() {
+    }
 
     public static synchronized UserDAO getInstance() {
         if (instance == null) {
@@ -39,7 +42,7 @@ public class UserDAO implements DAOInterface<User> {
         return instance;
     }
 
-@Override
+    @Override
     public int insert(User t) {
         Connection c = null;
         int userId = -1;
@@ -288,11 +291,16 @@ public class UserDAO implements DAOInterface<User> {
             c = DBUtil.makeConnection();
 
             // Truy vấn lấy dữ liệu phân trang
-            String sql = "SELECT u.* FROM `_user` u " 
+            String sql = "SELECT u.*  "
+                    + "FROM [user] u "
                     + "WHERE u.group_user_id = ? "
-                    + "AND (? IS NULL OR ? = '' OR u.name LIKE ?) "
+                    + "  AND ( "
+                    + "        ? IS NULL OR  "
+                    + "        ? = '' OR  "
+                    + "        u.name LIKE ? "
+                    + "      ) "
                     + "ORDER BY u.user_id "
-                    + "LIMIT ?, ?";
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
             PreparedStatement s = c.prepareStatement(sql);
             s.setInt(1, groupUserId);
@@ -382,7 +390,7 @@ public class UserDAO implements DAOInterface<User> {
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password")
-);
+                );
             }
             rs.close();
             s.close();

@@ -28,10 +28,32 @@ public class CollectionUserController {
 
     private final UserService userService = new UserService();
 
+    @POST
+    @Path("Add/{collectionId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addUserIntoCollection(
+            @HeaderParam("authorization") String authHeader,
+            @FormParam("collectionId") int collectionId
+    ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        int success = collectionService.addUserToCollection(collectionId, userId);
+
+        return success != 0 ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
+
+    }
+
     // Tạo bộ sưu tập mới
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
+
     public Response createCollection(
             @HeaderParam("authorization") String authHeader,
             @FormParam("name") String name
@@ -97,7 +119,8 @@ public class CollectionUserController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if (!collectionService.hasAccessToCollection(userId, collectionId)) {
+        Collection collection = collectionService.selectByID(collectionId);
+        if (!collectionService.hasAccessToCollection(userId, collectionId) && collection.isPublic() == false) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 

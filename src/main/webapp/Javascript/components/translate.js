@@ -12,9 +12,14 @@ const swapLang = document.getElementById('swapLang');
 
 // Đổi chiều dịch
 swapLang.addEventListener('click', function() {
-    const from = fromLang.value;
-    fromLang.value = toLang.value;
-    toLang.value = from;
+    // Hoán đổi text
+    const fromText = fromLang.textContent;
+    fromLang.textContent = toLang.textContent;
+    toLang.textContent = fromText;
+    // Hoán đổi data-value
+    const fromValue = fromLang.dataset.value;
+    fromLang.dataset.value = toLang.dataset.value;
+    toLang.dataset.value = fromValue;
 });
 
 let debounceTimer;
@@ -74,8 +79,8 @@ document.addEventListener('click', function(e) {
 searchBtn.addEventListener('click', function() {
     const word = searchInput.value.trim();
     if (word) {
-        const from = fromLang.value;
-        const to = toLang.value;
+        const from = fromLang.dataset.value;
+        const to = toLang.dataset.value;
         showResult(word, from, to);
     }
 });
@@ -86,8 +91,8 @@ searchInput.addEventListener('keydown', function(e) {
         e.preventDefault();
         const word = this.value.trim();
         if (word) {
-            const from = fromLang.value;
-            const to = toLang.value;
+            const from = fromLang.dataset.value;
+            const to = toLang.dataset.value;
             showResult(word, from, to);
         }
     }
@@ -95,8 +100,8 @@ searchInput.addEventListener('keydown', function(e) {
 
 // Lấy gợi ý từ API
 async function fetchSuggestions(keyword) {
-    const from = fromLang.value === 'en' ? '1' : '2';
-    const to = toLang.value === 'vi' ? '2' : '1';
+    const from = fromLang.dataset.value === 'en' ? '1' : '2';
+    const to = toLang.dataset.value === 'vi' ? '2' : '1';
     const url = `${API_Translate_BASE}/${encodeURIComponent(keyword)}/${from}/${to}`;
 
     try {

@@ -11,16 +11,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Xử lý hiển thị sidebar/header dựa trên role
     const headerDiv = document.getElementById('header');
+    const footerDiv = document.getElementById('footer');
     const sidebarDiv = document.getElementById('sidebar');
     const profileContainer = document.querySelector('.profile-container');
 
     if (userInfo.group_user_id === 1 || userInfo.group_user_id === 3) {
-        // Admin hoặc Staff - hiển thị sidebar
-        if (headerDiv) headerDiv.style.display = 'none';
+        // Admin hoặc Staff - chỉ hiển thị sidebar, xóa header
+        if (headerDiv) headerDiv.remove(); // XÓA HẲN header khỏi DOM
+        if (footerDiv) footerDiv.remove(); // XÓA HẲN footer khỏi DOM
         if (sidebarDiv) sidebarDiv.style.display = '';
         if (profileContainer) profileContainer.classList.add('profile-has-sidebar');
     } else {
-        // User thường - hiển thị header/footer
+        // User thường - hiển thị header/footer, ẩn sidebar
         if (headerDiv) headerDiv.style.display = '';
         if (sidebarDiv) sidebarDiv.style.display = 'none';
         if (profileContainer) profileContainer.classList.remove('profile-has-sidebar');

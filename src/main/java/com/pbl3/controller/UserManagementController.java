@@ -4,9 +4,7 @@
  */
 package com.pbl3.controller;
 
-import com.pbl3.dto.Account;
 import com.pbl3.dto.User;
-import com.pbl3.service.AccountService;
 import com.pbl3.service.AuthService;
 import com.pbl3.service.UserService;
 import jakarta.ws.rs.DELETE;
@@ -18,6 +16,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import java.util.Map;
 @Path("/admin/users")
 public class UserManagementController {
 
-    private final AccountService accountService = new AccountService();
     private final UserService userService = new UserService();
     private final AuthService authService = new AuthService();
 
@@ -69,19 +67,12 @@ public class UserManagementController {
             user.setName(name);
             user.setAvatar(avatar);
             user.setGroup_user_id(roleId);
-            int id = userService.insert(user);
-            if (id == -1) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"error\":\"Failed to create user\"}").build();
-            }
-            Account account = new Account();
-            account.setUsername(username);
-            account.setPassword(password);
-            account.setEmail(email);
-            account.setUser_id(id);
-
-            int result = accountService.insert(account);
-            if (result > 0) {
+            user.setEmail(email);
+            user.setUsername(username);
+            user.setPassword(password);
+            int result = userService.insert(user);
+           
+            if (result >= 0) {
                 return Response.ok()
                         .entity("{\"message\":\"User created successfully\"}").build();
             } else {
@@ -100,6 +91,7 @@ public class UserManagementController {
     public Response updateUser(
             @HeaderParam("authorization") String authHeader,
             @FormParam("user_id") int userId,
+            @FormParam("username") String username,
             @FormParam("email") String email,
             @FormParam("name") String name,
             @FormParam("role_id") int roleId,
@@ -114,7 +106,7 @@ public class UserManagementController {
         }
 
         // Kiểm tra các trường bắt buộc
-        if (email == null || name == null) {
+        if (email == null || name == null || username == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\":\"Missing required fields\"}").build();
         }
@@ -124,21 +116,15 @@ public class UserManagementController {
             user.setName(name);
             user.setAvatar(avatar);
             user.setGroup_user_id(roleId);
+            user.setEmail(email);
+            user.setUsername(username);
             int resultUser = userService.update(user);
-            if (resultUser <= 0) {
+            if (resultUser < 0) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity("{\"error\":\"Failed to update user\"}").build();
-            }
-            Account account = accountService.selectByUserId(userId);
-            account.setEmail(email);
-
-            int result = accountService.update(account);
-            if (result > 0) {
+            } else {
                 return Response.ok()
                         .entity("{\"message\":\"User update successfully\"}").build();
-            } else {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("{\"error\":\"Failed to update user\"}").build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -162,17 +148,13 @@ public class UserManagementController {
                     .entity("{\"error\":\"Access denied\"}").build();
         }
 
-        Account account = accountService.selectByUserId(userId);
-        if (account == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"error\":\"User not found\"}").build();
-        }
-
+        
+        User user = userService.selectByID(userId);
         try {
-            account.setPassword(password);
+            user.setPassword(password);
 
             // Cập nhật mật khẩu mới
-            int result = accountService.update(account);
+            int result = userService.updatePassword(user);
 
             if (result > 0) {
                 return Response.ok()
@@ -187,36 +169,38 @@ public class UserManagementController {
         }
     }
 
+   
+
     @GET
-    @Path("/list/{role}")
+    @Path("/list/{page_number}/{pagesize}/{group_user_id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listUsers(@HeaderParam("authorization") String authHeader,
-            @PathParam("role") int role) {
+    public Response getWordsByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @PathParam("group_user_id") int groupUserId,
+            @QueryParam("keyword") String keyword) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        if (!authService.isAdmin(authHeader) ) {
+        if (!authService.isContentManagerOrAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
-
-        List<Map<String, Object>> liResponse = new ArrayList<Map<String, Object>>();
-
-        for (User user : userService.selectAllByGroupUserId(role)) {
-            Account account = accountService.selectByUserId(user.getUser_id());
-            if (account != null) {
-                account.setPassword(null); // Xoá mật khẩu
-            }
-            Map<String, Object> response = new HashMap<>();
-            response.put("user", user);
-            response.put("account", account);
-            liResponse.add(response);
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+        
+        // Tạo Map kết quả
+        Map<String, Object> result = userService.getUsersByPage(pageNumber, pageSize, groupUserId, keyword);
+        if(result == null)
+        {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}")
+                    .build();
         }
 
-        return Response.ok()
-                .entity(liResponse)
-                .build();
+        return Response.ok(result).build();
     }
 
     @DELETE
@@ -230,21 +214,16 @@ public class UserManagementController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-        if (!authService.isAdmin(authHeader) ) {
+        if (!authService.isAdmin(authHeader)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("{\"error\":\"Access denied\"}").build();
         }
 
-        Account account = accountService.selectByUserId(userId);
-        if (account == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"Not found account\"}").build();
-        }
-        // Xóa cả thông tin người dùng và tài khoản
+        
+        
         int userResult = userService.delete(userId);
 
-        int accountResult = accountService.delete(account.getAccount_id());
-
-        if (userResult > 0 && accountResult > 0) {
+        if (userResult > 0) {
             return Response.ok()
                     .entity("{\"message\":\"User deleted successfully\"}").build();
         } else {

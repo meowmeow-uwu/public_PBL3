@@ -1,5 +1,6 @@
 package com.pbl3.controller;
 
+import com.pbl3.dto.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +68,11 @@ public class CollectionUserController {
         int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        Collection collection = collectionService.selectByID(collectionId);
+
+        if (collection.isPublic() == true) {
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
         if (!collectionService.hasAccessToCollection(userId, collectionId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
@@ -144,7 +150,11 @@ public class CollectionUserController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+        Collection collection = collectionService.selectByID(collectionId);
 
+        if (collection.isPublic() == true) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         if (!collectionService.hasAccessToCollection(userId, collectionId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -173,9 +183,14 @@ public class CollectionUserController {
         if (!collectionService.hasAccessToCollection(userId, collectionId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
-
-        boolean success = collectionService.deleteCollection(collectionId);
-        return success ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
+        Collection collection = collectionService.selectByID(collectionId);
+        boolean success = false;
+        if (collection.isPublic() == true) {
+            success = collectionService.deleteUserFromCollection(collectionId, userId);
+        } else {
+            success = collectionService.deleteCollection(collectionId);
+        }
+        return (success) ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     //Xóa 1 từ khỏi bộ sưu tập
@@ -199,8 +214,12 @@ public class CollectionUserController {
         if (!collectionService.hasAccessToCollection(userId, collectionId)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
-
+        Collection collection = collectionService.selectByID(collectionId);
+        if (collection.isPublic() == true) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         int success = collectionService.deleteWordFromCollection(collectionId, wordId);
+
         return success != 0 ? Response.ok().build() : Response.status(Response.Status.BAD_REQUEST).build();
     }
 

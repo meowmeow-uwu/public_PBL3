@@ -145,4 +145,18 @@ public class CollectionOfUserDAO implements DAOInterface<CollectionOfUser> {
         }
         return null;
     }
+    public int deleteUserFromCollection(int collectionId, int userId) {
+        try (Connection conn = DBUtil.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 "DELETE FROM collection_has_user WHERE collection_id = ? AND user_id = ?")) {
+            
+            ps.setInt(1, collectionId);
+            ps.setInt(2, userId);
+            return ps.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

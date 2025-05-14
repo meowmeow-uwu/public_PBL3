@@ -14,11 +14,14 @@ import com.pbl3.dto.CollectionOfUser;
 import com.pbl3.dto.CollectionOfWord;
 import com.pbl3.dto.Word;
 
-
 public abstract class CollectionService implements ServiceInterface<Collection> {
+
     private final CollectionDAO collectionDAO = CollectionDAO.getInstance();
     private final CollectionOfWordDAO collectionOfWordDAO = CollectionOfWordDAO.getInstance();
     private final CollectionOfUserDAO collectionOfUserDAO = CollectionOfUserDAO.getInstance();
+    private final AuthService authService = new AuthService();
+    private final UserService userService = new UserService();
+
     private static final int CID = -1;
 
     @Override
@@ -40,16 +43,18 @@ public abstract class CollectionService implements ServiceInterface<Collection> 
                 collectionOfWordDAO.delete(cw.getCollection_word_id());
             }
         }
-        
+
         // Then delete all user associations
         List<CollectionOfUser> userCollections = collectionOfUserDAO.selectAll();
-        if(userCollections == null) return 0;
+        if (userCollections == null) {
+            return 0;
+        }
         for (CollectionOfUser cu : userCollections) {
             if (cu.getCollection_id() == collectionId) {
                 collectionOfUserDAO.delete(cu.getCollection_user_id());
             }
         }
-        
+
         // Finally delete the collection itself
         return collectionDAO.delete(collectionId);
     }
@@ -69,7 +74,7 @@ public abstract class CollectionService implements ServiceInterface<Collection> 
         return null;
     }
 
-    public int wordCount(int cid){
+    public int wordCount(int cid) {
         return collectionOfWordDAO.wordCount(cid);
     }
 
@@ -84,36 +89,40 @@ public abstract class CollectionService implements ServiceInterface<Collection> 
     }
 
     public boolean deleteCollection(int collectionId) {
+        
         CollectionOfWordDAO.getInstance().deleteByCollectionID(collectionId);
         return delete(collectionId) > 0;
     }
 
-    public int deleteWordFromCollection(int collection_id, int word_id){
+    public int deleteWordFromCollection( int collection_id, int word_id) {
         return collectionOfWordDAO.deleteWordFromCollection(collection_id, word_id);
     }
-
+    public boolean deleteUserFromCollection( int collection_id, int user_id) {
+        
+        return collectionOfUserDAO.deleteUserFromCollection(collection_id, user_id) !=0;
+    }
+    
     public int addWordToCollection(int collectionId, int wordId) {
         CollectionOfWord item = new CollectionOfWord(CID, collectionId, wordId);
-    return CollectionOfWordDAO.getInstance().insert(item);
-}
-
-public List<Map<String, Object>> getWordsInCollection(int collectionId) {
-    List<Map<String, Object>> result = new ArrayList<>();
-    ArrayList<CollectionOfWord> collectionWords = collectionOfWordDAO.selectByCollectionID(collectionId);
-    
-    for (CollectionOfWord cw : collectionWords) {
-        Word word = WordDAO.getInstance().selectByID(cw.getWord_id());
-        if (word != null) {
-            Map<String, Object> wordInfo = new HashMap<>();
-            wordInfo.put("wordId", word.getWord_id());
-            wordInfo.put("word", word.getWord_name());
-            wordInfo.put("pronunciation", word.getPronunciation());
-            wordInfo.put("sound", word.getSound());
-            result.add(wordInfo);
-        }
+        return CollectionOfWordDAO.getInstance().insert(item);
     }
-    return result;
-}
 
+    public List<Map<String, Object>> getWordsInCollection(int collectionId) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        ArrayList<CollectionOfWord> collectionWords = collectionOfWordDAO.selectByCollectionID(collectionId);
+
+        for (CollectionOfWord cw : collectionWords) {
+            Word word = WordDAO.getInstance().selectByID(cw.getWord_id());
+            if (word != null) {
+                Map<String, Object> wordInfo = new HashMap<>();
+                wordInfo.put("wordId", word.getWord_id());
+                wordInfo.put("word", word.getWord_name());
+                wordInfo.put("pronunciation", word.getPronunciation());
+                wordInfo.put("sound", word.getSound());
+                result.add(wordInfo);
+            }
+        }
+        return result;
+    }
 
 }

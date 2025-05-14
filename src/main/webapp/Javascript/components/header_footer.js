@@ -1,49 +1,129 @@
 // Load header and footer
 document.addEventListener('DOMContentLoaded', async function() {
-    // Nếu có hàm fetchUserInfo (tức là đã load getInfor.js), thì gọi lấy user
-    let userInfo = null;
-    if (typeof window.fetchUserInfo === 'function') {
-        const token = localStorage.getItem('token');
-        if (token) {
-            userInfo = await window.fetchUserInfo();
-        }
-    }
+    const basePath = window.APP_CONFIG.BASE_PATH || './';
+    const headerDiv = document.getElementById('header');
+    const footerDiv = document.getElementById('footer');
 
-    fetch('/Pages/Components/Layouts/header.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('header').innerHTML = data;
-            setTimeout(function() {
-                if (userInfo && userInfo.group_user_id) {
-                    // User đã đăng nhập
-                    document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
-                    document.querySelectorAll('.user-only').forEach(el => el.style.display = '');
-                    // Gán tên, avatar
-                    const userNameSpan = document.getElementById('userName');
-                    if (userNameSpan) userNameSpan.textContent = userInfo.name || 'User';
-                    const avatarImg = document.querySelector('.user-info .avatar');
-                    if (avatarImg && userInfo.avatar) avatarImg.src = userInfo.avatar;
-                } else {
-                    // Guest
-                    document.querySelectorAll('.guest-only').forEach(el => el.style.display = '');
-                    document.querySelectorAll('.user-only').forEach(el => el.style.display = 'none');
+    // Ẩn header và footer ban đầu để tránh nhấp nháy
+    if (headerDiv) headerDiv.style.display = 'none';
+    if (footerDiv) footerDiv.style.display = 'none';
+
+    try {
+        // Load header
+        const headerResponse = await fetch(basePath + 'Pages/Components/Layouts/header.html');
+        let headerHtml = await headerResponse.text();
+        headerHtml = headerHtml.replace(/\${window\.APP_CONFIG\.BASE_PATH}/g, basePath);
+        headerDiv.innerHTML = headerHtml;
+
+        // Load footer
+        const footerResponse = await fetch(basePath + 'Pages/Components/Layouts/footer.html');
+        let footerHtml = await footerResponse.text();
+        footerHtml = footerHtml.replace(/\${window\.APP_CONFIG\.BASE_PATH}/g, basePath);
+        footerDiv.innerHTML = footerHtml;
+
+        // Kiểm tra đăng nhập
+        let userInfo = null;
+        if (typeof window.fetchUserInfo === 'function') {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    userInfo = await window.fetchUserInfo();
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                    // Nếu có lỗi khi lấy thông tin user, xử lý như guest
+                    handleGuestView();
+                    return;
                 }
-            }, 10);
-        });
+            }
+        }
 
-    fetch('/Pages/Components/Layouts/footer.html')
-        .then(response => response.text())
-        .then(data => document.getElementById('footer').innerHTML = data);
+        // Xử lý hiển thị dựa trên role
+        if (userInfo && userInfo.group_user_id) {
+            handleUserView(userInfo);
+        } else {
+            handleGuestView();
+        }
+
+        // Hiển thị header và footer sau khi đã xử lý xong
+        if (headerDiv) headerDiv.style.display = '';
+        if (footerDiv) footerDiv.style.display = '';
+
+        // Thêm event listeners cho header
+        addHeaderEventListeners();
+    } catch (error) {
+        console.error('Error loading header/footer:', error);
+        // Hiển thị thông báo lỗi nếu cần
+    }
 });
 
-// Xử lý đăng xuất
-function logOut() {
-    localStorage.clear();
-    window.location.href = '/Pages/Components/Login_Register_ForgotPW/login.html';
+// Xử lý hiển thị cho user đã đăng nhập
+function handleUserView(userInfo) {
+    // Ẩn các phần tử guest
+    document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
+    // Hiển thị các phần tử user
+    document.querySelectorAll('.user-only').forEach(el => el.style.display = '');
+
+    // Cập nhật thông tin user
+    const userNameSpan = document.getElementById('userName');
+    if (userNameSpan) userNameSpan.textContent = userInfo.name || 'User';
+    const avatarImg = document.querySelector('.user-info .avatar');
+    if (avatarImg && userInfo.avatar) avatarImg.src = userInfo.avatar;
+
+    // Xử lý hiển thị header/footer dựa trên role
+    const headerDiv = document.getElementById('header');
+    const footerDiv = document.getElementById('footer');
+    
+    if (userInfo.group_user_id === 1 || userInfo.group_user_id === 3) {
+        // Admin hoặc Staff - ẩn header/footer
+        if (headerDiv) headerDiv.style.display = 'none';
+        if (footerDiv) {
+            footerDiv.style.display = 'none';
+            footerDiv.classList.add('footer-has-sidebar');
+        }
+    } else {
+        // User thường - hiển thị header/footer
+        if (headerDiv) headerDiv.style.display = '';
+        if (footerDiv) {
+            footerDiv.style.display = '';
+            footerDiv.classList.remove('footer-has-sidebar');
+        }
+    }
 }
 
-// Xử lý form đăng ký
-document.addEventListener('DOMContentLoaded', function() {
+// Xử lý hiển thị cho guest
+function handleGuestView() {
+    document.querySelectorAll('.guest-only').forEach(el => el.style.display = '');
+    document.querySelectorAll('.user-only').forEach(el => el.style.display = 'none');
+}
+
+// Thêm event listeners cho header
+function addHeaderEventListeners() {
+    const header = document.getElementById('header');
+    if (!header) return;
+
+    // Xử lý click vào các link trong header
+    header.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link) {
+            e.preventDefault();
+            const href = link.getAttribute('href');
+            if (href) {
+                window.location.href = href;
+            }
+        }
+    });
+
+    // Xử lý đăng xuất
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            localStorage.clear();
+            const basePath = window.APP_CONFIG.BASE_PATH || './';
+            window.location.href = basePath + 'Pages/Components/Login_Register_ForgotPW/login.html';
+        });
+    }
+
+    // Xử lý form đăng ký
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', function(e) {
@@ -55,10 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
 
-// Đánh dấu active cho nút login/register
-document.addEventListener('DOMContentLoaded', function() {
+    // Đánh dấu active cho nút login/register
     const path = window.location.pathname;
     const loginBtn = document.querySelector('.login-button');
     const registerBtn = document.querySelector('.register-button');
@@ -68,4 +146,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (registerBtn && path.includes('register.html')) {
         registerBtn.classList.add('active');
     }
-});
+
+    // Xử lý mobile menu
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.querySelector('.mobile-menu');
+
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Đóng menu khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.mobile-menu-btn') && !e.target.closest('.mobile-menu')) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+    }
+
+    // Xử lý mobile logout
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            const basePath = window.APP_CONFIG.BASE_PATH || './';
+            window.location.href = basePath + 'Pages/Components/Login_Register_ForgotPW/login.html';
+        });
+    }
+}

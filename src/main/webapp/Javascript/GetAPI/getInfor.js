@@ -1,4 +1,5 @@
-const API_getIF_URL = 'http://localhost:2005/PBL3/api/user/me';
+const API_LgRgt_URL = window.APP_CONFIG.API_BASE_URL + '/auth/';
+const API_getIF_URL = window.APP_CONFIG.API_BASE_URL + '/user/me';
 
 /**
  * Lấy thông tin user từ API dựa trên token trong localStorage

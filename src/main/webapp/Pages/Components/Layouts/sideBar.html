@@ -2,7 +2,7 @@
     <!-- User Profile Section -->
     <div class="user-profile">
         <div class="profile-image">
-            <img src="/Assets/Images/default-avatar.png" alt="User Avatar" id="user-avatar">
+            <img src="${window.APP_CONFIG.BASE_PATH}Assets/Images/default-avatar.png" alt="User Avatar" id="user-avatar">
         </div>
         <div class="profile-info">
             <h3 id="sidebar-user-name">User Name</h3>
@@ -13,49 +13,49 @@
     <div class="menu-section staff-only">
         <ul class="menu-list">
             <li class="menu-item">
-                <a href="/Pages/Staff/home.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/home.html" class="menu-link">
                     <i class="fas fa-home"></i>
                     <span>Trang tổng quan</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="/Pages/Staff/lessonManagerment.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/lessonManagerment.html" class="menu-link">
                     <i class="fas fa-book"></i>
                     <span>Quản lý khóa học</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="/Pages/Staff/collectionManagerment.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/collectionManagerment.html" class="menu-link">
                     <i class="fas fa-bookmark"></i>
                     <span>Bộ sưu tập</span>
                 </a>
             </li>            
             <li class="menu-item">
-                <a href="/Pages/Staff/vocaGramReaManagerment.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/vocaGramReaManagerment.html" class="menu-link">
                     <i class="fas fa-language"></i>
                     <span>Quản lý từ vựng / ngữ pháp / đọc hiểu</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="/Pages/Staff/answerManagerment.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/answerManagerment.html" class="menu-link">
                     <i class="fas fa-check-circle"></i>
                     <span>Quản lý câu trả lời</span>
                 </a>
             </li>
-            <li class="menu-item">
-                <a href="/Pages/Staff/historyManagerment.html" class="menu-link">
+            <!-- <li class="menu-item">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/historyManagerment.html" class="menu-link">
                     <i class="fas fa-history"></i>
                     <span>Lịch sử làm bài</span>
                 </a>
-            </li>
+            </li> -->
             <!-- <li class="menu-item">
-                <a href="/Pages/Staff/notificationManagerment.html" class="menu-link">
+                <a href="../../../Pages/Staff/notificationManagerment.html" class="menu-link">
                     <i class="fas fa-bell"></i>
                     <span>Gửi thông báo</span>
                 </a>
             </li> -->
             <li class="menu-item">
-                <a href="/Pages/Components/Html/profile.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html" class="menu-link">
                     <i class="fas fa-user"></i>
                     <span>Thông tin cá nhân</span>
                 </a>
@@ -68,11 +68,7 @@
                     <i class="fa fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="#" onclick="logOut()">Đăng xuất</a>
-                    <button class="theme-btn" onclick="themeManager.toggleTheme()">
-                        <i class="fas fa-moon"></i>
-                        <span>Chế độ tối</span>
-                    </button>
+                    <a href="#" onclick="logOut()" >Đăng xuất</a>
                 </div>
             </li>
         </ul>
@@ -85,19 +81,19 @@
         </div>
         <ul class="menu-list">
             <li class="menu-item">
-                <a href="/Pages/Admin/staffManagerment.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Admin/staffManagerment.html" class="menu-link">
                     <i class="fas fa-user-tie"></i>
                     <span>Quản lý nhân viên</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="/Pages/Staff/userManagerment.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/userManagerment.html" class="menu-link">
                     <i class="fas fa-users"></i>
                     <span>Quản lý học viên</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="/Pages/Admin/addUser.html" class="menu-link">
+                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Admin/addUser.html" class="menu-link">
                     <i class="fas fa-user-plus"></i>
                     <span>Thêm nhân viên/Người dùng</span>
                 </a>

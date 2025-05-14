@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thông tin cá nhân</title>
-  <link rel="stylesheet" href="/Assets/Css/main.css">
-  <link rel="stylesheet" href="/Assets/Css/Components/sideBar.css">
-  <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
-  <link rel="stylesheet" href="/Assets/Css/Components/header.css">
-  <link rel="stylesheet" href="/Assets/Css/Components/profile.css">
+  <link rel="stylesheet" href="../../../Assets/Css/main.css">
+  <link rel="stylesheet" href="../../../Assets/Css/Components/sideBar.css">
+  <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
+  <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
+  <link rel="stylesheet" href="../../../Assets/Css/Components/profile.css">
 </head>
 <body>
   <div id="header"></div>
@@ -18,7 +18,7 @@
     <h2>Thông tin cá nhân</h2>
     <div class="profile-main">
       <div class="profile-avatar">
-        <img id="avatarImg" src="/assets/images/default-avatar.png" alt="Avatar">
+        <img id="avatarImg" src="../../../Assets/Images/default-avatar.png" alt="Avatar">
         <input type="file" id="avatarInput" accept="image/*" style="display:none;">
         <button class="btn" onclick="document.getElementById('avatarInput').click()">Đổi ảnh</button>
       </div>
@@ -79,12 +79,18 @@
       </form>
     </div>
   </div>
+</div>
   <div id="footer"></div>
-  <script src="/Javascript/GetAPI/getInfor.js"></script>
-  <script src="/Javascript/Components/sideBar.js"></script>
-  <script src="/Javascript/Components/header_footer.js"></script>
-  <script src="/Javascript/components/profile.js"></script>
-  <script src="/Javascript/GetAPI/profileAPI.js"></script>
+
+  <script src="../../../Javascript/config.js"></script>
+  <script>
+    window.APP_CONFIG.BASE_PATH = '../../../';
+  </script>
+  <script src="../../../Javascript/components/header_footer.js"></script>
+  <script src="../../../Javascript/GetAPI/getInfor.js"></script>
+  <script src="../../../Javascript/components/sideBar.js"></script>
+  <script src="../../../Javascript/components/profile.js"></script>
+  <script src="../../../Javascript/GetAPI/profileAPI.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Lấy role từ localStorage
@@ -120,7 +126,7 @@
         alert('Đổi mật khẩu thành công (giả lập)');
         closeChangePassword();
       };
-});
+    });
   </script>
 </body>
 </html>

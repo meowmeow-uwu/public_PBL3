@@ -1,5 +1,5 @@
-const API_Translate_BASE = "http://localhost:2005/PBL3/api/translate";
-const API_Word_BASE = "http://localhost:2005/PBL3/api/word";
+const API_Translate_BASE = window.APP_CONFIG.API_BASE_URL + "/translate";
+const API_Word_BASE = window.APP_CONFIG.API_BASE_URL + "/word";
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');

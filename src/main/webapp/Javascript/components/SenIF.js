@@ -1,5 +1,6 @@
-const API_LgRgt_URL = 'http://localhost:2005/PBL3/api/auth/';
-const API_getIF_URL = 'http://localhost:2005/PBL3/api/user/me';
+// Sử dụng APP_CONFIG cho các đường dẫn
+const API_LgRgt_URL = window.APP_CONFIG.API_BASE_URL + '/auth/';
+const API_getIF_URL = window.APP_CONFIG.API_BASE_URL + '/user/me';
 
 // Constants for user roles
 const ROLES = {
@@ -8,11 +9,11 @@ const ROLES = {
     STAFF: 3
 };
 
-// Constants for redirect paths
+// Constants for redirect paths - sử dụng BASE_PATH
 const REDIRECT_PATHS = {
-    [ROLES.ADMIN]: '/Pages/Staff/home.html',
-    [ROLES.USER]: '/Pages/User/home.html',
-    [ROLES.STAFF]: '/Pages/Staff/home.html'
+    [ROLES.ADMIN]: window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html',
+    [ROLES.USER]: window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html',
+    [ROLES.STAFF]: window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html'
 };
 
 async function handleLogin(event) {
@@ -69,20 +70,9 @@ async function fetchUserInfo() {
     if (!token) {
         console.error("Không tìm thấy token trong localStorage.");
         alert("Bạn chưa đăng nhập hoặc token đã hết hạn.");
-        window.location.href = '/Pages/Components/Layouts/login.html';
+        window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
         return;
     }
-
-    // // Kiểm tra token hết hạn
-    // const expiresAt = localStorage.getItem("tokenExpiresAt");
-    // if (expiresAt && new Date().getTime() > parseInt(expiresAt)) {
-    //     console.error("Token đã hết hạn");
-    //     localStorage.removeItem("token");
-    //     localStorage.removeItem("tokenExpiresAt");
-    //     alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
-    //     window.location.href = '/Pages/Components/Layouts/login.html';
-    //     return;
-    // }
 
     try {
         const response = await fetch(API_getIF_URL, {
@@ -92,7 +82,7 @@ async function fetchUserInfo() {
                 "Content-Type": "application/json"
             }
         });
-        // {"name":"pcta","avatar":"https://imgur.com/a/Ne5GWsq.png","group_user_id":2}
+
         const text = await response.text();
         let data;
         try {
@@ -106,7 +96,6 @@ async function fetchUserInfo() {
             throw new Error(data?.error || `Lỗi HTTP ${response.status}`);
         }
 
-        // Lưu thông tin user vào localStorage
         // Chuyển hướng dựa trên role
         const role = data.group_user_id;
         const redirectPath = REDIRECT_PATHS[role];
@@ -123,7 +112,7 @@ async function fetchUserInfo() {
         alert("Lỗi khi lấy thông tin người dùng: " + error.message);
         // Nếu lỗi 401 (Unauthorized), chuyển về trang login
         if (error.message.includes("401")) {
-            window.location.href = '/Pages/Components/Layouts/login.html';
+            window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
         }
     }
 }
@@ -176,13 +165,12 @@ async function handleRegister(event) {
         }
 
         alert('Đăng ký thành công! Vui lòng đăng nhập.');
-        window.location.href = '/Pages/Components/Login_Register_ForgotPW/login.html';
+        window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
     } catch (error) {
         console.error('Lỗi đăng ký:', error);
         alert('Lỗi: ' + error.message);
     }
 }
-
 
 // Add event listeners when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {

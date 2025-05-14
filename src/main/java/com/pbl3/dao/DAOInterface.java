@@ -14,7 +14,7 @@ public interface DAOInterface<T> {
 	
 	public int insert(T t);
 	public int update(T t);
-	public int delete(T t);
+	public int delete(int id);
 	public ArrayList<T> selectAll();
 	public T selectByID(int id);
 	public T selectByCondition(String condition);

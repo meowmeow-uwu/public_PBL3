@@ -1,5 +1,5 @@
 // API functions for user management (admin)
-const USER_BASE_URL = 'http://localhost:2005/PBL3/api/admin/users';
+const USER_BASE_URL = window.APP_CONFIG.API_BASE_URL +'/admin/users';
 
 function getToken() {
     return localStorage.getItem('token');

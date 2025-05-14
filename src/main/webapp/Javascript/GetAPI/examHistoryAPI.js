@@ -1,4 +1,4 @@
-const EXAM_HISTORY_BASE_URL = 'http://localhost:2005/PBL3/api/exam-history';
+const EXAM_HISTORY_BASE_URL = window.APP_CONFIG.API_BASE_URL +'/exam-history';
 
 function getToken() {
     return localStorage.getItem('token');

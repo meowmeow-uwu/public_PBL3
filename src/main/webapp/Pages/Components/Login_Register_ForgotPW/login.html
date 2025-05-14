@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="/Assets/Css/main.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/login_register.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/header.css">
-    <link rel="stylesheet" href="/Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="../../../Assets/Css/main.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/login_register.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
 </head>
 <body>
     <!-- Header -->
@@ -30,22 +30,24 @@
                     <div class="input-label-desc">Hãy giữ mật khẩu an toàn</div>
                 </div>
                 <div class="btn-row">
-                    <a href="/Pages/Components/Login_Register_ForgotPW/forgotPw.html" class="btn-forgot">Quên mật khẩu?</a>
+                    <a href="../../../Pages/Components/Login_Register_ForgotPW/forgotPw.html" class="btn-forgot">Quên mật khẩu?</a>
                     <button type="submit" class="btn btn-login">Đăng nhập</button>
                 </div>
             </form>
             <div class="login-register-link">
-                Chưa có tài khoản? <a href="/Pages/Components/Login_Register_ForgotPW/register.html">Đăng ký ngay</a>
+                Chưa có tài khoản? <a href="../../../Pages/Components/Login_Register_ForgotPW/register.html">Đăng ký ngay</a>
             </div>
         </div>
     </main>    
 
     <!-- Footer -->
     <div id="footer"></div>
-
-    <!-- Scripts -->
-    <script src="/Javascript/components/header_footer.js"></script>
-    <script src="/Javascript/components/theme.js"></script>
-    <script src="/Javascript/components/SenIF.js"></script>
+    <script src="../../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG.BASE_PATH = '../../../';
+    </script>
+    <script src="../../../Javascript/components/header_footer.js"></script>
+    
+    <script src="../../../Javascript/components/SenIF.js"></script>
 </body>
 </html> 

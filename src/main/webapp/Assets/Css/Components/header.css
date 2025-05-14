@@ -14,8 +14,8 @@
     align-items: center;
     justify-content: space-between;
     max-width: 1300px;
-    margin: 0 auto;
-    padding: 12px 32px;
+    margin: 10px auto;
+    padding: 3px 6px;
     gap: 24px;
 }
 
@@ -74,23 +74,6 @@
     gap: 16px;
     min-width: 220px;
     justify-content: flex-end;
-}
-
-/* Theme Toggle Button */
-.theme-toggle {
-    background: #e3f0fc;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-right: 8px;
-    transition: background 0.2s;
-}
-
-.theme-toggle:hover {
-    background: #d0e6fa;
 }
 
 /* Auth Buttons */
@@ -176,6 +159,7 @@
 
 .user-info:hover .dropdown-menu {
     display: block;
+
 }
 
 .dropdown-menu a {
@@ -192,10 +176,14 @@
     color: var(--primary-color);
 }
 
+.mobile-menu-btn{
+    display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .navbar {
-        flex-direction: column;
+        flex-direction: row;
         gap: 12px;
         padding: 12px 8px;
     }
@@ -214,5 +202,92 @@
     .auth-buttons {
         flex-direction: column;
         gap: 8px;
+    }
+    
+}
+
+@media (max-width: 900px) {
+    .header-container {
+        padding: 0 1rem;
+    }
+
+    /* Ẩn nav-center trên mobile */
+    .nav-center {
+        display: none;
+    }
+    .logo.guest-only{
+        display:none;
+    }
+    #logo-text {
+        display:none;
+    }
+    /* Ẩn buttons đăng nhập/đăng ký trên mobile */
+    .guest-only .login-button,
+    .guest-only .register-button {
+        display: none;
+    }
+    .nav-right{
+        display: flex;
+        flex-direction: row;
+    
+    }
+    .a.btn{
+        padding: 0;
+    }
+    .auth-buttons{
+        display: flex;
+        flex-direction: row;
+    }
+    /* Thêm mobile menu button */
+    .header-container::after {
+        content: '\f0c9'; /* Font Awesome menu icon */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    /* Mobile menu */
+    .header-container::before {
+        content: '';
+        position: fixed;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .header-container:hover::before {
+        display: block;
+    }
+    .mobile-menu-btn:hover .dropdown-menu {
+        display: block;
+        left: 0;
+    
+    }
+    .mobile-menu-btn{
+        margin-left: 30px;
+        display: block;
+        position: relative;
+    }
+    /* Ẩn tên user trên mobile */
+    .user-info span {
+        display: none;
+    }
+
+    /* Điều chỉnh logo */
+    .logo img {
+        height: 32px; /* Giảm kích thước logo trên mobile */
+    }
+
+    /* Điều chỉnh user avatar */
+    .user-info .avatar {
+        width: 32px;
+        height: 32px;
     }
 }

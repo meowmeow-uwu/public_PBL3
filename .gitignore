@@ -2,3 +2,6 @@
 target/
 *.war
 *.class
+*.lst
+config.js
+

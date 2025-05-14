@@ -101,8 +101,8 @@ public class UserService implements ServiceInterface<User> {
         return JwtUtil.getUserIdFromToken(token);
     }
 
-    public Map<String, Object> getUsersByPage(int pageNumber, int pageSize, int groupUserId, String keyword) {
-        return userDAO.getUsersByPage(pageNumber, pageSize, groupUserId, keyword);
+    public Map<String, Object> getUserByPage(int pageNumber, int pageSize, int groupUserId, String keyword) {
+        return userDAO.getUserByPage(pageNumber, pageSize, groupUserId, keyword);
     }
 
     public String authenticate(String username, String password) {

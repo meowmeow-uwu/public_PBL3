@@ -192,7 +192,7 @@ public class UserManagementController {
         }
         
         // Tạo Map kết quả
-        Map<String, Object> result = userService.getUsersByPage(pageNumber, pageSize, groupUserId, keyword);
+        Map<String, Object> result = userService.getUserByPage(pageNumber, pageSize, groupUserId, keyword);
         if(result == null)
         {
             return Response.status(Response.Status.NOT_FOUND)

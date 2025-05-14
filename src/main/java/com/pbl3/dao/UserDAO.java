@@ -27,11 +27,9 @@ public class UserDAO implements DAOInterface<User> {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
         System.out.print(u);
-        Map<String, Object> e = d.getUsersByPage(1, 20, 2, "");
-
+        
         System.out.println(d.getNumberPage(1, 2, ""));
-        System.out.println(e.get("users"));
-    }
+     }
     private UserDAO() {}
 
     public static synchronized UserDAO getInstance() {
@@ -47,7 +45,7 @@ public class UserDAO implements DAOInterface<User> {
         int userId = -1;
         try {
             c = DBUtil.makeConnection();
-            String query = "INSERT INTO users (name, avatar, group_user_id, username, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO _user (name, avatar, group_user_id, username, email, password) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             s.setString(1, t.getName());
             s.setString(2, t.getAvatar());
@@ -78,7 +76,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "UPDATE users SET name = ?, avatar = ?, group_user_id = ?, username = ?, email = ?, password = ? WHERE user_id = ?";
+            String query = "UPDATE _user SET name = ?, avatar = ?, group_user_id = ?, username = ?, email = ?, password = ? WHERE user_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, t.getName());
             s.setString(2, t.getAvatar());
@@ -134,7 +132,7 @@ public class UserDAO implements DAOInterface<User> {
             s4.close();
 
             // 5. Xóa user
-            String deleteUser = "DELETE FROM users WHERE user_id = ?";
+            String deleteUser = "DELETE FROM _user WHERE user_id = ?";
             PreparedStatement s5 = c.prepareStatement(deleteUser);
             s5.setInt(1, id);
             int result = s5.executeUpdate();
@@ -155,7 +153,7 @@ public class UserDAO implements DAOInterface<User> {
         try {
             ArrayList<User> listUser = new ArrayList<User>();
             c = DBUtil.makeConnection();
-            String query = "select * from users ";
+            String query = "select * from _user ";
             PreparedStatement s = c.prepareStatement(query);
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
@@ -184,7 +182,7 @@ public class UserDAO implements DAOInterface<User> {
         try {
             ArrayList<User> listUser = new ArrayList<User>();
             c = DBUtil.makeConnection();
-            String query = "select * from users where group_user_id = ? ";
+            String query = "select * from _user where group_user_id = ? ";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, groupUserId);
             ResultSet rs = s.executeQuery();
@@ -215,7 +213,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "select * from users where user_id = ?";
+            String query = "select * from _user where user_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
@@ -250,11 +248,11 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
 
         try {
-            List<Map<String, User>> users = new ArrayList<>();
+            List<Map<String, User>> _user = new ArrayList<>();
             c = DBUtil.makeConnection();
 
             // Truy vấn đếm tổng số bản ghi
-            String countSql = "SELECT COUNT(*) as total FROM users "
+            String countSql = "SELECT COUNT(*) as total FROM _user "
                     + "WHERE group_user_id = ?  "
                     + "AND (? IS NULL OR ? = '' OR name LIKE ?)";
 
@@ -281,7 +279,7 @@ public class UserDAO implements DAOInterface<User> {
         return 0;
     }
 
-    public Map<String, Object> getUsersByPage(int pageNumber, int pageSize, int groupUserId, String keyword) {
+    public Map<String, Object> getUserByPage(int pageNumber, int pageSize, int groupUserId, String keyword) {
         Connection c = null;
         int offset = (pageNumber - 1) * pageSize;
 
@@ -290,7 +288,7 @@ public class UserDAO implements DAOInterface<User> {
             c = DBUtil.makeConnection();
 
             // Truy vấn lấy dữ liệu phân trang
-            String sql = "SELECT u.* FROM `users` u " 
+            String sql = "SELECT u.* FROM `_user` u " 
                     + "WHERE u.group_user_id = ? "
                     + "AND (? IS NULL OR ? = '' OR u.name LIKE ?) "
                     + "ORDER BY u.user_id "
@@ -326,7 +324,7 @@ public class UserDAO implements DAOInterface<User> {
 
             // Tạo Map kết quả
             Map<String, Object> result = new HashMap<>();
-            result.put("users", userDetails);
+            result.put("_user", userDetails);
             result.put("totalPages", getNumberPage(pageSize, groupUserId, keyword));
 
             return result;
@@ -344,7 +342,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM users WHERE username = ?";
+            String query = "SELECT * FROM _user WHERE username = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, username);
             ResultSet rs = s.executeQuery();
@@ -371,7 +369,7 @@ public class UserDAO implements DAOInterface<User> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM users WHERE email = ?";
+            String query = "SELECT * FROM _user WHERE email = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();

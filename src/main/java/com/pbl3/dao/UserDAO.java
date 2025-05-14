@@ -26,6 +26,7 @@ public class UserDAO implements DAOInterface<User> {
     public static void main(String[] args) {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
+        System.out.print(u);
         Map<String, Object> e = d.getUsersByPage(1, 20, 2, "");
 
         System.out.println(d.getNumberPage(1, 2, ""));

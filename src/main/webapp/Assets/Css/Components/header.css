@@ -14,8 +14,8 @@
     align-items: center;
     justify-content: space-between;
     max-width: 1300px;
-    margin: 0 auto;
-    padding: 12px 32px;
+    margin: 10px auto;
+    padding: 3px 6px;
     gap: 24px;
 }
 
@@ -74,23 +74,6 @@
     gap: 16px;
     min-width: 220px;
     justify-content: flex-end;
-}
-
-/* Theme Toggle Button */
-.theme-toggle {
-    background: #e3f0fc;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-right: 8px;
-    transition: background 0.2s;
-}
-
-.theme-toggle:hover {
-    background: #d0e6fa;
 }
 
 /* Auth Buttons */
@@ -193,10 +176,14 @@
     color: var(--primary-color);
 }
 
+.mobile-menu-btn{
+    display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .navbar {
-        flex-direction: column;
+        flex-direction: row;
         gap: 12px;
         padding: 12px 8px;
     }
@@ -216,9 +203,10 @@
         flex-direction: column;
         gap: 8px;
     }
+    
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .header-container {
         padding: 0 1rem;
     }
@@ -227,13 +215,29 @@
     .nav-center {
         display: none;
     }
-
+    .logo.guest-only{
+        display:none;
+    }
+    #logo-text {
+        display:none;
+    }
     /* Ẩn buttons đăng nhập/đăng ký trên mobile */
     .guest-only .login-button,
     .guest-only .register-button {
         display: none;
     }
-
+    .nav-right{
+        display: flex;
+        flex-direction: row;
+    
+    }
+    .a.btn{
+        padding: 0;
+    }
+    .auth-buttons{
+        display: flex;
+        flex-direction: row;
+    }
     /* Thêm mobile menu button */
     .header-container::after {
         content: '\f0c9'; /* Font Awesome menu icon */
@@ -261,7 +265,16 @@
     .header-container:hover::before {
         display: block;
     }
-
+    .mobile-menu-btn:hover .dropdown-menu {
+        display: block;
+        left: 0;
+    
+    }
+    .mobile-menu-btn{
+        margin-left: 30px;
+        display: block;
+        position: relative;
+    }
     /* Ẩn tên user trên mobile */
     .user-info span {
         display: none;

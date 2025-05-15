@@ -35,15 +35,23 @@
       <button class="close-modal" onclick="closeSaveModal()">&times;</button>
       <h3>Lưu từ vựng</h3>
       <form id="saveForm" onsubmit="return false;">
-        <label for="wordInput">Từ:</label>
-        <input type="text" id="wordInput" readonly>
-        <label for="meaningInput">Nghĩa:</label>
-        <input type="text" id="meaningInput" readonly>
-        <label for="folderInput">Bộ sưu tập:</label>
-        <input type="text" id="folderInput" placeholder="Tên Folder...">
+        <div class="form-group">
+          <label for="wordInput">Từ:</label>
+          <input type="text" id="wordInput" readonly>
+        </div>
+        <div class="form-group">
+          <label for="meaningInput">Nghĩa:</label>
+          <input type="text" id="meaningInput" readonly>
+        </div>
+        <div class="form-group">
+          <label for="folderInput">Bộ sưu tập:</label>
+          <select id="folderInput" class="collection-select" required>
+            <option value="">Chọn bộ sưu tập...</option>
+          </select>
+        </div>
         <div class="modal-actions">
-          <button type="button" onclick="closeSaveModal()" class="btn" style="background:#eee;color:#333;">Hủy</button>
-          <button type="submit" class="btn btn-success">OK</button>
+          <button type="button" onclick="closeSaveModal()" class="btn btn-cancel">Hủy</button>
+          <button type="submit" class="btn btn-save">Lưu</button>
         </div>
       </form>
     </div>
@@ -54,7 +62,24 @@
         window.APP_CONFIG.BASE_PATH = '../../../';
     </script>
   <script src="../../../Javascript/GetAPI/getInfor.js"></script>
+  <script src="../../../Javascript/GetAPI/collectionsAPI.js"></script>
   <script src="../../../Javascript/components/header_footer.js"></script>
   <script src="../../../Javascript/components/translate.js"></script>
+  <script>
+    // Kiểm tra đăng nhập khi trang load
+    (async function() {
+        try {
+            const userInfo = await window.fetchUserInfo();
+            if (userInfo) {
+                console.log('Đã đăng nhập với user:', userInfo);
+                window.groupUserId = userInfo.group_user_id;
+            } else {
+                console.log('Chưa đăng nhập');
+            }
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra đăng nhập:', error);
+        }
+    })();
+  </script>
 </body>
 </html>

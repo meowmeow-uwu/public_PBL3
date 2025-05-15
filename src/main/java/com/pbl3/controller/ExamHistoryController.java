@@ -29,10 +29,17 @@ public class ExamHistoryController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllExams(@HeaderParam("Authorization") String token) {
+    public Response getAllExams(@HeaderParam("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
         }
         ArrayList<ExamHistory> examHistories = examHistoryService.selectAll(userId);
         if (examHistories != null) {
@@ -45,10 +52,17 @@ public class ExamHistoryController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getExamByID(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response getExamByID(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
         }
         ExamHistory examHistory = examHistoryService.selectByID(id, userId);
         if (examHistory == null) {
@@ -61,10 +75,19 @@ public class ExamHistoryController {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createExam(@HeaderParam("Authorization") String token, ExamHistory examHistory) {
+    public Response createExam(@HeaderParam("Authorization") String authHeader, ExamHistory examHistory) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(examHistoryService.selectByID(examHistory.getExam_id(), userId) != null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Exam history already exists").build();
         }
         examHistory.setUser_id(userId);
         int result = examHistoryService.insert(examHistory);
@@ -74,35 +97,4 @@ public class ExamHistoryController {
         return Response.status(Response.Status.CREATED).entity(examHistory).build();
     }
 
-    @PUT
-    @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updateExam(@HeaderParam("Authorization") String token, @PathParam("id") int id, ExamHistory examHistory) {
-        int userId = JwtUtil.getUserIdFromToken(token);
-        if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        examHistory.setUser_id(userId);
-        int result = examHistoryService.update(examHistory);
-        if (result == 0) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Failed to update exam history").build();
-        }
-        return Response.status(Response.Status.OK).entity(examHistory).build();
-    }
-
-    @DELETE
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteExamHistory(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
-        int userId = JwtUtil.getUserIdFromToken(token);
-        if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        int result = examHistoryService.delete(id, userId);
-        if (result == 0) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Failed to delete exam history").build();
-        }
-        return Response.status(Response.Status.OK).entity("Exam history deleted successfully").build();
-    }
 }

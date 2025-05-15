@@ -10,6 +10,24 @@ const fromLang = document.getElementById('fromLang');
 const toLang = document.getElementById('toLang');
 const swapLang = document.getElementById('swapLang');
 
+// Biến lưu group_user_id của user
+let groupUserId = null;
+
+// Lấy thông tin user khi trang được load
+async function loadUserInfo() {
+    try {
+        const userInfo = await fetchUserInfo();
+        if (userInfo) {
+            groupUserId = userInfo.group_user_id;
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin user:', error);
+    }
+}
+
+// Gọi hàm load user info khi trang được load
+loadUserInfo();
+
 // Đổi chiều dịch
 swapLang.addEventListener('click', function() {
     // Hoán đổi text
@@ -165,6 +183,11 @@ async function showWordDetail(wordId) {
             </div>
         `).join('');
 
+        // Chỉ hiển thị nút lưu nếu user có group_user_id = 2
+        const saveButtonHtml = groupUserId === 2 ? 
+            `<button class="save-btn" onclick="(async function() { await openSaveModal('${escapeHtml(wordDetail.word)}', '${escapeHtml(wordDetail.definitions[0]?.meaning || '')}', ${wordId}); })()">Lưu</button>` : 
+            '';
+
         const resultHtml = `
             <div class="result-card">
                 <div class="result-header" style="background:#4285f4;color:#fff;border-radius:12px 12px 0 0;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;">
@@ -175,7 +198,7 @@ async function showWordDetail(wordId) {
                             <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
-                    <button class="save-btn" onclick="openSaveModal('${escapeHtml(wordDetail.word)}', '${escapeHtml(wordDetail.definitions[0]?.meaning || '')}')">Lưu</button>
+                    ${saveButtonHtml}
                 </div>
                 <div style="padding:18px;">
                     <div class="definitions-container">
@@ -206,26 +229,162 @@ const wordInput = document.getElementById('wordInput');
 const meaningInput = document.getElementById('meaningInput');
 const saveForm = document.getElementById('saveForm');
 
-function openSaveModal(word, meaning) {
-    wordInput.value = word;
-    meaningInput.value = meaning;
-    modalBackdrop.classList.add('active');
+// Biến lưu wordId hiện tại
+let currentWordId = null;
+
+// Hàm kiểm tra đăng nhập
+async function checkLogin() {
+    try {
+        const userInfo = await window.fetchUserInfo();
+        if (!userInfo) {
+            throw new Error('Chưa đăng nhập');
+        }
+        groupUserId = userInfo.group_user_id;
+        return true;
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra đăng nhập:', error);
+        return false;
+    }
+}
+
+async function openSaveModal(word, meaning, wordId) {
+    try {
+        // Kiểm tra đăng nhập
+        const isLoggedIn = await checkLogin();
+        if (!isLoggedIn) {
+            alert('Vui lòng đăng nhập để sử dụng chức năng này');
+            window.location.href = '../../../Pages/Components/Html/login.html';
+            return;
+        }
+
+        // Điền thông tin từ vựng
+        const wordInput = document.getElementById('wordInput');
+        const meaningInput = document.getElementById('meaningInput');
+        wordInput.value = word;
+        meaningInput.value = meaning;
+        currentWordId = wordId;
+        
+        // Hiển thị modal
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        modalBackdrop.style.display = 'flex';
+        modalBackdrop.classList.add('active');
+        
+        // Load danh sách bộ sưu tập
+        await loadCollections();
+        
+    } catch (error) {
+        console.error('Lỗi khi mở modal:', error);
+        alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+    }
 }
 
 function closeSaveModal() {
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    modalBackdrop.style.display = 'none';
     modalBackdrop.classList.remove('active');
+    currentWordId = null;
+    
+    // Reset select box
+    const folderInput = document.getElementById('folderInput');
+    if (folderInput) {
+        folderInput.innerHTML = '<option value="">Chọn bộ sưu tập...</option>';
+    }
+}
+
+// Hàm lấy token từ localStorage
+function getToken() {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+}
+
+// Hàm load danh sách bộ sưu tập
+async function loadCollections() {
+    try {
+        // Lấy danh sách từ API
+        const collections = await window.collectionsAPI.getUserCollections();
+        console.log('Danh sách bộ sưu tập:', collections);
+
+        // Lấy reference đến select box
+        const folderInput = document.getElementById('folderInput');
+        if (!folderInput) {
+            throw new Error('Không tìm thấy element folderInput');
+        }
+
+        // Xóa các option cũ
+        folderInput.innerHTML = '<option value="">Chọn bộ sưu tập...</option>';
+        
+        // Kiểm tra có dữ liệu không
+        if (!collections || !Array.isArray(collections) || collections.length === 0) {
+            const option = document.createElement('option');
+            option.disabled = true;
+            option.textContent = 'Bạn chưa có bộ sưu tập nào';
+            folderInput.appendChild(option);
+            return;
+        }
+        
+        // Thêm các bộ sưu tập vào select box
+        collections.forEach(collection => {
+            if (collection && typeof collection === 'object') {
+                const { collectionId, name } = collection;
+                
+                if (collectionId && name) {
+                    const option = document.createElement('option');
+                    option.value = collectionId;
+                    option.textContent = `${name} (${collection.wordCount} từ)`;
+                    folderInput.appendChild(option);
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Lỗi khi load danh sách bộ sưu tập:', error);
+        const folderInput = document.getElementById('folderInput');
+        if (folderInput) {
+            folderInput.innerHTML = '<option value="" disabled>Không thể tải danh sách bộ sưu tập</option>';
+        }
+        alert('Có lỗi xảy ra khi lấy danh sách bộ sưu tập. Vui lòng thử lại sau.');
+    }
 }
 
 // Xử lý lưu từ
-saveForm.addEventListener('submit', function(e) {
+saveForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const word = wordInput.value;
-    const meaning = meaningInput.value;
-    const folder = document.getElementById('folderInput').value;
+    const folderInput = document.getElementById('folderInput');
     
-    // TODO: Thêm API call để lưu từ
-    alert(`Đã lưu từ: ${word} - ${meaning} vào folder: ${folder}`);
-    closeSaveModal();
+    if (!folderInput) {
+        alert('Không tìm thấy phần tử chọn bộ sưu tập');
+        return;
+    }
+
+    const collectionId = folderInput.value;
+    console.log('Collection ID được chọn:', collectionId); // Debug log
+    
+    if (!collectionId || collectionId === '') {
+        alert('Vui lòng chọn bộ sưu tập');
+        return;
+    }
+
+    if (!currentWordId) {
+        alert('Không tìm thấy thông tin từ cần lưu');
+        return;
+    }
+
+    try {
+        console.log('Đang thêm từ vào bộ sưu tập:', { collectionId, currentWordId }); // Debug log
+        await window.collectionsAPI.addWordToCollection(collectionId, currentWordId);
+        alert('Đã lưu từ vào bộ sưu tập thành công!');
+        closeSaveModal();
+    } catch (error) {
+        console.error('Lỗi khi lưu từ:', error);
+        if (error.message.includes('Unauthorized')) {
+            alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        } else if (error.message.includes('Forbidden')) {
+            alert('Bạn không có quyền thêm từ vào bộ sưu tập này');
+        } else {
+            alert('Có lỗi xảy ra khi lưu từ. Vui lòng thử lại sau.');
+        }
+    }
 });
 
 function escapeHtml(str) {

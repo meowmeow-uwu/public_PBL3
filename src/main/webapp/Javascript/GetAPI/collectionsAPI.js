@@ -1,16 +1,23 @@
 const USER_BASE_URL = window.APP_CONFIG.API_BASE_URL +'/collections';
 
 function getToken() {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    return `Bearer ${token}`;
 }
 // lấy danh sách bộ sưu tập của người dùng hiện tại
 async function getUserCollections() {
     try {
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
         const response = await fetch(`${USER_BASE_URL}/user`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Authorization': token,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -41,8 +48,8 @@ async function deleteCollection(collectionId) {
         const response = await fetch(`${USER_BASE_URL}/${collectionId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Authorization': getToken(),
+                'Content-Type': 'application/json'
             }
         });
 
@@ -72,7 +79,7 @@ async function createCollection(name) {
         const response = await fetch(`${USER_BASE_URL}/create`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': getToken(),
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData.toString()
@@ -99,7 +106,7 @@ async function addWordToCollection(collectionId, wordId) {
         const response = await fetch(`${USER_BASE_URL}/${collectionId}/words/${wordId}`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': getToken(),
                 'Content-Type': 'application/json'
             }
         });
@@ -131,7 +138,7 @@ async function getWordsInCollection(collectionId) {
         const response = await fetch(`${USER_BASE_URL}/${collectionId}/words`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': getToken(),
                 'Content-Type': 'application/json'
             }
         });
@@ -169,7 +176,7 @@ async function updateCollection(collectionId, name) {
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': getToken(),
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData.toString()
@@ -206,7 +213,7 @@ async function deleteWordFromCollection(collectionId, wordId) {
         const response = await fetch(`${USER_BASE_URL}/${collectionId}/delete-word`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${getToken()}`
+                'Authorization': getToken()
             },
             body: formData
         });
@@ -239,7 +246,7 @@ async function addUserToCollection(collectionId) {
         const response = await fetch(`${USER_BASE_URL}/Add/${collectionId}`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': getToken(),
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData.toString()

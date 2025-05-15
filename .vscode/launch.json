@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "JwtUtil",
+            "request": "launch",
+            "mainClass": "com.pbl3.util.JwtUtil",
+            "projectName": "PBL3"
+        },
+        {
+            "type": "java",
+            "name": "DBUtil",
+            "request": "launch",
+            "mainClass": "com.pbl3.util.DBUtil",
+            "projectName": "PBL3"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",

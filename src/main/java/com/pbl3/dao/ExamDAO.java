@@ -3,6 +3,7 @@ package com.pbl3.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.pbl3.dto.Exam;
@@ -41,7 +42,7 @@ public class ExamDAO implements DAOInterface<Exam> {
         Connection c= null;
         try {
             c= DBUtil.makeConnection();
-            PreparedStatement ps= c.prepareStatement("SELECT * FROM exam");
+            PreparedStatement ps= c.prepareStatement("SELECT * FROM exam WHERE is_deleted = 0");
             ResultSet rs= ps.executeQuery();
             ArrayList<Exam> exams= new ArrayList<>();
             while (rs.next()) {
@@ -88,7 +89,7 @@ public class ExamDAO implements DAOInterface<Exam> {
         Connection c= null;
         try {
             c= DBUtil.makeConnection();
-            PreparedStatement ps= c.prepareStatement("UPDATE exam SET name=?, sub_topic_id=?, is_deleted=? WHERE exam_id=?");
+            PreparedStatement ps= c.prepareStatement("UPDATE exam SET name=?, sub_topic_id=?, is_deleted=? WHERE exam_id=? AND is_deleted = 0");
             ps.setString(1, exam.getName());
             ps.setInt(2, exam.getSub_topic_id());
             ps.setBoolean(3, exam.is_deleted());
@@ -112,5 +113,36 @@ public class ExamDAO implements DAOInterface<Exam> {
     @Override
     public Exam selectByCondition(String condition) {
         return null;
+    }
+
+    public ArrayList<Exam> selectBySubTopicId(int subTopicId) {
+        Connection con = null;
+        ArrayList<Exam> exams = new ArrayList<>();
+        String sql = "SELECT * FROM exam WHERE sub_topic_id = ? AND is_deleted = 0";
+        
+        try {
+            con = DBUtil.makeConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, subTopicId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Exam exam = new Exam();
+                exam.setExam_id(rs.getInt("exam_id"));
+                exam.setName(rs.getString("name"));
+                exam.setSub_topic_id(rs.getInt("sub_topic_id"));
+                exam.set_deleted(rs.getBoolean("is_deleted"));
+                exams.add(exam);
+            }
+            ps.close();
+            rs.close();
+            return exams;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(con);
+        }
+        
+        return exams;
     }
 }

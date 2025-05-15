@@ -24,7 +24,7 @@ public class TopicService implements ServiceInterface<Topic>{
 
     @Override
     public int delete(int id) {
-        if(id == 0) {
+        if(id == 1) {
             return -1;
         }
         return topicDAO.delete(id);

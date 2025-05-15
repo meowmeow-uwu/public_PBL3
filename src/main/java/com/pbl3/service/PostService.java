@@ -41,4 +41,8 @@ public class PostService implements ServiceInterface<Post>{
     public Post selectByCondition(String condition) {
         return postDAO.selectByCondition(condition);
     }
+
+    public ArrayList<Post> getPostsBySubTopicId(int subTopicId) {
+        return postDAO.selectBySubTopicId(subTopicId);
+    }
 }

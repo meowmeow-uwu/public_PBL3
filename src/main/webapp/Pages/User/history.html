@@ -23,40 +23,47 @@
 
     <div class="history-tabs">
       <button class="tab-btn active" data-tab="word-history">
-        <i class="fas fa-book"></i> Word History
+        <i class="fas fa-book"></i> Lịch sử Từ
       </button>
       <button class="tab-btn" data-tab="exam-history">
-        <i class="fas fa-file-alt"></i> Exam History
+        <i class="fas fa-file-alt"></i> Lịch sử Thi
       </button>
       <button class="tab-btn" data-tab="post-history">
-        <i class="fas fa-thumbtack"></i> Post History
-      </button>
+        <i class="fas fa-thumbtack"></i> Lịch sử Ngữ pháp </button>
     </div>
 
     <div id="word-history" class="tab-content active">
-      <h2>Word History</h2>
-      <p>Ví dụ: Danh sách các từ đã học, thời gian học, lần cuối ôn tập...</p>
+      <h2>Lịch sử Từ</h2>
+      <div class="history-list-container">
+        <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử từ...</p>
+      </div>
     </div>
 
     <div id="exam-history" class="tab-content">
-      <h2>Exam History</h2>
-      <p>Ví dụ: Danh sách các bài thi đã làm, điểm số, ngày làm bài...</p>
+      <h2>Lịch sử Thi</h2>
+      <div class="history-list-container">
+        <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử thi...</p>
+      </div>
     </div>
 
     <div id="post-history" class="tab-content">
-      <h2>Grammar History</h2>
-      <p>Ví dụ: Danh sách các bài đăng đã tạo hoặc tương tác...</p>
+      <h2>Lịch sử Ngữ pháp</h2> <div class="history-list-container">
+        <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử ngữ pháp...</p>
+      </div>
     </div>
   </div>
 
   <div id="footer"></div>
 
+  <!-- Load scripts in the correct order -->
   <script src="../../Javascript/config.js"></script>
   <script>
-    // Set the correct base path for components
+    window.APP_CONFIG = window.APP_CONFIG || {};
     window.APP_CONFIG.BASE_PATH = '../../';
   </script>
-  <script src="../../Javascript/components/header_footer.js"></script>
+  <!-- Load history.js first as it contains fetchUserInfo -->
   <script src="../../Javascript/User/history.js"></script>
+  <!-- Then load header_footer.js which depends on fetchUserInfo -->
+  <script src="../../Javascript/components/header_footer.js"></script>
 </body>
 </html>

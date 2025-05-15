@@ -1,124 +1,195 @@
 /* Assets/Css/User/history.css */
 
 body {
-    background: #f6f8fb; /* Màu nền tương tự collections.css */
-  }
-  
+  background: #f6f8fb;
+}
+
+.history-container {
+  max-width: 900px;
+  margin: 40px auto 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(80,120,200,0.10);
+  padding: 2rem;
+  min-height: 60vh; /* Đảm bảo container có chiều cao tối thiểu */
+}
+
+.history-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.history-header h1 {
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.history-tabs {
+  display: flex;
+  gap: 10px; /* Giảm khoảng cách một chút */
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0; /* Màu đường kẻ rõ hơn chút */
+}
+
+.tab-btn {
+  background: #f0f4f8; /* Màu nền tab không active nhạt hơn */
+  border: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 12px 22px; /* Điều chỉnh padding */
+  font-size: 1.05rem; /* Điều chỉnh kích thước font */
+  font-weight: 500; /* Giảm độ đậm một chút */
+  cursor: pointer;
+  color: #4a76a8; /* Màu chữ tab không active */
+  transition: background 0.2s ease-in-out, color 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid transparent; /* Thêm border dưới trong suốt để giữ vị trí */
+  position: relative;
+  top: 2px; /* Dịch chuyển nút tab xuống để khớp với đường kẻ của history-tabs */
+}
+
+.tab-btn:hover {
+  background: #e3f0fc;
+  color: #3b5f8a;
+}
+
+.tab-btn.active {
+  background: #fff; /* Nền trắng khi active để nổi bật trên history-tabs */
+  color: #4285f4; /* Màu chữ chính khi active */
+  font-weight: 600;
+  border-top: 1px solid #d1d1d1; /* Thêm border nhẹ */
+  border-left: 1px solid #d1d1d1;
+  border-right: 1px solid #d1d1d1;
+  border-bottom-color: #fff; /* Làm cho border dưới của tab active trùng màu nền content */
+  z-index: 1; /* Đảm bảo tab active nổi lên trên đường kẻ của history-tabs */
+}
+
+.tab-content {
+  display: none; /* Quan trọng: Mặc định ẩn tất cả nội dung tab */
+  padding: 1.5rem 0.5rem; /* Thêm padding ngang */
+  animation: fadeIn 0.4s ease-in-out;
+  background-color: #fff; /* Đảm bảo nền trắng cho content */
+}
+
+.tab-content.active {
+  display: block; /* Quan trọng: Hiển thị nội dung của tab có class active */
+}
+
+.tab-content h2 {
+  color: #3a3b3c;
+  margin-bottom: 1.5rem; /* Tăng khoảng cách dưới H2 */
+  font-size: 1.6rem; /* Tăng kích thước H2 */
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f0f0f0; /* Đường kẻ nhẹ dưới H2 */
+}
+
+.history-list-container {
+  /* Vùng chứa các card item, có thể thêm style nếu cần */
+}
+
+.history-list-container p { /* Style cho các thông báo (loading, no data, error) */
+  padding: 1.5rem 1rem; /* Tăng padding */
+  text-align: center;
+  color: #65676b; /* Màu chữ nhạt hơn */
+  font-size: 1rem;
+  background-color: #f7f8fa; /* Nền nhẹ cho thông báo */
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.history-list-container .error-message {
+  color: #c9302c;
+  font-weight: 500;
+  background-color: #f2dede;
+  border: 1px solid #ebccd1;
+}
+
+.history-list-container .fa-spinner {
+  margin-right: 10px;
+  font-size: 1.1em; /* To hơn chút */
+}
+
+.history-item-card {
+  background: #ffffff;
+  border-radius: 8px; /* Bo góc mềm mại hơn */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Shadow nhẹ nhàng hơn */
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #4a90e2;
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.history-item-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.history-item-card p {
+    margin-bottom: 0.6em;
+    text-align: left;
+    padding: 0;
+    color: #4b4f56; /* Màu chữ cho nội dung card */
+    font-size: 0.95rem; /* Kích thước chữ trong card */
+    line-height: 1.5;
+}
+
+.history-item-card p:last-child {
+    margin-bottom: 0;
+}
+
+.history-item-card strong {
+    color: #1c1e21; /* Màu cho phần nhấn mạnh */
+    font-weight: 500;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) { /* Điều chỉnh breakpoint nếu cần */
   .history-container {
-    max-width: 900px; /* Hoặc kích thước bạn muốn */
-    margin: 40px auto 0 auto;
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(80,120,200,0.10);
-    padding: 2rem;
+    padding: 1.5rem;
+    margin-top: 20px;
   }
-  
-  .history-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
   .history-header h1 {
-    color: #333; /* Hoặc màu chủ đạo của bạn */
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
-  
-  .history-tabs {
-    display: flex;
-    gap: 12px; /* Khoảng cách giữa các tab */
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #eee; /* Đường kẻ dưới dải tab */
-  }
-  
   .tab-btn {
-    background: #e3f0fc; /* Màu nền tab không active, tương tự collections.css */
-    border: none;
-    border-radius: 8px 8px 0 0; /* Bo góc trên cho tab */
-    padding: 12px 25px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: #4285f4; /* Màu chữ tab không active */
-    transition: background 0.3s, color 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Khoảng cách giữa icon và chữ */
+    padding: 10px 15px;
+    font-size: 0.95rem;
   }
-  
-  .tab-btn:hover {
-    background: #d1e6fa; /* Màu nền khi hover */
-  }
-  
-  .tab-btn.active {
-    background: #4285f4; /* Màu nền tab active */
-    color: #fff; /* Màu chữ tab active */
-    border-bottom: 2px solid #4285f4; /* Để tạo cảm giác tab "nổi" lên */
-    margin-bottom: -2px; /* Điều chỉnh để đường kẻ của tab active đè lên đường kẻ chung */
-  }
-  
-  .tab-content {
-    display: none; /* Mặc định ẩn tất cả nội dung tab */
-    padding: 1.5rem 0; /* Khoảng đệm cho nội dung tab */
-    animation: fadeIn 0.5s; /* Hiệu ứng xuất hiện */
-  }
-  
-  .tab-content.active {
-    display: block; /* Hiển thị nội dung của tab active */
-  }
-  
   .tab-content h2 {
-    color: #333;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
-  
-  .tab-content p {
-    font-size: 1rem;
-    color: #555;
-    line-height: 1.6;
+}
+
+@media (max-width: 500px) {
+  .history-tabs {
+    flex-direction: column;
+    gap: 0; /* Bỏ gap khi xếp chồng */
+    border-bottom: none; /* Bỏ đường kẻ chung khi xếp chồng */
   }
-  
-  /* Thêm các style cho card hoặc danh sách trong từng tab nếu cần, ví dụ: */
-  .history-item-card {
-    background: #f7fbff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-    padding: 1rem 1.5rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid #4a90e2; /* Đường kẻ màu bên trái */
+  .tab-btn {
+    width: 100%;
+    justify-content: center;
+    border-radius: 6px; /* Bo tròn đều các góc */
+    margin-bottom: 8px; /* Tạo khoảng cách giữa các nút khi xếp chồng */
+    border: 1px solid #d1d1d1; /* Thêm border để rõ ràng hơn khi xếp chồng */
+    top: 0; /* Reset top */
   }
-  
-  .history-item-card:hover {
-    box-shadow: 0 4px 16px rgba(74,144,226,0.15);
+  .tab-btn.active {
+    border-bottom-color: #d1d1d1; /* Giữ border dưới khi active */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .tab-btn:last-child {
+    margin-bottom: 0;
   }
-  
-  /* Responsive (tương tự collections.css) */
-  @media (max-width: 900px) {
-    .history-container {
-      padding: 1.5rem;
-      margin-top: 20px;
-    }
+  .history-container {
+    padding: 1rem;
   }
-  
-  @media (max-width: 600px) {
-    .history-tabs {
-      flex-direction: column; /* Các tab xếp chồng lên nhau trên màn hình nhỏ */
-      gap: 8px;
-    }
-    .tab-btn {
-      width: 100%;
-      justify-content: center;
-      border-radius: 8px; /* Bo tròn đều các góc khi xếp chồng */
-    }
-    .tab-btn.active {
-      margin-bottom: 0;
-    }
-    .history-header h1 {
-      font-size: 1.5rem;
-    }
-  }
+}

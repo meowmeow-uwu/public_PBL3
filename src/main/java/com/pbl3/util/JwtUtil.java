@@ -14,6 +14,14 @@ import java.util.Date;
  */
 public class JwtUtil {
 
+    
+    public static void main(String[] args) {
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo0LCJleHAiOjE3NDczNTUzMzV9.m7UQYKoekcai-4IbkmbuKBmnwc-OrSg-grxPouc0R-OAmTiS1PHm6E-sJFZibZW_A25IcqqWVDupzGH5fRT4Ew";
+        System.out.println(token);
+        System.out.println(JwtUtil.validateToken(token));
+        System.out.println(JwtUtil.getUserIdFromToken(token));
+    }
+
     private static final String SECRET_KEY = "mySuperSecretKey!123"; // Một chuỗi đủ mạnh và an toàn
     private static final long EXPIRATION_TIME = 86400000; // 1 ngày
 

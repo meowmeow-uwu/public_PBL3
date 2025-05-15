@@ -24,7 +24,7 @@ public class SubTopicService implements ServiceInterface<SubTopic>{
 
     @Override
     public int delete(int id) {
-        if(id == 0) {
+        if(id == 1) {
             return -1;
         }
         return subTopicDAO.delete(id);
@@ -45,7 +45,9 @@ public class SubTopicService implements ServiceInterface<SubTopic>{
         return subTopicDAO.selectByCondition(condition);
     }   
     
-    
+    public ArrayList<SubTopic> selectByTopicId(int topicId) {
+        return subTopicDAO.selectByTopicId(topicId);
+    }   
     
     
     

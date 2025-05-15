@@ -40,7 +40,7 @@ public class PostDAO implements DAOInterface<Post>{
         Connection c = null;
         try{
             c = DBUtil.makeConnection();
-            String sql = "UPDATE post SET post_name = ?, content = ?, sub_topic_id = ?, is_deleted = ? WHERE post_id = ?";
+            String sql = "UPDATE post SET post_name = ?, content = ?, sub_topic_id = ?, is_deleted = ? WHERE post_id = ? AND is_deleted = 0";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setString(1, t.getPost_name());
             pstmt.setString(2, t.getContent());
@@ -70,7 +70,7 @@ public class PostDAO implements DAOInterface<Post>{
         Connection c = null;
         try{
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM post";
+            String sql = "SELECT * FROM post WHERE is_deleted = 0";
             PreparedStatement pstmt = c.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             ArrayList<Post> posts = new ArrayList<>();
@@ -122,6 +122,39 @@ public class PostDAO implements DAOInterface<Post>{
 
     @Override
     public Post selectByCondition(String condition) {
+        return null;
+    }
+
+    public ArrayList<Post> selectBySubTopicId(int subTopicId) {
+        Connection con = null;
+        ArrayList<Post> posts = new ArrayList<>();
+        String sql = "SELECT * FROM post WHERE sub_topic_id = ? AND is_deleted = 0";
+        
+        try {
+            con = DBUtil.makeConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, subTopicId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Post post = new Post();
+                post.setPost_id(rs.getInt("post_id"));
+                post.setPost_name(rs.getString("post_name"));
+                post.setContent(rs.getString("content"));
+                post.setSub_topic_id(rs.getInt("sub_topic_id"));
+                post.set_deleted(rs.getBoolean("is_deleted"));
+                posts.add(post);
+            }
+            ps.close();
+            rs.close();
+            return posts;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally{
+            DBUtil.closeConnection(con);
+        }        
+
         return null;
     }
 }

@@ -62,7 +62,7 @@ public class SubTopicDAO implements DAOInterface<SubTopic>{
         try{
             c = DBUtil.makeConnection();
             String sql;
-            sql = "update post set sub_topic_id = 0 where sub_topic_id = ?";
+            sql = "update post set sub_topic_id = 1 where sub_topic_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
             int result = pstmt.executeUpdate();
@@ -135,6 +135,34 @@ public class SubTopicDAO implements DAOInterface<SubTopic>{
 
     @Override
     public SubTopic selectByCondition(String condition) {
+        return null;
+    }
+
+    public ArrayList<SubTopic> selectByTopicId(int topicId) {
+        Connection c = null;
+        try{
+            c = DBUtil.makeConnection();
+            String sql = "SELECT * FROM sub_topic WHERE topic_id = ?";
+            PreparedStatement pstmt = c.prepareStatement(sql);
+            pstmt.setInt(1, topicId);
+            ResultSet rs = pstmt.executeQuery();
+            ArrayList<SubTopic> subTopics = new ArrayList<>();
+            while(rs.next()){
+                SubTopic subTopic = new SubTopic();
+                subTopic.setSub_topic_id(rs.getInt("sub_topic_id"));
+                subTopic.setName(rs.getString("sub_topic_name"));
+                subTopic.setTopic_id(rs.getInt("topic_id"));
+                subTopics.add(subTopic);
+            }
+            pstmt.close();
+            return subTopics;
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        finally{
+            DBUtil.closeConnection(c);
+        }
         return null;
     }
 }

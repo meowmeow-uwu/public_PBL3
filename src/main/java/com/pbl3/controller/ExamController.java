@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.Exam;
 import com.pbl3.service.ExamService;
+import com.pbl3.service.AuthService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.Consumes;
@@ -28,7 +29,13 @@ public class ExamController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllExams(@HeaderParam("Authorization") String token) {
+    public Response getAllExams(@HeaderParam("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -44,7 +51,13 @@ public class ExamController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getExamById(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response getExamById(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -56,14 +69,47 @@ public class ExamController {
         return Response.status(Response.Status.OK).entity(exam).build();
     }
 
+    @GET
+    @Path("/subtopic/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getExamsBySubTopicId(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
+        }
+ 
+        ArrayList<Exam> exams = examService.getExamsBySubTopicId(id);
+        if (exams == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Exams not found").build();
+        }
+        return Response.status(Response.Status.OK).entity(exams).build();
+    }
+
+
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createExam(@HeaderParam("Authorization") String token, Exam exam) {
+    public Response createExam(@HeaderParam("Authorization") String authHeader, Exam exam) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(!new AuthService().isContentManagerOrAdmin(token)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         int result = examService.insert(exam);
         if (result == 0) {
@@ -76,10 +122,19 @@ public class ExamController {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateExam(@HeaderParam("Authorization") String token, @PathParam("id") int id, Exam exam) {
+    public Response updateExam(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Exam exam) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(!new AuthService().isContentManagerOrAdmin(token)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         int result = examService.update(exam);
         if (result == 0) {
@@ -91,10 +146,19 @@ public class ExamController {
     @PUT
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteExam(@HeaderParam("Authorization") String token, @PathParam("id") int id, Exam exam) {
+    public Response deleteExam(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Exam exam) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(!new AuthService().isContentManagerOrAdmin(token)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         exam.set_deleted(true);
         int result = examService.update(exam);

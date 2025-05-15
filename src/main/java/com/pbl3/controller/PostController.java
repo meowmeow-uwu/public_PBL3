@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.Post;
 import com.pbl3.service.PostService;
+import com.pbl3.service.AuthService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.GET;
@@ -27,7 +28,13 @@ public class PostController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllSubTopics(@HeaderParam("Authorization") String token) {
+    public Response getAllSubTopics(@HeaderParam("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(401).entity("Unauthorized").build();
@@ -43,7 +50,13 @@ public class PostController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSubTopicById(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response getSubTopicById(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(401).entity("Unauthorized").build();
@@ -59,10 +72,20 @@ public class PostController {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createPost(@HeaderParam("Authorization") String token, Post post) {
+    public Response createPost(@HeaderParam("Authorization") String authHeader, Post post) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(401).entity("Unauthorized").build();
+        }
+
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+            return Response.status(403).entity("Forbidden").build();
         }
 
         int result = postService.insert(post);
@@ -75,10 +98,20 @@ public class PostController {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updatePost(@HeaderParam("Authorization") String token, @PathParam("id") int id, Post post) {
+    public Response updatePost(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Post post) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(401).entity("Unauthorized").build();
+        }
+
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+            return Response.status(403).entity("Forbidden").build();
         }
 
         int result = postService.update(post);
@@ -91,10 +124,20 @@ public class PostController {
     @PUT
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteSubTopic(@HeaderParam("Authorization") String token, @PathParam("id") int id, Post post) {
+    public Response deleteSubTopic(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Post post) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(401).entity("Unauthorized").build();
+        }
+
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         post.set_deleted(true);
         int result = postService.update(post);

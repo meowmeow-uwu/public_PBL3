@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.pbl3.dto.Answer;
 import com.pbl3.dto.Question;
 import com.pbl3.service.AnswerService;
+import com.pbl3.service.AuthService;
 import com.pbl3.service.QuestionService;
 import com.pbl3.util.JwtUtil;
 
@@ -30,10 +31,17 @@ public class QuestionController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getQuestion(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response getQuestion(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
         }
         Question question = questionService.selectByID(id);
         if (question != null) {
@@ -46,7 +54,13 @@ public class QuestionController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getQuestions(@HeaderParam("Authorization") String token) {
+    public Response getQuestions(@HeaderParam("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -62,10 +76,19 @@ public class QuestionController {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createQuestion(@HeaderParam("Authorization") String token, Question question) {
+    public Response createQuestion(@HeaderParam("Authorization") String authHeader, Question question) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         int result = questionService.insert(question);
         if (result > 0) {
@@ -78,10 +101,19 @@ public class QuestionController {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateQuestion(@HeaderParam("Authorization") String token, @PathParam("id") int id, Question question) {
+    public Response updateQuestion(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Question question) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         question.setQuestion_id(id);
         int result = questionService.update(question);
@@ -95,10 +127,19 @@ public class QuestionController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestion(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response deleteQuestion(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+            return Response.status(403).entity("Forbidden").build();
         }
         int result = questionService.delete(id);
         if (result > 0) {
@@ -111,7 +152,13 @@ public class QuestionController {
     @GET
     @Path("/{id}/answers")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswers(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response getAnswers(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -128,7 +175,13 @@ public class QuestionController {
     @GET
     @Path("/exam/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getQuestionsByExamID(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response getQuestionsByExamID(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
         int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();

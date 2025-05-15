@@ -16,7 +16,7 @@ public class TopicDAO implements DAOInterface<Topic>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "INSERT INTO topics (name) VALUES (?)";
+            String sql = "INSERT INTO topics (topic_name) VALUES (?)";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setString(1, t.getName());
             int result = pstmt.executeUpdate();
@@ -34,7 +34,7 @@ public class TopicDAO implements DAOInterface<Topic>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "UPDATE topic SET name = ? WHERE topic_id = ?";
+            String sql = "UPDATE topic SET topic_name = ? WHERE topic_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setString(1, t.getName());
             pstmt.setInt(2, t.getTopic_id());
@@ -54,7 +54,7 @@ public class TopicDAO implements DAOInterface<Topic>{
         try {
             c = DBUtil.makeConnection();
             String sql;
-            sql = "update sub_topic set topic_id = 0 where topic_id = ?";
+            sql = "update sub_topic set topic_id = 1 where topic_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
             int result = pstmt.executeUpdate();
@@ -83,7 +83,7 @@ public class TopicDAO implements DAOInterface<Topic>{
             while (rs.next()) {
                 Topic t = new Topic();
                 t.setTopic_id(rs.getInt("topic_id"));
-                t.setName(rs.getString("name"));
+                t.setName(rs.getString("topic_name"));
                 topics.add(t);
             }
             return topics;
@@ -108,7 +108,7 @@ public class TopicDAO implements DAOInterface<Topic>{
             if (rs.next()) {
                 t = new Topic();
                 t.setTopic_id(rs.getInt("topic_id"));
-                t.setName(rs.getString("name"));
+                t.setName(rs.getString("topic_name"));
             }
             return t;
         } catch (SQLException e) {

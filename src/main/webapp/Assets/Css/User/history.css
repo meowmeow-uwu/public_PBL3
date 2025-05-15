@@ -1,0 +1,124 @@
+/* Assets/Css/User/history.css */
+
+body {
+    background: #f6f8fb; /* Màu nền tương tự collections.css */
+  }
+  
+  .history-container {
+    max-width: 900px; /* Hoặc kích thước bạn muốn */
+    margin: 40px auto 0 auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(80,120,200,0.10);
+    padding: 2rem;
+  }
+  
+  .history-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .history-header h1 {
+    color: #333; /* Hoặc màu chủ đạo của bạn */
+    font-size: 1.8rem;
+  }
+  
+  .history-tabs {
+    display: flex;
+    gap: 12px; /* Khoảng cách giữa các tab */
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #eee; /* Đường kẻ dưới dải tab */
+  }
+  
+  .tab-btn {
+    background: #e3f0fc; /* Màu nền tab không active, tương tự collections.css */
+    border: none;
+    border-radius: 8px 8px 0 0; /* Bo góc trên cho tab */
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #4285f4; /* Màu chữ tab không active */
+    transition: background 0.3s, color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa icon và chữ */
+  }
+  
+  .tab-btn:hover {
+    background: #d1e6fa; /* Màu nền khi hover */
+  }
+  
+  .tab-btn.active {
+    background: #4285f4; /* Màu nền tab active */
+    color: #fff; /* Màu chữ tab active */
+    border-bottom: 2px solid #4285f4; /* Để tạo cảm giác tab "nổi" lên */
+    margin-bottom: -2px; /* Điều chỉnh để đường kẻ của tab active đè lên đường kẻ chung */
+  }
+  
+  .tab-content {
+    display: none; /* Mặc định ẩn tất cả nội dung tab */
+    padding: 1.5rem 0; /* Khoảng đệm cho nội dung tab */
+    animation: fadeIn 0.5s; /* Hiệu ứng xuất hiện */
+  }
+  
+  .tab-content.active {
+    display: block; /* Hiển thị nội dung của tab active */
+  }
+  
+  .tab-content h2 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .tab-content p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  /* Thêm các style cho card hoặc danh sách trong từng tab nếu cần, ví dụ: */
+  .history-item-card {
+    background: #f7fbff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #4a90e2; /* Đường kẻ màu bên trái */
+  }
+  
+  .history-item-card:hover {
+    box-shadow: 0 4px 16px rgba(74,144,226,0.15);
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Responsive (tương tự collections.css) */
+  @media (max-width: 900px) {
+    .history-container {
+      padding: 1.5rem;
+      margin-top: 20px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .history-tabs {
+      flex-direction: column; /* Các tab xếp chồng lên nhau trên màn hình nhỏ */
+      gap: 8px;
+    }
+    .tab-btn {
+      width: 100%;
+      justify-content: center;
+      border-radius: 8px; /* Bo tròn đều các góc khi xếp chồng */
+    }
+    .tab-btn.active {
+      margin-bottom: 0;
+    }
+    .history-header h1 {
+      font-size: 1.5rem;
+    }
+  }

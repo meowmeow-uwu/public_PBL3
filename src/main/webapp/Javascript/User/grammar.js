@@ -611,5 +611,93 @@ document.addEventListener('DOMContentLoaded', async () => {
         quizSection.classList.add('hidden');
     }
 
+    async function addExamHistory(examId, correctNumber, wrongNumber, totalQuestion) {
+        try {
+            const examHistoryData = {
+                exam_id: examId, // key_id trong DTO ExamHistory
+                correct_number: correctNumber,
+                wrong_number: wrongNumber,
+                total_question: totalQuestion
+                // user_id sẽ được backend thêm từ token
+            };
+            // GIẢ ĐỊNH BẠN SẼ TẠO ENDPOINT NÀY Ở BACKEND:
+            // POST /history/exam  (hoặc một tên khác phù hợp)
+            // Endpoint này sẽ nhận đối tượng ExamHistoryData và lưu vào bảng exam_history
+            await fetchWithAuth(`${API_BASE_URL}/history/exam`, { // THAY ĐỔI ENDPOINT NÀY CHO ĐÚNG
+                method: 'POST',
+                body: JSON.stringify(examHistoryData)
+            });
+            console.log(`Exam history added for exam_id ${examId}`);
+        } catch (error) {
+            console.error(`CLIENT: Error adding exam history for exam_id ${examId}:`, error.message);
+            // Có thể không cần alert lỗi này
+        }
+    }
+    
+    
+    function processQuizSubmission() {
+        stopQuizTimerInterval();
+        let score = 0;
+        let correctAnswersCount = 0;
+        let wrongAnswersCount = 0;
+        let totalAttemptedQuestions = 0; // Số câu đã trả lời (khác null)
+    
+        if (currentQuizData && currentQuizData.questions && currentQuizData.questions.length > 0) {
+            currentQuizData.questions.forEach((question, index) => {
+                if (userAnswers[index] !== null) { // Chỉ tính những câu đã trả lời
+                    totalAttemptedQuestions++;
+                    if (userAnswers[index] === question.correctOptionId) {
+                        correctAnswersCount++;
+                    } else {
+                        wrongAnswersCount++;
+                    }
+                }
+            });
+            score = correctAnswersCount; // Điểm là số câu đúng
+            const totalQuestionsInQuiz = currentQuizData.questions.length;
+            const resultMessage = `Bạn đã trả lời đúng ${score}/${totalQuestionsInQuiz} câu.`;
+    
+            if (quizContentDiv) {
+                quizContentDiv.innerHTML = `
+                    <div class="quiz-results">
+                        <h2>Kết quả bài kiểm tra</h2>
+                        <p>${resultMessage}</p>
+                        <button id="backToQuizListFromResultInQuiz" class="btn-primary">Quay lại danh sách</button>
+                    </div>
+                `;
+                document.getElementById('backToQuizListFromResultInQuiz')?.addEventListener('click', () => {
+                    quizSection.classList.add('hidden');
+                    currentLessonOrQuizType = 'quizzes';
+                    showLessonsAndQuizzesListView(currentSubTopicId);
+                });
+            }
+            if(submitQuizButton) submitQuizButton.style.display = 'none';
+    
+            // Gọi hàm lưu Exam History
+            addExamHistory(currentQuizData.id, correctAnswersCount, wrongAnswersCount, totalQuestionsInQuiz);
+    
+        } else if (currentQuizData) { // Quiz tồn tại nhưng không có câu hỏi
+            if (quizContentDiv) {
+                quizContentDiv.innerHTML = `
+                    <div class="quiz-results">
+                        <h2>Thông báo</h2>
+                        <p>Bài kiểm tra này không có câu hỏi để chấm điểm.</p>
+                        <button id="backToQuizListFromResultInQuiz" class="btn-primary">Quay lại danh sách</button>
+                    </div>
+                `;
+                 document.getElementById('backToQuizListFromResultInQuiz')?.addEventListener('click', () => {
+                    quizSection.classList.add('hidden');
+                    currentLessonOrQuizType = 'quizzes';
+                    showLessonsAndQuizzesListView(currentSubTopicId);
+                });
+            }
+            if(submitQuizButton) submitQuizButton.style.display = 'none';
+            // Vẫn có thể lưu exam history với 0 câu hỏi nếu muốn
+            addExamHistory(currentQuizData.id, 0, 0, 0);
+        } else {
+            alert("Không có dữ liệu bài kiểm tra để nộp.");
+        }
+    }
+
     initializeApp();
 });

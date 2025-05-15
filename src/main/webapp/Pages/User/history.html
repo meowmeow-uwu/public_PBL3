@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lịch sử của tôi</title>
+
+  <link rel="stylesheet" href="../../Assets/Css/main.css">
+  <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+  <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+  <link rel="stylesheet" href="../../Assets/Css/User/history.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<body>
+  <div id="header"></div>
+
+  <div class="history-container">
+    <div class="history-header">
+      <h1>Lịch sử hoạt động</h1>
+    </div>
+
+    <div class="history-tabs">
+      <button class="tab-btn active" data-tab="word-history">
+        <i class="fas fa-book"></i> Word History
+      </button>
+      <button class="tab-btn" data-tab="exam-history">
+        <i class="fas fa-file-alt"></i> Exam History
+      </button>
+      <button class="tab-btn" data-tab="post-history">
+        <i class="fas fa-thumbtack"></i> Post History
+      </button>
+    </div>
+
+    <div id="word-history" class="tab-content active">
+      <h2>Word History</h2>
+      <p>Ví dụ: Danh sách các từ đã học, thời gian học, lần cuối ôn tập...</p>
+    </div>
+
+    <div id="exam-history" class="tab-content">
+      <h2>Exam History</h2>
+      <p>Ví dụ: Danh sách các bài thi đã làm, điểm số, ngày làm bài...</p>
+    </div>
+
+    <div id="post-history" class="tab-content">
+      <h2>Grammar History</h2>
+      <p>Ví dụ: Danh sách các bài đăng đã tạo hoặc tương tác...</p>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script src="../../Javascript/config.js"></script>
+  <script>
+    // Set the correct base path for components
+    window.APP_CONFIG.BASE_PATH = '../../';
+  </script>
+  <script src="../../Javascript/components/header_footer.js"></script>
+  <script src="../../Javascript/User/history.js"></script>
+</body>
+</html>

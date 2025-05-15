@@ -29,43 +29,7 @@
     margin: 0;
 }
 
-.streak-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-end;
-}
 
-.streak-count {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.2rem;
-}
-
-.streak-count i {
-    color: #ffd700;
-}
-
-.goal-progress {
-    text-align: right;
-}
-
-.progress-bar {
-    width: 200px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
-}
-
-.progress-fill {
-    height: 100%;
-    background: #ffd700;
-    border-radius: 4px;
-    transition: width 0.3s ease;
-}
 
 /* Quick Stats Section */
 .quick-stats {
@@ -198,69 +162,7 @@
     background: #357abd;
 }
 
-/* Today's Goals Section */
-.today-goals {
-    background: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
 
-.goals-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.goal-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 10px;
-}
-
-.goal-checkbox {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #4a90e2;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.goal-checkbox.checked {
-    background: #4a90e2;
-}
-
-.goal-checkbox.checked::after {
-    content: '✓';
-    color: white;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.goal-content {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.goal-text {
-    color: #2c3e50;
-    font-size: 1.1rem;
-}
-
-.goal-progress {
-    color: #666;
-    font-size: 0.9rem;
-}
 
 /* Recent Activity Section */
 .recent-activity {

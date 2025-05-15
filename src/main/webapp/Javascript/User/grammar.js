@@ -1,29 +1,34 @@
-// Giả định API_BASE_URL đã được thiết lập trong window.APP_CONFIG
+// Giả định API_BASE_URL đã được thiết lập trong window.APP_CONFIG (ví dụ trong config.js)
 const API_BASE_URL = window.APP_CONFIG.API_BASE_URL;
 
-// Hàm tiện ích để thực hiện fetch với Authorization header (giữ nguyên)
+// Hàm tiện ích để thực hiện fetch với Authorization header
 async function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem("token");
     const headers = {
-        ...options.headers,
+        ...options.headers, // Giữ lại các header đã có nếu options được truyền vào
         'Content-Type': 'application/json',
     };
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(url, { ...options, headers });
+    try {
+        const response = await fetch(url, { ...options, headers });
 
-    if (!response.ok) {
-        let errorMessage = `HTTP error! status: ${response.status}`;
-        try {
-            const errorData = await response.json();
-            errorMessage += ` - ${errorData.error || errorData.message || JSON.stringify(errorData)}`;
-        } catch (e) { /* Ignore */ }
-        throw new Error(errorMessage);
+        if (!response.ok) {
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage += ` - ${errorData.error || errorData.message || JSON.stringify(errorData)}`;
+            } catch (e) { /* Ignore if error response is not JSON */ }
+            throw new Error(errorMessage);
+        }
+        if (response.status === 204) return null; // No Content
+        return response.json(); // Giả định đa số API trả về JSON
+    } catch (networkError) { // Bắt lỗi mạng (fetch không thành công)
+        console.error("Network error or server unreachable:", networkError);
+        throw new Error(`Network error: ${networkError.message}`);
     }
-    if (response.status === 204) return null;
-    return response.json();
 }
 
 
@@ -37,25 +42,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const mainTopicsGrid = document.querySelector('.main-topics-grid');
     const lessonsContentDiv = document.getElementById('lessonsContent');
-    const lessonDetailContentArea = document.getElementById('lessonDetailContentArea');
+    const lessonDetailContentArea = document.getElementById('lessonDetailContentArea'); // ID đã được đổi
     const quizContentDiv = document.getElementById('quizContent');
-
-    // Lesson Detail Action Buttons
-    const favoriteBtn = lessonDetailSection.querySelector('.action-btn.favorite');
-    const completedBtn = lessonDetailSection.querySelector('.action-btn.completed'); // Nút "Đánh dấu hoàn thành"
-    const restartBtn = lessonDetailSection.querySelector('.action-btn.restart');
-    // const lessonTimerSpan = lessonDetailSection.querySelector('.timer'); // Nếu cần dùng
 
     // Navigation buttons
     const backToMainTopics = document.getElementById('backToMainTopics');
     const backToSubTopics = document.getElementById('backToSubTopics');
     const backToLessons = document.getElementById('backToLessons');
     const backToQuizList = document.getElementById('backToQuizList');
+    const submitQuizButton = document.getElementById('submitQuizBtn'); // Nút nộp bài quiz
 
     // State variables
     let currentMainTopicId = null;
     let currentSubTopicId = null;
-    let currentViewingLessonId = null; // ID của bài học đang xem chi tiết
     let currentLessonOrQuizType = 'lessons';
     let quizTimer = null;
     let quizTimeLeft = 0;
@@ -65,14 +64,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     let userAnswers = [];
 
     // --- CÁC HÀM GỌI API ---
-    // ... (Các hàm getMainTopics, getSubTopicsForTopic, getPostsForSubTopic, getExamsForSubTopic, getPostDetails, getExamDetails giữ nguyên)
     async function getMainTopics() {
         try {
             allTopics = await fetchWithAuth(`${API_BASE_URL}/topic/`);
             return allTopics || [];
         } catch (error) {
             console.error("Error fetching main topics:", error);
-            if(mainTopicsGrid) mainTopicsGrid.innerHTML = `<p>Lỗi tải danh sách chủ đề. ${error.message}</p>`;
+            if (mainTopicsGrid) mainTopicsGrid.innerHTML = `<p class="error-message">Lỗi tải danh sách chủ đề. Vui lòng thử lại sau.</p>`;
             return [];
         }
     }
@@ -120,36 +118,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function getExamDetails(examId) {
         try {
             const examBasicInfo = await fetchWithAuth(`${API_BASE_URL}/exam/${examId}`);
-            if (!examBasicInfo) throw new Error("Exam not found");
+            if (!examBasicInfo) throw new Error("Thông tin bài kiểm tra không tìm thấy.");
 
             const questionsFromApi = await fetchWithAuth(`${API_BASE_URL}/questions/exam/${examId}`);
-            if (!questionsFromApi) throw new Error("No questions found for this exam");
+            // Không cần throw error nếu không có câu hỏi, có thể exam đó chưa có câu hỏi
+            // if (!questionsFromApi) throw new Error("Không tìm thấy câu hỏi cho bài kiểm tra này.");
 
             const processedQuestions = [];
-            for (const qDto of questionsFromApi) {
-                if (qDto.is_deleted) continue;
-                const answersFromApi = await fetchWithAuth(`${API_BASE_URL}/questions/${qDto.question_id}/answers`);
-                let correctOptId = null;
-                const options = (answersFromApi || [])
-                    .filter(ans => !ans.is_deleted)
-                    .map(ansDto => {
-                        if (ansDto.is_correct) {
-                            correctOptId = ansDto.answer_id;
-                        }
-                        return { optionId: ansDto.answer_id, optionText: ansDto.content };
+            if (questionsFromApi && questionsFromApi.length > 0) {
+                for (const qDto of questionsFromApi) {
+                    if (qDto.is_deleted) continue;
+                    const answersFromApi = await fetchWithAuth(`${API_BASE_URL}/questions/${qDto.question_id}/answers`);
+                    let correctOptId = null;
+                    const options = (answersFromApi || [])
+                        .filter(ans => !ans.is_deleted)
+                        .map(ansDto => {
+                            if (ansDto.is_correct) {
+                                correctOptId = ansDto.answer_id;
+                            }
+                            return { optionId: ansDto.answer_id, optionText: ansDto.content };
+                        });
+                    processedQuestions.push({
+                        questionId: qDto.question_id,
+                        questionText: qDto.content,
+                        options: options,
+                        correctOptionId: correctOptId
                     });
-                processedQuestions.push({
-                    questionId: qDto.question_id,
-                    questionText: qDto.content,
-                    options: options,
-                    correctOptionId: correctOptId
-                });
+                }
             }
+
             return {
                 id: examBasicInfo.exam_id,
                 title: examBasicInfo.name,
                 questions: processedQuestions,
-                timeLimit: examBasicInfo.timeLimitSeconds || 600, // GIẢ ĐỊNH backend có timeLimitSeconds
+                timeLimit: examBasicInfo.timeLimitSeconds || 0, // Nếu backend không có, mặc định là 0 (không giới hạn hoặc cần xử lý riêng)
                 type: 'quiz'
             };
         } catch (error) {
@@ -159,67 +161,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Hàm API cho History
     async function addHistory(keyId, type) {
         try {
-            const historyData = { key_id: keyId }; // user_id sẽ được set ở backend từ token
+            const historyData = { key_id: keyId };
             // API POST /history/?type={type}
             await fetchWithAuth(`${API_BASE_URL}/history/?type=${type}`, {
                 method: 'POST',
                 body: JSON.stringify(historyData)
             });
+            console.log(`History added for key_id ${keyId}, type ${type}`);
             return true;
         } catch (error) {
             console.error(`Error adding history for key_id ${keyId} with type ${type}:`, error);
-            alert(`Lỗi khi đánh dấu hoàn thành: ${error.message}`);
+            // Không alert lỗi này để tránh làm phiền người dùng nếu chỉ là lưu lịch sử nền
             return false;
         }
     }
-
-    async function checkHistory(keyId, type) {
-        try {
-            // API GET /history/{id}?type={type} (id ở đây là key_id)
-            // Hoặc API GET /history/?type={type} rồi lọc ở client nếu API không hỗ trợ lấy theo key_id trực tiếp
-            // Dựa trên HistoryController, có vẻ GET /history/{id}?type={type} là history_id, không phải key_id.
-            // Nên sẽ dùng GET /history/?type={type} và lọc.
-            const histories = await fetchWithAuth(`${API_BASE_URL}/history/?type=${type}`);
-            if (histories && histories.some(h => h.key_id === keyId)) {
-                return true; // Đã tồn tại trong lịch sử
-            }
-            return false; // Chưa có trong lịch sử
-        } catch (error) {
-            console.error(`Error checking history for key_id ${keyId} with type ${type}:`, error);
-            return false; // Mặc định là chưa hoàn thành nếu có lỗi
-        }
-    }
-
-    async function removeHistory(keyId, type) {
-        try {
-            // Để xóa, chúng ta cần history_id. API DELETE /{id} yêu cầu history_id.
-            // Trước tiên cần tìm history_id dựa trên keyId và type.
-            const histories = await fetchWithAuth(`${API_BASE_URL}/history/?type=${type}`);
-            const existingHistory = histories ? histories.find(h => h.key_id === keyId) : null;
-
-            if (existingHistory) {
-                // API DELETE /history/{history_id}?type={type}
-                await fetchWithAuth(`${API_BASE_URL}/history/${existingHistory.history_id}?type=${type}`, {
-                    method: 'DELETE'
-                });
-                return true;
-            }
-            return false; // Không tìm thấy để xóa
-        } catch (error) {
-            console.error(`Error removing history for key_id ${keyId} with type ${type}:`, error);
-            alert(`Lỗi khi bỏ đánh dấu hoàn thành: ${error.message}`);
-            return false;
-        }
-    }
-
 
     // --- CÁC HÀM HIỂN THỊ ---
-    // ... (renderMainTopics, showSubTopicsView, showLessonsAndQuizzesListView, renderItemsInLessonsContent giữ nguyên)
     function renderMainTopics(topics) {
         if (!mainTopicsGrid) return;
+        if (!topics || topics.length === 0) {
+            mainTopicsGrid.innerHTML = "<p>Chưa có chủ đề nào.</p>";
+            return;
+        }
         mainTopicsGrid.innerHTML = topics.map(topic => `
             <div class="main-topic-card" data-topic-id="${topic.topic_id}">
                 <div class="main-topic-icon"><i class="fas fa-book"></i></div>
@@ -239,11 +204,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function showSubTopicsView(mainTopicId) {
         const subTopicsGrid = document.getElementById('subTopicsGrid');
         if (!subTopicsGrid) return;
-        subTopicsGrid.innerHTML = '<p>Đang tải chủ đề con...</p>';
+        subTopicsGrid.innerHTML = '<p class="loading-message">Đang tải chủ đề con...</p>';
 
         const currentTopic = allTopics.find(t => t.topic_id === mainTopicId);
         if (!currentTopic) {
-            subTopicsGrid.innerHTML = '<p>Không tìm thấy thông tin chủ đề chính.</p>';
+            subTopicsGrid.innerHTML = '<p class="error-message">Không tìm thấy thông tin chủ đề chính.</p>';
             return;
         }
 
@@ -268,18 +233,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
         mainTopicsSection.classList.add('hidden');
-        subTopicsSection.classList.remove('hidden');
         lessonsSection.classList.add('hidden');
         lessonDetailSection.classList.add('hidden');
         quizSection.classList.add('hidden');
+        subTopicsSection.classList.remove('hidden');
     }
 
     async function showLessonsAndQuizzesListView(subTopicId) {
         let subTopicName = "Danh sách";
         try {
             const subTopicDetail = await fetchWithAuth(`${API_BASE_URL}/subtopic/${subTopicId}`);
-            if(subTopicDetail) subTopicName = subTopicDetail.name;
-        } catch(e) { console.error("Could not fetch subtopic name for title", e)}
+            if (subTopicDetail) subTopicName = subTopicDetail.name;
+        } catch (e) { console.error("Could not fetch subtopic name for title", e) }
 
         document.getElementById('lessonsTitle').textContent = subTopicName;
 
@@ -292,7 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (!lessonsContentDiv) return;
-        lessonsContentDiv.innerHTML = '<p>Đang tải danh sách...</p>';
+        lessonsContentDiv.innerHTML = '<p class="loading-message">Đang tải danh sách...</p>';
         await renderItemsInLessonsContent(subTopicId, currentLessonOrQuizType);
 
         subTopicsSection.classList.add('hidden');
@@ -305,7 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function renderItemsInLessonsContent(subTopicId, type) {
         let items = [];
         if (!lessonsContentDiv) return;
-        lessonsContentDiv.innerHTML = `<p>Đang tải ${type === 'lessons' ? 'bài học' : 'bài kiểm tra'}...</p>`;
+        lessonsContentDiv.innerHTML = `<p class="loading-message">Đang tải ${type === 'lessons' ? 'bài học' : 'bài kiểm tra'}...</p>`;
 
         if (type === 'lessons') {
             const posts = await getPostsForSubTopic(subTopicId);
@@ -348,26 +313,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // CẬP NHẬT HÀM NÀY
     async function showLessonDetailView(lessonId) {
-        currentViewingLessonId = lessonId; // Lưu ID bài học đang xem
-
         if (!lessonDetailContentArea) {
             console.error("Element with ID 'lessonDetailContentArea' not found.");
             alert("Lỗi hiển thị bài học: Không tìm thấy vùng chứa nội dung.");
             return;
         }
-        lessonDetailContentArea.innerHTML = '<p>Đang tải nội dung bài học...</p>';
+        lessonDetailContentArea.innerHTML = '<p class="loading-message">Đang tải nội dung bài học...</p>';
         const postDetails = await getPostDetails(lessonId);
 
         if (!postDetails) {
-            lessonDetailContentArea.innerHTML = '<p>Không thể tải nội dung bài học.</p>';
+            lessonDetailContentArea.innerHTML = '<p class="error-message">Không thể tải nội dung bài học.</p>';
             return;
         }
         lessonDetailContentArea.innerHTML = postDetails.content;
 
-        // Kiểm tra và cập nhật trạng thái nút "completed"
-        await updateCompletedButtonState(lessonId);
+        // Tự động lưu vào history khi xem bài học (type = 2 cho lesson)
+        await addHistory(lessonId, 2);
 
         lessonsSection.classList.add('hidden');
         quizSection.classList.add('hidden');
@@ -376,44 +338,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         lessonDetailSection.classList.remove('hidden');
     }
 
-    async function updateCompletedButtonState(lessonId) {
-        if (!completedBtn) return;
-        const isCompleted = await checkHistory(lessonId, 2); // type = 2 cho lesson
-        if (isCompleted) {
-            completedBtn.classList.add('active'); // Thêm class 'active' nếu đã hoàn thành
-            completedBtn.innerHTML = '<i class="fas fa-check-circle"></i>'; // Icon đã hoàn thành
-            completedBtn.title = "Đã hoàn thành";
-            // completedBtn.disabled = true; // Tùy chọn: vô hiệu hóa nếu không cho bỏ đánh dấu
-        } else {
-            completedBtn.classList.remove('active');
-            completedBtn.innerHTML = '<i class="far fa-check-circle"></i>'; // Icon chưa hoàn thành
-            completedBtn.title = "Đánh dấu hoàn thành";
-            // completedBtn.disabled = false;
-        }
-    }
-
-
     async function showQuizView(quizId) {
-        // ... (Hàm này giữ nguyên, chỉ cần đảm bảo getExamDetails hoạt động đúng)
         if (!quizContentDiv) return;
-        quizContentDiv.innerHTML = '<p>Đang tải chi tiết bài kiểm tra...</p>';
+        quizContentDiv.innerHTML = '<p class="loading-message">Đang tải chi tiết bài kiểm tra...</p>';
 
         const examFullDetails = await getExamDetails(quizId);
 
-        if (!examFullDetails || !examFullDetails.questions || examFullDetails.questions.length === 0) {
-            if(examFullDetails !== null) {
-                 quizContentDiv.innerHTML = '<p>Lỗi: Bài kiểm tra không có câu hỏi hoặc không tải được.</p>';
-            }
+        if (!examFullDetails) { // Lỗi đã được alert trong getExamDetails
+             quizContentDiv.innerHTML = '<p class="error-message">Không thể tải thông tin bài kiểm tra.</p>';
             return;
         }
-        currentQuizData = examFullDetails;
-        quizTimeLeft = currentQuizData.timeLimit;
-        currentQuestionIndex = 0;
-        userAnswers = new Array(currentQuizData.questions.length).fill(null);
-        updateQuizTimerDisplay();
-        startQuizTimerInterval();
-        document.getElementById('totalQuestions').textContent = currentQuizData.questions.length;
-        renderQuizQuestionView(currentQuestionIndex);
+        if (!examFullDetails.questions || examFullDetails.questions.length === 0) {
+            quizContentDiv.innerHTML = '<p>Bài kiểm tra này hiện chưa có câu hỏi.</p>';
+             // Vẫn hiển thị quizSection để người dùng có thể quay lại, nhưng không có câu hỏi
+            currentQuizData = examFullDetails; // Lưu để có thể quay lại
+            document.getElementById('totalQuestions').textContent = '0';
+            document.getElementById('currentQuestion').textContent = '0';
+            stopQuizTimerInterval(); // Dừng timer nếu có
+            document.getElementById('quizTime').textContent = '00:00';
+        } else {
+            currentQuizData = examFullDetails;
+            quizTimeLeft = currentQuizData.timeLimit;
+            if(quizTimeLeft === 0) { // Xử lý trường hợp timeLimit là 0 (có thể là không giới hạn)
+                // Hiển thị 'Không giới hạn' hoặc ẩn timer. Hiện tại để là 00:00 và không chạy timer.
+                document.getElementById('quizTime').textContent = 'Không giới hạn';
+            } else {
+                updateQuizTimerDisplay();
+                startQuizTimerInterval();
+            }
+            currentQuestionIndex = 0;
+            userAnswers = new Array(currentQuizData.questions.length).fill(null);
+            document.getElementById('totalQuestions').textContent = currentQuizData.questions.length;
+            renderQuizQuestionView(currentQuestionIndex);
+        }
+
         lessonsSection.classList.add('hidden');
         lessonDetailSection.classList.add('hidden');
         subTopicsSection.classList.add('hidden');
@@ -421,11 +379,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         quizSection.classList.remove('hidden');
     }
 
-
     // --- QUIZ FUNCTIONS ---
-    // ... (startQuizTimerInterval, stopQuizTimerInterval, updateQuizTimerDisplay, renderQuizQuestionView, processQuizSubmission giữ nguyên)
     function startQuizTimerInterval() {
         if (quizTimer) clearInterval(quizTimer);
+        if (quizTimeLeft === 0) return; // Không bắt đầu timer nếu thời gian là 0
+
         quizTimer = setInterval(() => {
             quizTimeLeft--;
             updateQuizTimerDisplay();
@@ -441,6 +399,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateQuizTimerDisplay() {
+        if (quizTimeLeft === 0 && currentQuizData && currentQuizData.timeLimit === 0) {
+             document.getElementById('quizTime').textContent = 'Không giới hạn';
+             return;
+        }
         const minutes = Math.floor(quizTimeLeft / 60);
         const seconds = quizTimeLeft % 60;
         const quizTimeEl = document.getElementById('quizTime');
@@ -451,27 +413,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderQuizQuestionView(index) {
-        if (!currentQuizData || index < 0 || index >= currentQuizData.questions.length) {
-            processQuizSubmission();
+        if (!currentQuizData || !currentQuizData.questions || currentQuizData.questions.length === 0 || index < 0 || index >= currentQuizData.questions.length) {
+            if (currentQuizData && (!currentQuizData.questions || currentQuizData.questions.length === 0)) {
+                // Trường hợp quiz không có câu hỏi, đã xử lý ở showQuizView
+                return;
+            }
+            processQuizSubmission(); // Nếu index out of bounds nhưng có questions, nộp bài
             return;
         }
+
         const question = currentQuizData.questions[index];
-        const content = quizContentDiv;
         document.getElementById('currentQuestion').textContent = (index + 1).toString();
 
         let optionsHtml = '';
-        if (question.options && Array.isArray(question.options)) {
+        if (question.options && Array.isArray(question.options) && question.options.length > 0) {
             optionsHtml = question.options.map((option) => `
-                <label>
+                <label class="quiz-option-label">
                     <input type="radio" name="answer" value="${option.optionId}" ${userAnswers[index] == option.optionId ? 'checked' : ''}>
-                    ${option.optionText || 'Lựa chọn'}
+                    <span class="quiz-option-text">${option.optionText || 'Lựa chọn'}</span>
                 </label>
             `).join('');
         } else {
-            optionsHtml = "<p>Không có lựa chọn nào cho câu hỏi này.</p>";
+            optionsHtml = "<p>Câu hỏi này không có lựa chọn.</p>";
         }
 
-        content.innerHTML = `
+        quizContentDiv.innerHTML = `
             <div class="question">
                 <h3>${question.questionText || 'Nội dung câu hỏi...'}</h3>
                 <div class="options">
@@ -479,12 +445,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>
             <div class="quiz-navigation-buttons">
-                <button id="prevQuestionBtn" ${index === 0 ? 'disabled' : ''}>Câu trước</button>
-                <button id="nextQuestionBtn">${index === currentQuizData.questions.length - 1 ? 'Nộp bài' : 'Câu tiếp theo'}</button>
+                <button id="prevQuestionBtn" class="btn-secondary" ${index === 0 ? 'disabled' : ''}>Câu trước</button>
+                <button id="nextQuestionBtn" class="btn-primary">${index === currentQuizData.questions.length - 1 ? 'Nộp bài' : 'Câu tiếp theo'}</button>
             </div>
         `;
 
-        content.querySelectorAll('input[name="answer"]').forEach(radio => {
+        quizContentDiv.querySelectorAll('input[name="answer"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 userAnswers[currentQuestionIndex] = parseInt(e.target.value);
             });
@@ -509,7 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function processQuizSubmission() {
         stopQuizTimerInterval();
         let score = 0;
-        if (currentQuizData && currentQuizData.questions) {
+        if (currentQuizData && currentQuizData.questions && currentQuizData.questions.length > 0) {
             currentQuizData.questions.forEach((question, index) => {
                 if (userAnswers[index] !== null && userAnswers[index] === question.correctOptionId) {
                     score++;
@@ -518,11 +484,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             const totalQuestions = currentQuizData.questions.length;
             const resultMessage = `Bạn đã trả lời đúng ${score}/${totalQuestions} câu.`;
 
-            if(quizContentDiv) {
+            if (quizContentDiv) {
                 quizContentDiv.innerHTML = `
-                    <h2>Kết quả bài kiểm tra</h2>
-                    <p>${resultMessage}</p>
-                    <button id="backToQuizListFromResultInQuiz">Quay lại danh sách</button>
+                    <div class="quiz-results">
+                        <h2>Kết quả bài kiểm tra</h2>
+                        <p>${resultMessage}</p>
+                        <button id="backToQuizListFromResultInQuiz" class="btn-primary">Quay lại danh sách</button>
+                    </div>
+                `;
+                document.getElementById('backToQuizListFromResultInQuiz')?.addEventListener('click', () => {
+                    quizSection.classList.add('hidden');
+                    currentLessonOrQuizType = 'quizzes'; // Để khi quay lại sẽ active tab quizzes
+                    showLessonsAndQuizzesListView(currentSubTopicId);
+                });
+            }
+        } else if (currentQuizData) { // Trường hợp quiz không có câu hỏi nhưng vẫn vào được đây
+             if (quizContentDiv) {
+                quizContentDiv.innerHTML = `
+                    <div class="quiz-results">
+                        <h2>Thông báo</h2>
+                        <p>Bài kiểm tra này không có câu hỏi để chấm điểm.</p>
+                        <button id="backToQuizListFromResultInQuiz" class="btn-primary">Quay lại danh sách</button>
+                    </div>
                 `;
                 document.getElementById('backToQuizListFromResultInQuiz')?.addEventListener('click', () => {
                     quizSection.classList.add('hidden');
@@ -533,90 +516,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             alert("Không có dữ liệu bài kiểm tra để nộp.");
         }
+        // Tùy chọn: Gửi kết quả lên server
     }
-
-
-    // --- EVENT LISTENERS CHO CÁC NÚT ACTION TRONG LESSON DETAIL ---
-    if (completedBtn) {
-        completedBtn.addEventListener('click', async () => {
-            if (!currentViewingLessonId) return;
-
-            const type = 2; // type = 2 cho lesson history
-            const isCurrentlyCompleted = completedBtn.classList.contains('active');
-
-            if (isCurrentlyCompleted) {
-                // Nếu đang là "Đã hoàn thành", click để bỏ đánh dấu
-                // (Tùy chọn: có thể bạn không muốn cho phép bỏ đánh dấu)
-                // const success = await removeHistory(currentViewingLessonId, type);
-                // if (success) {
-                //     updateCompletedButtonState(currentViewingLessonId);
-                // }
-                alert("Bài học này đã được đánh dấu hoàn thành."); // Hoặc không làm gì cả
-            } else {
-                // Nếu chưa hoàn thành, click để đánh dấu
-                const success = await addHistory(currentViewingLessonId, type);
-                if (success) {
-                    updateCompletedButtonState(currentViewingLessonId); // Cập nhật lại trạng thái nút
-                }
-            }
-        });
-    }
-
-    if (restartBtn) {
-        restartBtn.addEventListener('click', async () => {
-            if (!currentViewingLessonId) return;
-            const type = 2; // type = 2 cho lesson history
-            // Logic cho "Học lại": có thể là xóa history và reset trạng thái nút
-            const reallyRestart = confirm("Bạn có muốn đánh dấu bài học này là chưa hoàn thành và học lại không?");
-            if (reallyRestart) {
-                const success = await removeHistory(currentViewingLessonId, type);
-                if (success) {
-                    updateCompletedButtonState(currentViewingLessonId);
-                    alert("Đã bỏ đánh dấu hoàn thành. Bạn có thể học lại bài này.");
-                } else {
-                    // Có thể history không tồn tại để xóa, vẫn cập nhật nút
-                    updateCompletedButtonState(currentViewingLessonId);
-                     alert("Không tìm thấy lịch sử để xóa, hoặc đã bỏ đánh dấu.");
-                }
-            }
-        });
-    }
-
-    // (Thêm event listener cho favoriteBtn nếu cần)
-
 
     // --- Back button handlers ---
-    if(backToMainTopics) backToMainTopics.addEventListener('click', () => {
+    if (backToMainTopics) backToMainTopics.addEventListener('click', () => {
         subTopicsSection.classList.add('hidden');
         lessonsSection.classList.add('hidden');
         lessonDetailSection.classList.add('hidden');
         quizSection.classList.add('hidden');
         mainTopicsSection.classList.remove('hidden');
         stopQuizTimerInterval();
-        currentViewingLessonId = null; // Reset khi thoát khỏi chi tiết bài học
     });
 
-    if(backToSubTopics) backToSubTopics.addEventListener('click', () => {
+    if (backToSubTopics) backToSubTopics.addEventListener('click', () => {
         lessonsSection.classList.add('hidden');
         subTopicsSection.classList.remove('hidden');
         mainTopicsSection.classList.add('hidden');
         stopQuizTimerInterval();
-        currentViewingLessonId = null;
     });
 
-    if(backToLessons) backToLessons.addEventListener('click', () => {
+    if (backToLessons) backToLessons.addEventListener('click', () => {
         lessonDetailSection.classList.add('hidden');
         currentLessonOrQuizType = 'lessons';
         showLessonsAndQuizzesListView(currentSubTopicId);
-        currentViewingLessonId = null;
     });
 
-    if(backToQuizList) backToQuizList.addEventListener('click', () => {
+    if (backToQuizList) backToQuizList.addEventListener('click', () => {
         quizSection.classList.add('hidden');
         stopQuizTimerInterval();
         currentLessonOrQuizType = 'quizzes';
         showLessonsAndQuizzesListView(currentSubTopicId);
     });
+
+    // Event listener cho nút Nộp bài chính (nếu cần, vì đã có nút "Nộp bài" khi ở câu cuối)
+    if (submitQuizButton) {
+        submitQuizButton.addEventListener('click', () => {
+            // Có thể hỏi xác nhận trước khi nộp sớm
+            const confirmSubmit = confirm("Bạn có chắc chắn muốn nộp bài không?");
+            if (confirmSubmit) {
+                processQuizSubmission();
+            }
+        });
+    }
+
 
     // --- Tab switching ---
     document.querySelectorAll('.lessons-tabs .tab-btn').forEach(btn => {
@@ -632,14 +575,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- KHỞI TẠO BAN ĐẦU ---
     async function initializeApp() {
-        if(mainTopicsGrid) mainTopicsGrid.innerHTML = '<p>Đang tải danh sách chủ đề...</p>';
+        if (mainTopicsGrid) mainTopicsGrid.innerHTML = '<p class="loading-message">Đang tải danh sách chủ đề...</p>';
         const topics = await getMainTopics();
 
         if (topics && topics.length > 0) {
             renderMainTopics(topics);
-        } else if (topics) {
-             if(mainTopicsGrid) mainTopicsGrid.innerHTML = "<p>Chưa có chủ đề nào.</p>";
+        } else if (topics) { // topics là mảng rỗng
+            if (mainTopicsGrid) mainTopicsGrid.innerHTML = "<p>Chưa có chủ đề nào.</p>";
         }
+        // Hiển thị section chính, ẩn các section khác
         mainTopicsSection.classList.remove('hidden');
         subTopicsSection.classList.add('hidden');
         lessonsSection.classList.add('hidden');

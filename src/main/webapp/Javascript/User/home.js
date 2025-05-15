@@ -4,17 +4,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         const collections = await window.collectionsAPI.getUserCollections();
         console.log('Danh sách bộ sưu tập:', collections);
 
-        // Cập nhật số lượng bộ sưu tập trong stat card
-        const collectionStat = document.querySelector('.stat-card:nth-child(4) .stat-value');
-        if (collectionStat) {
-            collectionStat.textContent = collections.length;
-        }
+        // Tìm thẻ stat-card chứa "Bộ sưu tập"
+        const collectionCard = Array.from(document.querySelectorAll('.stat-card')).find(card => 
+            card.querySelector('h3').textContent === 'Bộ sưu tập'
+        );
 
-        // Cập nhật số lượng từ trong bộ sưu tập
-        const collectionLabel = document.querySelector('.stat-card:nth-child(4) .stat-label');
-        if (collectionLabel) {
-            const totalWords = collections.reduce((sum, collection) => sum + (collection.wordCount || 0), 0);
-            collectionLabel.textContent = `từ đã lưu`;
+        if (collectionCard) {
+            // Cập nhật số lượng bộ sưu tập
+            const collectionStat = collectionCard.querySelector('.stat-value');
+            if (collectionStat) {
+                collectionStat.textContent = collections.length;
+            }
+
+            // Cập nhật label
+            const collectionLabel = collectionCard.querySelector('.stat-label');
+            if (collectionLabel) {
+                const totalWords = collections.reduce((sum, collection) => sum + (collection.wordCount || 0), 0);
+                collectionLabel.textContent = ` đã lưu`;
+            }
         }
 
         // Xử lý checkbox trong Today's Goals
@@ -36,12 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     case 'Ngữ pháp':
                         window.location.href = 'grammar.html';
                         break;
-                    case 'Đọc hiểu':
-                        window.location.href = 'reading.html';
-                        break;
-                    case 'Kiểm tra':
-                        window.location.href = 'quiz.html';
-                        break;
+                    
                 }
             });
         });

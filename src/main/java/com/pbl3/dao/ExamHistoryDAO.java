@@ -109,7 +109,7 @@ public class ExamHistoryDAO{
         ExamHistory t = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM exam_history WHERE exam_history_id = ? AND user_id = ?";
+            String sql = "SELECT * FROM exam_history WHERE exam_id = ? AND user_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
             pstmt.setInt(2, userId);

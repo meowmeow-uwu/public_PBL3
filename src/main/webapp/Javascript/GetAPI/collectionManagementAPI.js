@@ -6,29 +6,33 @@
 const COLLECTION_BASE_URL = window.APP_CONFIG.API_BASE_URL + '/admin/collections';
 
 function getToken() {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 }
 
 // Lấy danh sách bộ sưu tập công khai
 async function getAllPublicCollections() {
     try {
-        console.log('Đang gọi API lấy danh sách bộ sưu tập công khai...'); // Debug log
-        console.log('API URL:', `${COLLECTION_BASE_URL}/all`); // Debug log
-        console.log('Token:', getToken()); // Debug log
+        console.log('Đang gọi API lấy danh sách bộ sưu tập công khai...');
+        
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
 
+        console.log('Token gửi đi trong header:', token);
         const response = await fetch(`${COLLECTION_BASE_URL}/all`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': token,
                 'Content-Type': 'application/json'
             }
         });
 
-        console.log('Response status:', response.status); // Debug log
-
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Response error:', errorText); // Debug log
+            console.error('Response error:', errorText);
 
             if (response.status === 401) {
                 throw new Error('Unauthorized: Vui lòng đăng nhập lại');
@@ -40,7 +44,7 @@ async function getAllPublicCollections() {
         }
 
         const data = await response.json();
-        console.log('Danh sách bộ sưu tập:', data); // Debug log
+        console.log('Danh sách bộ sưu tập:', data);
         return data;
     } catch (error) {
         console.error('Lỗi khi lấy danh sách bộ sưu tập:', error);

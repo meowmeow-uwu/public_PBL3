@@ -64,26 +64,28 @@
                         <i class="far fa-clock"></i> <span id="quizTime">00:00</span>
                     </span>
                     <span class="quiz-progress">
-                        Câu <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span>
+                        Câu <span id="currentQuestion">1</span>/<span id="totalQuestions">0</span>
                     </span>
                 </div>
             </div>
             <div class="quiz-content" id="quizContent">
                 </div>
             <div class="quiz-actions">
-                <button class="btn-primary" id="submitQuizBtn">Nộp bài</button> <button class="btn-secondary" id="saveQuizBtn">Lưu bài làm</button> </div>
+                <button class="btn-primary" id="submitQuizBtn">Nộp bài</button>
+                <button class="btn-secondary" id="saveQuizBtn" style="display: none;">Lưu bài làm</button>
+            </div>
         </div>
     </div>
     <div id="footer"></div>
 
     <script src="../../Javascript/config.js"></script>
     <script>
-        // Đảm bảo APP_CONFIG và BASE_PATH được định nghĩa trước khi grammar.js chạy
         if (typeof window.APP_CONFIG === 'undefined') {
             window.APP_CONFIG = {};
         }
         window.APP_CONFIG.BASE_PATH = '../../';
-        // window.APP_CONFIG.API_BASE_URL = 'http://localhost:8080/your-app-context/api'; // Ví dụ
+        // Đảm bảo window.APP_CONFIG.API_BASE_URL được định nghĩa ở đây hoặc trong config.js
+        // window.APP_CONFIG.API_BASE_URL = 'http://localhost:8080/PBL3/api'; // Ví dụ
     </script>
     <script src="../../Javascript/components/header_footer.js"></script>
     <script src="../../Javascript/GetAPI/getInfor.js"></script>

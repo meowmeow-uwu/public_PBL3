@@ -319,9 +319,15 @@ async function showCollectionModal() {
     try {
         // Lấy danh sách bộ sưu tập cá nhân
         const collections = await window.collectionsAPI.getUserCollections();
+        console.log('Danh sách bộ sưu tập:', collections);
         
         // Xóa danh sách cũ
         collectionList.innerHTML = '';
+        
+        if (!collections || collections.length === 0) {
+            collectionList.innerHTML = '<div class="collection-item">Bạn chưa có bộ sưu tập nào</div>';
+            return;
+        }
         
         // Thêm các bộ sưu tập vào danh sách
         collections.forEach(collection => {
@@ -332,8 +338,10 @@ async function showCollectionModal() {
                     <div class="collection-name">${collection.name}</div>
                     <div class="word-count">${collection.wordCount || 0} từ</div>
                 </div>
+                <button class="save-btn" onclick="event.stopPropagation(); saveWordToCollection(${collection.collectionId})">
+                    <i class="fas fa-plus"></i>
+                </button>
             `;
-            item.addEventListener('click', () => saveWordToCollection(collection.collectionId));
             collectionList.appendChild(item);
         });
         
@@ -357,6 +365,7 @@ async function saveWordToCollection(collectionId) {
             throw new Error('Không tìm thấy từ hiện tại');
         }
 
+        console.log('Lưu từ:', currentWord.wordId, 'vào bộ sưu tập:', collectionId);
         await window.collectionsAPI.addWordToCollection(collectionId, currentWord.wordId);
         alert('Đã lưu từ vào bộ sưu tập');
         closeCollectionModal();

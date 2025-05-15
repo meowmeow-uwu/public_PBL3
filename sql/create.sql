@@ -23,16 +23,10 @@ CREATE TABLE _user (
     name NVARCHAR(100) NOT NULL,
     avatar NVARCHAR(255) NULL,
     group_user_id INT NOT NULL,
+username NVARCHAR(50) UNIQUE NOT NULL,
+    email NVARCHAR(255) UNIQUE NOT NULL,
+    password NVARCHAR(255) NOT NULL,
     FOREIGN KEY (group_user_id) REFERENCES group_user(group_user_id)
-);
-CREATE TABLE account (
-    
-    account_id INT PRIMARY KEY IDENTITY(1, 1) NOT NULL,
-    username NVARCHAR(50) UNIQUE NOT NULL,
-    email NVARCHAR(100) UNIQUE NOT NULL,
-    password NVARCHAR(100) NOT NULL,
-	user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES _user(user_id)
 );
 
 

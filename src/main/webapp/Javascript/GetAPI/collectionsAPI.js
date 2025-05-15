@@ -3,7 +3,7 @@ const USER_BASE_URL = window.APP_CONFIG.API_BASE_URL +'/collections';
 function getToken() {
     const token = localStorage.getItem('token');
     if (!token) return null;
-    return `Bearer ${token}`;
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 }
 // lấy danh sách bộ sưu tập của người dùng hiện tại
 async function getUserCollections() {
@@ -44,11 +44,16 @@ async function deleteCollection(collectionId) {
     }
 
     try {
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
         console.log('Đang gọi API xóa bộ sưu tập với ID:', collectionId); // Debug log
         const response = await fetch(`${USER_BASE_URL}/${collectionId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': token,
                 'Content-Type': 'application/json'
             }
         });
@@ -73,13 +78,18 @@ async function deleteCollection(collectionId) {
 // Tạo bộ sưu tập mới
 async function createCollection(name) {
     try {
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
         const formData = new URLSearchParams();
         formData.append('name', name);
 
         const response = await fetch(`${USER_BASE_URL}/create`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': token,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData.toString()
@@ -103,15 +113,25 @@ async function createCollection(name) {
 // Thêm từ vào bộ sưu tập
 async function addWordToCollection(collectionId, wordId) {
     try {
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
+        console.log('Thêm từ vào bộ sưu tập:', { collectionId, wordId });
+
         const response = await fetch(`${USER_BASE_URL}/${collectionId}/words/${wordId}`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': token,
                 'Content-Type': 'application/json'
             }
         });
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText);
+
             if (response.status === 401) {
                 throw new Error('Unauthorized: Vui lòng đăng nhập lại');
             }
@@ -135,15 +155,27 @@ async function getWordsInCollection(collectionId) {
     }
 
     try {
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
+        console.log('Gọi API với token:', token);
+
         const response = await fetch(`${USER_BASE_URL}/${collectionId}/words`, {
             method: 'GET',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': token,
                 'Content-Type': 'application/json'
             }
         });
 
+        console.log('Response status:', response.status);
+
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText);
+
             if (response.status === 401) {
                 throw new Error('Unauthorized: Vui lòng đăng nhập lại');
             }
@@ -154,6 +186,7 @@ async function getWordsInCollection(collectionId) {
         }
 
         const data = await response.json();
+        console.log('Danh sách từ nhận được:', data);
         return data;
     } catch (error) {
         console.error('Lỗi khi lấy danh sách từ:', error);
@@ -166,6 +199,11 @@ async function updateCollection(collectionId, name) {
     try {
         console.log('Đang cập nhật bộ sưu tập:', { collectionId, name }); // Debug log
 
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
         const formData = new URLSearchParams();
         formData.append('name', name);
 
@@ -176,7 +214,7 @@ async function updateCollection(collectionId, name) {
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': token,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData.toString()
@@ -207,15 +245,21 @@ async function updateCollection(collectionId, name) {
 // Xóa từ khỏi bộ sưu tập
 async function deleteWordFromCollection(collectionId, wordId) {
     try {
-        const formData = new FormData();
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
+        const formData = new URLSearchParams();
         formData.append('wordId', wordId);
 
         const response = await fetch(`${USER_BASE_URL}/${collectionId}/delete-word`, {
             method: 'DELETE',
             headers: {
-                'Authorization': getToken()
+                'Authorization': token,
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            body: formData.toString()
         });
 
         if (!response.ok) {
@@ -240,13 +284,18 @@ async function addUserToCollection(collectionId) {
     try {
         console.log('Đang thêm người dùng vào bộ sưu tập:', collectionId); // Debug log
 
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
+
         const formData = new URLSearchParams();
         formData.append('collectionId', collectionId);
 
         const response = await fetch(`${USER_BASE_URL}/Add/${collectionId}`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': token,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData.toString()

@@ -6,7 +6,9 @@
 const WORD_BASE_URL = window.APP_CONFIG.API_BASE_URL + '/word';
 
 function getToken() {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 }
 
 /**
@@ -16,12 +18,17 @@ function getToken() {
  */
 async function getFlashcard(wordId) {
     try {
-        console.log('Đang gọi API lấy flashcard cho wordId:', wordId); // Debug log
+        console.log('Đang gọi API lấy flashcard cho wordId:', wordId);
+        
+        const token = getToken();
+        if (!token) {
+            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+        }
 
         const response = await fetch(`${WORD_BASE_URL}/flashcard/${wordId}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': token,
                 'Content-Type': 'application/json'
             }
         });

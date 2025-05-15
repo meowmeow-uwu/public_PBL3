@@ -106,6 +106,10 @@ public abstract class CollectionService implements ServiceInterface<Collection> 
         CollectionOfWord item = new CollectionOfWord(CID, collectionId, wordId);
         return CollectionOfWordDAO.getInstance().insert(item);
     }
+    public int addUserToCollection(int collectionId, int userId) {
+        CollectionOfUser item = new CollectionOfUser(CID, collectionId, userId);
+        return CollectionOfUserDAO.getInstance().insert(item);
+    }
 
     public List<Map<String, Object>> getWordsInCollection(int collectionId) {
         List<Map<String, Object>> result = new ArrayList<>();

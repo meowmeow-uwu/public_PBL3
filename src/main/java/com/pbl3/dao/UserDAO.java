@@ -292,7 +292,7 @@ public class UserDAO implements DAOInterface<User> {
 
             // Truy vấn lấy dữ liệu phân trang
             String sql = "SELECT u.*  "
-                    + "FROM [user] u "
+                    + "FROM _user u "
                     + "WHERE u.group_user_id = ? "
                     + "  AND ( "
                     + "        ? IS NULL OR  "

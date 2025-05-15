@@ -1,40 +1,3 @@
-// Sample vocabulary data (replace with actual data from backend)
-const vocabularyData = {
-    fruits: {
-        title: "Fruits",
-        level: "Beginner",
-        words: [
-            {
-                word: "Apple",
-                phonetic: "/ˈæp.əl/",
-                type: "noun",
-                meaning: "A round fruit with red, yellow, or green skin",
-                example: "I eat an apple every day.",
-                image: "apple.jpg",
-                audio: "apple.mp3"
-            },
-            // Add more words...
-        ]
-    },
-    family: {
-        title: "Family",
-        level: "Beginner",
-        words: [
-            {
-                word: "Mother",
-                phonetic: "/ˈmʌð.ər/",
-                type: "noun",
-                meaning: "A female parent",
-                example: "My mother is a teacher.",
-                image: "mother.jpg",
-                audio: "mother.mp3"
-            },
-            // Add more words...
-        ]
-    },
-    // Add more topics...
-};
-
 // DOM Elements
 const topicGrid = document.querySelector('.topic-grid');
 const flashcardSection = document.querySelector('.flashcard-section');
@@ -42,8 +5,13 @@ const flashcard = document.querySelector('.flashcard');
 const wordElement = document.querySelector('.word');
 const phoneticElement = document.querySelector('.phonetic');
 const wordTypeElement = document.querySelector('.word-type');
-const meaningElement = document.querySelector('.meaning');
+const meaningEnElement = document.querySelector('.meaning-en');
+const definitionElement = document.querySelector('.definition');
 const exampleElement = document.querySelector('.example');
+const meaningElement = document.querySelector('.meaning');
+const meaningViElement = document.querySelector('.meaning-vi');
+const definitionViElement = document.querySelector('.definition-vi');
+const exampleViElement = document.querySelector('.example-vi');
 const progressFill = document.querySelector('.progress-fill');
 const progressText = document.querySelector('.progress-text');
 const prevBtn = document.querySelector('.prev-btn');
@@ -51,155 +19,352 @@ const nextBtn = document.querySelector('.next-btn');
 const audioBtn = document.querySelector('.audio-btn');
 const imageBtn = document.querySelector('.image-btn');
 const markLearnedBtn = document.querySelector('.mark-learned-btn');
+const currentNumberElement = document.querySelector('.current-number');
+const totalNumberElement = document.querySelector('.total-number');
+const collectionModal = document.getElementById('collectionModal');
+const collectionList = document.querySelector('.collection-list');
 
 // State variables
-let currentTopic = null;
+let currentCollection = null;
 let currentWordIndex = 0;
 let learnedWords = new Set();
+let publicCollections = [];
+let currentWords = [];
+let currentWord = null;
 
 // Initialize the interface
-function init() {
-    // Create topic cards
-    Object.entries(vocabularyData).forEach(([key, topic]) => {
-        const card = createTopicCard(key, topic);
-        topicGrid.appendChild(card);
-    });
+async function init() {
+    try {
+        // Kiểm tra các element cần thiết
+        if (!topicGrid) {
+            console.error('Không tìm thấy element .topic-grid');
+            return;
+        }
 
-    // Hide flashcard section initially
-    flashcardSection.style.display = 'none';
+        // Lấy danh sách bộ sưu tập công khai
+        publicCollections = await window.collectionManagementAPI.getAllPublicCollections();
+        console.log('Danh sách bộ sưu tập công khai:', publicCollections);
 
-    // Add event listeners
-    flashcard.addEventListener('click', flipCard);
-    prevBtn.addEventListener('click', showPreviousWord);
-    nextBtn.addEventListener('click', showNextWord);
-    audioBtn.addEventListener('click', playAudio);
-    imageBtn.addEventListener('click', showImage);
-    markLearnedBtn.addEventListener('click', toggleLearned);
+        // Tạo topic cards từ danh sách bộ sưu tập
+        publicCollections.forEach(collection => {
+            const card = createTopicCard(collection);
+            topicGrid.appendChild(card);
+        });
+
+        // Ẩn flashcard section ban đầu
+        if (flashcardSection) {
+            flashcardSection.style.display = 'none';
+        }
+
+        // Thêm event listeners nếu các element tồn tại
+        if (flashcard) {
+            flashcard.addEventListener('click', flipCard);
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', showPreviousWord);
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', showNextWord);
+        }
+        if (audioBtn) {
+            audioBtn.addEventListener('click', playAudio);
+        }
+        if (imageBtn) {
+            imageBtn.addEventListener('click', showImage);
+        }
+        if (markLearnedBtn) {
+            markLearnedBtn.addEventListener('click', toggleLearned);
+        }
+    } catch (error) {
+        console.error('Lỗi khi khởi tạo:', error);
+        if (topicGrid) {
+            topicGrid.innerHTML = `
+                <div class="error-message">
+                    <div style="font-size: 2em; margin-bottom: 10px;">⚠️</div>
+                    <div>Có lỗi xảy ra khi tải dữ liệu</div>
+                    <div style="margin-top: 10px; color: #666;">Vui lòng thử lại sau</div>
+                </div>
+            `;
+        }
+    }
 }
 
-// Create a topic card
-function createTopicCard(key, topic) {
+// Tạo topic card
+function createTopicCard(collection) {
     const card = document.createElement('div');
     card.className = 'topic-card';
     card.innerHTML = `
         <div class="topic-icon">
             <i class="fas fa-book"></i>
         </div>
-        <h3>${topic.title}</h3>
+        <h3>${collection.name}</h3>
         <div class="topic-info">
-            <span>${topic.words.length} words</span>
-            <span class="level-badge">${topic.level}</span>
+            <span>${collection.wordCount || 0} từ</span>
+            <span class="level-badge">${collection.level || 'A1'}</span>
         </div>
+        <button class="save-collection-btn" onclick="event.stopPropagation(); saveCollection(${collection.collectionId})">
+            <i class="fas fa-bookmark"></i> Lưu bộ sưu tập
+        </button>
     `;
-    card.addEventListener('click', () => startTopic(key));
+    card.addEventListener('click', () => startCollection(collection));
     return card;
 }
 
-// Start a topic
-function startTopic(topicKey) {
-    currentTopic = topicKey;
-    currentWordIndex = 0;
-    learnedWords.clear();
-    updateProgress();
-    
-    // Show flashcard section
-    topicGrid.style.display = 'none';
-    flashcardSection.style.display = 'block';
-    
-    // Show first word
-    showCurrentWord();
+// Bắt đầu học một bộ sưu tập
+async function startCollection(collection) {
+    try {
+        currentCollection = collection;
+        currentWordIndex = 0;
+        learnedWords.clear();
+        updateProgress();
+        
+        // Hiển thị flashcard section
+        if (topicGrid) {
+            topicGrid.style.display = 'none';
+        }
+        if (flashcardSection) {
+            flashcardSection.style.display = 'block';
+        }
+        
+        // Lấy danh sách từ trong bộ sưu tập
+        currentWords = await window.collectionsAPI.getWordsInCollection(collection.collectionId);
+        if (!currentWords || currentWords.length === 0) {
+            alert('Bộ sưu tập này chưa có từ nào');
+            return;
+        }
+        
+        // Hiển thị từ đầu tiên
+        showCurrentWord(currentWords[0]);
+    } catch (error) {
+        console.error('Lỗi khi bắt đầu học:', error);
+        alert('Có lỗi xảy ra khi tải dữ liệu từ vựng');
+    }
 }
 
-// Show current word
-function showCurrentWord() {
-    const word = vocabularyData[currentTopic].words[currentWordIndex];
-    
-    // Update front of card
-    wordElement.textContent = word.word;
-    phoneticElement.textContent = word.phonetic;
-    wordTypeElement.textContent = word.type;
-    
-    // Update back of card
-    meaningElement.textContent = word.meaning;
-    exampleElement.textContent = word.example;
-    
-    // Reset card to front
-    flashcard.classList.remove('flipped');
-    
-    // Update navigation buttons
-    prevBtn.disabled = currentWordIndex === 0;
-    nextBtn.disabled = currentWordIndex === vocabularyData[currentTopic].words.length - 1;
-    
-    // Update learned status
-    updateLearnedStatus();
+// Hiển thị từ hiện tại
+async function showCurrentWord(word) {
+    try {
+        currentWord = word; // Lưu từ hiện tại
+        // Lấy thông tin flashcard của từ
+        const flashcardData = await window.wordAPI.getFlashcard(word.wordId);
+        console.log('Flashcard data:', flashcardData); // Debug log
+        
+        // Cập nhật số thứ tự
+        if (currentNumberElement) {
+            currentNumberElement.textContent = currentWordIndex + 1;
+        }
+        if (totalNumberElement) {
+            totalNumberElement.textContent = currentWords.length;
+        }
+        
+        // Cập nhật mặt trước của thẻ
+        if (wordElement) {
+            wordElement.textContent = flashcardData.sourceWord.word_name;
+        }
+        if (phoneticElement) {
+            phoneticElement.textContent = flashcardData.sourceWord.pronunciation;
+        }
+        if (wordTypeElement) {
+            wordTypeElement.textContent = flashcardData.sourceDefinition?.definition || '';
+        }
+        if (meaningEnElement) {
+            meaningEnElement.textContent = flashcardData.sourceDefinition?.meaning || '';
+        }
+        if (definitionElement) {
+            definitionElement.textContent = flashcardData.sourceDefinition?.definition || '';
+        }
+        if (exampleElement) {
+            exampleElement.textContent = flashcardData.sourceDefinition?.example || '';
+        }
+        
+        // Cập nhật mặt sau của thẻ
+        if (meaningElement) {
+            meaningElement.textContent = flashcardData.targetWord.word_name;
+        }
+        if (meaningViElement) {
+            meaningViElement.textContent = flashcardData.targetDefinition?.meaning || '';
+        }
+        if (definitionViElement) {
+            definitionViElement.textContent = flashcardData.targetDefinition?.definition || '';
+        }
+        if (exampleViElement) {
+            exampleViElement.textContent = flashcardData.targetDefinition?.example || '';
+        }
+        
+        // Reset thẻ về mặt trước
+        if (flashcard) {
+            flashcard.classList.remove('flipped');
+        }
+        
+        // Cập nhật nút điều hướng
+        if (prevBtn) {
+            prevBtn.disabled = currentWordIndex === 0;
+        }
+        if (nextBtn) {
+            nextBtn.disabled = currentWordIndex === currentWords.length - 1;
+        }
+        
+        // Cập nhật trạng thái đã học
+        updateLearnedStatus();
+    } catch (error) {
+        console.error('Lỗi khi hiển thị từ:', error);
+        alert('Có lỗi xảy ra khi tải thông tin từ vựng');
+    }
 }
 
-// Flip card
+// Lật thẻ
 function flipCard() {
-    flashcard.classList.toggle('flipped');
+    if (flashcard) {
+        flashcard.classList.toggle('flipped');
+    }
 }
 
-// Show previous word
+// Hiển thị từ trước
 function showPreviousWord() {
     if (currentWordIndex > 0) {
         currentWordIndex--;
-        showCurrentWord();
+        showCurrentWord(currentWords[currentWordIndex]);
     }
 }
 
-// Show next word
+// Hiển thị từ tiếp theo
 function showNextWord() {
-    if (currentWordIndex < vocabularyData[currentTopic].words.length - 1) {
+    if (currentWordIndex < currentWords.length - 1) {
         currentWordIndex++;
-        showCurrentWord();
+        showCurrentWord(currentWords[currentWordIndex]);
     }
 }
 
-// Play audio
+// Phát âm
 function playAudio() {
-    const word = vocabularyData[currentTopic].words[currentWordIndex];
-    const audio = new Audio(`/Assets/Audio/${word.audio}`);
-    audio.play();
-}
-
-// Show image
-function showImage() {
-    const word = vocabularyData[currentTopic].words[currentWordIndex];
-    // Implement image display logic (e.g., modal or lightbox)
-    alert(`Showing image for ${word.word}`);
-}
-
-// Toggle learned status
-function toggleLearned() {
-    const word = vocabularyData[currentTopic].words[currentWordIndex];
-    if (learnedWords.has(word.word)) {
-        learnedWords.delete(word.word);
-    } else {
-        learnedWords.add(word.word);
+    const currentWord = currentWords[currentWordIndex];
+    if (currentWord && currentWord.sound) {
+        const audio = new Audio(`${window.APP_CONFIG.BASE_PATH}Assets/Sounds/${currentWord.sound}`);
+        audio.play().catch(error => {
+            console.error('Lỗi khi phát âm:', error);
+        });
     }
-    updateLearnedStatus();
-    updateProgress();
 }
 
-// Update learned status button
+// Hiển thị hình ảnh
+function showImage() {
+    // Implement image display logic
+    alert('Tính năng đang được phát triển');
+}
+
+// Đánh dấu đã học
+function toggleLearned() {
+    const currentWord = currentWords[currentWordIndex];
+    if (currentWord) {
+        if (learnedWords.has(currentWord.wordId)) {
+            learnedWords.delete(currentWord.wordId);
+        } else {
+            learnedWords.add(currentWord.wordId);
+        }
+        updateLearnedStatus();
+        updateProgress();
+    }
+}
+
+// Cập nhật trạng thái đã học
 function updateLearnedStatus() {
-    const word = vocabularyData[currentTopic].words[currentWordIndex];
-    const isLearned = learnedWords.has(word.word);
-    markLearnedBtn.innerHTML = `
-        <i class="fas ${isLearned ? 'fa-check-circle' : 'fa-circle'}"></i>
-        ${isLearned ? 'Learned' : 'Mark as Learned'}
-    `;
+    const currentWord = currentWords[currentWordIndex];
+    if (markLearnedBtn && currentWord) {
+        const isLearned = learnedWords.has(currentWord.wordId);
+        markLearnedBtn.innerHTML = `
+            <i class="fas ${isLearned ? 'fa-check-circle' : 'fa-circle'}"></i>
+            ${isLearned ? 'Đã học' : 'Đánh dấu đã học'}
+        `;
+    }
 }
 
-// Update progress
+// Cập nhật tiến độ
 function updateProgress() {
-    const totalWords = vocabularyData[currentTopic].words.length;
-    const learnedCount = learnedWords.size;
-    const progress = (learnedCount / totalWords) * 100;
-    
-    progressFill.style.width = `${progress}%`;
-    progressText.textContent = `${learnedCount}/${totalWords} words learned`;
+    if (progressFill && progressText && currentWords) {
+        const totalWords = currentWords.length;
+        const learnedCount = learnedWords.size;
+        const progress = (learnedCount / totalWords) * 100;
+        
+        progressFill.style.width = `${progress}%`;
+        progressText.textContent = `${learnedCount}/${totalWords} từ đã học`;
+    }
 }
 
-// Initialize when DOM is loaded
+// Lưu bộ sưu tập
+async function saveCollection(collectionId) {
+    try {
+        await window.collectionsAPI.addUserToCollection(collectionId);
+        alert('Đã lưu bộ sưu tập vào danh sách học của bạn');
+    } catch (error) {
+        console.error('Lỗi khi lưu bộ sưu tập:', error);
+        alert(error.message || 'Có lỗi xảy ra khi lưu bộ sưu tập');
+    }
+}
+
+// Quay lại danh sách bộ sưu tập
+function backToCollections() {
+    if (topicGrid) {
+        topicGrid.style.display = 'grid';
+    }
+    if (flashcardSection) {
+        flashcardSection.style.display = 'none';
+    }
+    currentCollection = null;
+    currentWordIndex = 0;
+    learnedWords.clear();
+}
+
+// Hiển thị modal chọn bộ sưu tập
+async function showCollectionModal() {
+    try {
+        // Lấy danh sách bộ sưu tập cá nhân
+        const collections = await window.collectionsAPI.getUserCollections();
+        
+        // Xóa danh sách cũ
+        collectionList.innerHTML = '';
+        
+        // Thêm các bộ sưu tập vào danh sách
+        collections.forEach(collection => {
+            const item = document.createElement('div');
+            item.className = 'collection-item';
+            item.innerHTML = `
+                <div class="collection-info">
+                    <div class="collection-name">${collection.name}</div>
+                    <div class="word-count">${collection.wordCount || 0} từ</div>
+                </div>
+            `;
+            item.addEventListener('click', () => saveWordToCollection(collection.collectionId));
+            collectionList.appendChild(item);
+        });
+        
+        // Hiển thị modal
+        collectionModal.style.display = 'block';
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách bộ sưu tập:', error);
+        alert('Có lỗi xảy ra khi tải danh sách bộ sưu tập');
+    }
+}
+
+// Đóng modal
+function closeCollectionModal() {
+    collectionModal.style.display = 'none';
+}
+
+// Lưu từ vào bộ sưu tập
+async function saveWordToCollection(collectionId) {
+    try {
+        if (!currentWord) {
+            throw new Error('Không tìm thấy từ hiện tại');
+        }
+
+        await window.collectionsAPI.addWordToCollection(collectionId, currentWord.wordId);
+        alert('Đã lưu từ vào bộ sưu tập');
+        closeCollectionModal();
+    } catch (error) {
+        console.error('Lỗi khi lưu từ:', error);
+        alert(error.message || 'Có lỗi xảy ra khi lưu từ vào bộ sưu tập');
+    }
+}
+
+// Khởi tạo khi DOM đã load
 document.addEventListener('DOMContentLoaded', init);

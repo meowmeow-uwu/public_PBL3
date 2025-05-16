@@ -22,11 +22,11 @@
 .search-box {
     display: flex;
     gap: 1rem;
-    flex: 1;
+    flex:1 ;
 }
 
 .search-box input[type="text"] {
-    flex: 1;
+    flex: 3;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -34,11 +34,16 @@
 }
 
 .search-box select {
+    flex: 1;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1rem;
     min-width: 150px;
+}
+.search-box button{
+    flex: 1;
+    padding: 8px 20px;
 }
 
 /* Table Styles */
@@ -116,7 +121,7 @@
 .pagination button {
     padding: 0.5rem 1rem;
     border: 1px solid #ddd;
-    background: white;
+    background: rgb(255, 255, 255);
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s;
@@ -128,7 +133,7 @@
 
 .pagination button.active {
     background-color: #007bff;
-    color: white;
+    color: rgb(0, 0, 0);
     border-color: #007bff;
 }
 

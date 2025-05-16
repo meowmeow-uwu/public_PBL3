@@ -176,7 +176,7 @@ function renderPagination(totalPagesParam) {
 
     // Nút Previous
     paginationHTML += `
-        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} title="Trang trước">
+        <button class="btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} title="Trang trước">
             <i class="fas fa-chevron-left"></i>
         </button>
     `;
@@ -193,15 +193,15 @@ function renderPagination(totalPagesParam) {
     }
     
     if (startPage > 1) {
-        paginationHTML += `<button onclick="changePage(1)">1</button>`;
+        paginationHTML += `<button class="btn" onclick="changePage(1)">1</button>`;
         if (startPage > 2) {
-            paginationHTML += `<button disabled>...</button>`;
+            paginationHTML += `<button class="btn" disabled>...</button>`;
         }
     }
 
     for (let i = startPage; i <= endPage; i++) {
         paginationHTML += `
-            <button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">
+            <button class="btn" onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">
                 ${i}
             </button>
         `;
@@ -211,13 +211,13 @@ function renderPagination(totalPagesParam) {
         if (endPage < totalPages - 1) {
             paginationHTML += `<button disabled>...</button>`;
         }
-        paginationHTML += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+        paginationHTML += `<button class="btn " onclick="changePage(${totalPages})">${totalPages}</button>`;
     }
     
 
     // Nút Next
     paginationHTML += `
-        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} title="Trang sau">
+        <button class="btn " onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} title="Trang sau">
             <i class="fas fa-chevron-right"></i>
         </button>
     `;

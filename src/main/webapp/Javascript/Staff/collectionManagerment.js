@@ -370,7 +370,7 @@ function goToPage(page) {
 
 // Ví dụ: selectedWords là mảng các wordId đã chọn
 for (const word of selectedWords) {
-    await collectionAPI.addWordToCollection(collectionId, word.id);
+//    await collectionAPI.addWordToCollection(collectionId, word.id);
 }
 
 async function saveEditCollection(e) {

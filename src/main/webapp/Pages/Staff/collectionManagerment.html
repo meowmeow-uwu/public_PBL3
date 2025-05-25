@@ -15,12 +15,7 @@
     <!-- Toolbar -->
     <div class="collection-toolbar">
         <input type="text" id="searchInput" placeholder="Tìm theo tên bộ sưu tập...">
-        <select id="typeFilter">
-            <option value="">Tất cả loại</option>
-            <option value="Từ vựng">Từ vựng</option>
-            <option value="Ngữ pháp">Ngữ pháp</option>
-            <option value="Reading">Reading</option>
-        </select>
+        <button class="btn-primary" id="searchBtn"><i class="fas fa-search"></i> Tìm kiếm</button>
         <button class="btn-primary" onclick="showAddForm()"><i class="fas fa-plus"></i> Thêm bộ sưu tập</button>
     </div>
     <!-- Table -->
@@ -53,7 +48,8 @@
         window.APP_CONFIG.BASE_PATH = '../../';
     </script>
 <script src="../../Javascript/GetAPI/getInfor.js"></script>
-<script src="../../Javascript/Staff/collectionManagerment.js"></script>
 <script src="../../Javascript/Components/sideBar.js"></script>
+<script src="../../Javascript/Staff/collectionManagerment.js"></script>
+<script src="../../Javascript/GetAPI/collectionManagementAPI.js"></script>
 </body>
 </html>

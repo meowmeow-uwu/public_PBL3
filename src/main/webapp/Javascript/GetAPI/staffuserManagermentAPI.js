@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 const staffUserAPI = {
     /**
@@ -131,3 +132,24 @@ const staffUserAPI = {
         return await response.json();
     }
 };
+=======
+const API_BASE = window.APP_CONFIG.API_URL + '/admin/users';
+
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+// Lấy danh sách người dùng (có phân trang, lọc, tìm kiếm)
+async function fetchUserList({ page = 1, pageSize = 10, groupUserId = 0, keyword = "" }) {
+    const url = `${API_BASE}/list/${page}/${pageSize}/${groupUserId}?keyword=${encodeURIComponent(keyword)}`;
+    const res = await fetch(url, {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+    if (!res.ok) throw new Error((await res.json()).error || "Lỗi lấy danh sách người dùng");
+    return await res.json();
+}
+
+window.staffUserAPI = { fetchUserList };
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)

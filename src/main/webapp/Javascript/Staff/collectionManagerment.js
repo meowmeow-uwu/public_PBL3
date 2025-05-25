@@ -15,20 +15,17 @@ let vocabularyList = [
 let selectedWords = [];
 let editingId = null;
 const currentUser = "admin"; // hoặc "staff1" để test phân quyền
-let currentPage = 1;
-const itemsPerPage = 10;
+let currentPage = 1, pageSize = 10, currentKeyword = "";
 
 function renderTable() {
     const tbody = document.getElementById('collectionTableBody');
     const keyword = document.getElementById('searchInput').value.toLowerCase();
-    const type = document.getElementById('typeFilter').value;
     let filtered = collections.filter(c =>
-        (c.topic.toLowerCase().includes(keyword)) &&
-        (type === "" || c.type === type)
+        (c.topic.toLowerCase().includes(keyword))
     );
     tbody.innerHTML = filtered.map((c, idx) => `
         <tr>
-            <td>${idx+1}</td>
+            <td>${(currentPage-1)*pageSize + idx + 1}</td>
             <td>${c.topic}</td>
             <td>${c.type}</td>
             <td>${c.desc}</td>
@@ -50,10 +47,13 @@ function renderTable() {
 }
 window.renderTable = renderTable;
 
-document.addEventListener('DOMContentLoaded', function() {
-    renderTable();
-    document.getElementById('searchInput').addEventListener('input', renderTable);
-    document.getElementById('typeFilter').addEventListener('change', renderTable);
+document.addEventListener('DOMContentLoaded', () => {
+    loadCollections();
+    document.getElementById('searchBtn').onclick = () => {
+        currentKeyword = document.getElementById('searchInput').value.trim();
+        currentPage = 1;
+        loadCollections();
+    };
 });
 
 function showAddForm() {
@@ -221,22 +221,17 @@ function removeSelectedWord(id) {
 }
 window.removeSelectedWord = removeSelectedWord;
 
-function saveCollection(e) {
+async function saveCollection(e) {
     e.preventDefault();
-    const topic = document.getElementById('topicInput').value.trim();
-    const type = document.getElementById('typeInput').value;
-    const desc = document.getElementById('descInput').value.trim();
-    let count = type === "Từ vựng" ? selectedWords.length : (type === "Ngữ pháp" ? 10 : 1); // demo
-    if(editingId) {
-        const c = collections.find(c => c.id === editingId);
-        c.topic = topic; c.type = type; c.desc = desc; c.count = count;
-    } else {
-        collections.push({
-            id: collections.length+1, topic, type, desc, count, createdBy: currentUser
-        });
+    const name = document.getElementById('topicInput').value.trim();
+    try {
+        await collectionAPI.createCollection(name);
+        alert('Tạo bộ sưu tập thành công!');
+        closeModal();
+        loadCollections();
+    } catch (err) {
+        alert(err.message);
     }
-    closeModal();
-    renderTable();
 }
 window.saveCollection = saveCollection;
 
@@ -246,7 +241,7 @@ function deleteCollection(id) {
     if(confirm("Bạn chắc chắn muốn xoá bộ sưu tập này?")) {
         const idx = collections.findIndex(c => c.id === id);
         if(idx > -1) collections.splice(idx, 1);
-        renderTable();
+        loadCollections();
     }
 }
 window.deleteCollection = deleteCollection;
@@ -319,4 +314,75 @@ function changePage(newPage) {
     currentPage = newPage;
     const collectionId = parseInt(document.querySelector('.vocabulary-list-container').dataset.collectionId);
     showVocabularyList(collectionId);
+}
+
+async function loadCollections() {
+    try {
+        const collections = await collectionAPI.getAllCollections();
+        renderCollectionTable(collections);
+    } catch (e) {
+        alert(e.message || "Lỗi tải danh sách bộ sưu tập!");
+    }
+}
+
+function renderCollectionTable(collections) {
+    const tbody = document.getElementById('collectionTableBody');
+    if (!tbody) {
+        console.error('Không tìm thấy phần tử #collectionTableBody');
+        return;
+    }
+    tbody.innerHTML = collections.map((c, idx) => `
+        <tr>
+            <td>${(currentPage-1)*pageSize + idx + 1}</td>
+            <td>${c.name}</td>
+            <td>${c.isPublic ? "Công khai" : "Riêng tư"}</td>
+            <td></td>
+            <td>${c.wordCount}</td>
+            <td>
+                <button class="action-btn" title="Xem danh sách" onclick="showVocabularyList(${c.collectionId})">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button class="action-btn" title="Sửa" onclick="showEditForm(${c.collectionId})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Xoá" onclick="deleteCollection(${c.collectionId})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderPagination(total, pageSize, currentPage) {
+    const totalPages = Math.ceil(total / pageSize);
+    let html = '';
+    for (let i = 1; i <= totalPages; i++) {
+        html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+    }
+    const paginationDiv = document.getElementById('pagination');
+    if (paginationDiv) paginationDiv.innerHTML = html;
+}
+
+function goToPage(page) {
+    currentPage = page;
+    loadCollections();
+}
+
+// Ví dụ: selectedWords là mảng các wordId đã chọn
+for (const word of selectedWords) {
+    await collectionAPI.addWordToCollection(collectionId, word.id);
+}
+
+async function saveEditCollection(e) {
+    e.preventDefault();
+    const name = document.getElementById('topicInput').value.trim();
+    const isPublic = document.getElementById('isPublicInput').checked;
+    try {
+        await collectionAPI.updateCollection(editingId, { name, isPublic });
+        alert('Cập nhật thành công!');
+        closeModal();
+        loadCollections();
+    } catch (err) {
+        alert(err.message);
+    }
 }

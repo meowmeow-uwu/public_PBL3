@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // File: ../../Javascript/Admin/staffuserManagerment.js
 
 // Định nghĩa các vai trò người dùng
@@ -37,10 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Lỗi cấu hình: API base URL không được tìm thấy.');
         return;
     }
+=======
+const ROLE_MAP = {
+    1: "Admin",
+    3: "Nhân viên",
+    2: "User"
+};
+
+let currentPage = 1, pageSize = 10, totalPages = 1, currentRole = 0, currentKeyword = "";
+
+// DOM Elements
+const searchInput = document.getElementById('searchInput');
+const roleFilter = document.getElementById('roleFilter');
+const searchBtn = document.getElementById('searchBtn');
+const addUserBtn = document.getElementById('addUserBtn');
+const userTableBody = document.getElementById('userTableBody');
+const pagination = document.getElementById('pagination');
+const changePasswordModal = document.getElementById('changePasswordModal');
+const editUserModal = document.getElementById('editUserModal');
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
     loadUsers();
     setupEventListeners();
 });
 
+<<<<<<< HEAD
 /**
  * Thiết lập các trình nghe sự kiện cho các element trên trang.
  */
@@ -86,11 +110,37 @@ function setupEventListeners() {
     });
 
     // Đóng modal khi nhấp chuột bên ngoài nội dung modal
+=======
+function setupEventListeners() {
+    // Search and filter
+    searchBtn.addEventListener('click', () => {
+        currentPage = 1;
+        currentKeyword = searchInput.value.trim();
+        currentRole = parseInt(roleFilter.value);
+        loadUsers();
+    });
+
+    // Add user button
+    addUserBtn.addEventListener('click', () => {
+        window.location.href = 'addStaffUser.html';
+    });
+
+    // Modal close buttons
+    document.querySelectorAll('.close').forEach(btn => {
+        btn.addEventListener('click', () => {
+            changePasswordModal.style.display = 'none';
+            editUserModal.style.display = 'none';
+        });
+    });
+
+    // Close modals when clicking outside
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
     window.addEventListener('click', (e) => {
         if (e.target === changePasswordModal) changePasswordModal.style.display = 'none';
         if (e.target === editUserModal) editUserModal.style.display = 'none';
     });
 
+<<<<<<< HEAD
     // Xử lý submit form đổi mật khẩu
     document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
     // Xử lý submit form sửa thông tin người dùng
@@ -154,6 +204,44 @@ function renderUserTable(users) {
                     <i class="fas fa-key"></i>
                 </button>
                 <button class="action-btn delete" title="Xóa" onclick="deleteUser(${user.id})">
+=======
+    // Form submissions
+    document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
+    document.getElementById('editUserForm').addEventListener('submit', handleEditUser);
+}
+
+async function loadUsers() {
+    try {
+        const data = await staffUserAPI.fetchUserList({
+            page: currentPage,
+            pageSize,
+            groupUserId: currentRole,
+            keyword: currentKeyword
+        });
+        renderUserTable(data.users || []);
+        renderPagination(data.totalPages);
+    } catch (e) {
+        alert(e.message || "Lỗi tải danh sách!");
+    }
+}
+
+function renderUserTable(users) {
+    userTableBody.innerHTML = users.map(u => `
+        <tr>
+            <td>${u.id}</td>
+            <td>${u.username || ""}</td>
+            <td>${u.name || ""}</td>
+            <td>${u.email || ""}</td>
+            <td>${ROLE_MAP[u.group_user_id] || u.group_user_id}</td>
+            <td class="action-buttons">
+                <button class="action-btn edit" onclick="openEditModal(${u.id})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn password" onclick="openChangePasswordModal(${u.id})">
+                    <i class="fas fa-key"></i>
+                </button>
+                <button class="action-btn delete" onclick="deleteUser(${u.id})">
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
@@ -161,6 +249,7 @@ function renderUserTable(users) {
     `).join("");
 }
 
+<<<<<<< HEAD
 /**
  * Hiển thị các nút phân trang.
  * @param {number} totalPagesParam - Tổng số trang.
@@ -177,10 +266,18 @@ function renderPagination(totalPagesParam) {
     // Nút Previous
     paginationHTML += `
         <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} title="Trang trước">
+=======
+function renderPagination(totalPages) {
+    currentPage = 1;
+    totalPages = totalPages;
+    let paginationHTML = `
+        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
             <i class="fas fa-chevron-left"></i>
         </button>
     `;
 
+<<<<<<< HEAD
     // Logic hiển thị các nút số trang (có thể cải thiện để hiển thị dấu "...")
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
@@ -218,10 +315,34 @@ function renderPagination(totalPagesParam) {
     // Nút Next
     paginationHTML += `
         <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} title="Trang sau">
+=======
+    for (let i = 1; i <= totalPages; i++) {
+        if (
+            i === 1 || // First page
+            i === totalPages || // Last page
+            (i >= currentPage - 2 && i <= currentPage + 2) // Pages around current
+        ) {
+            paginationHTML += `
+                <button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">
+                    ${i}
+                </button>
+            `;
+        } else if (
+            i === currentPage - 3 ||
+            i === currentPage + 3
+        ) {
+            paginationHTML += '<button disabled>...</button>';
+        }
+    }
+
+    paginationHTML += `
+        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
             <i class="fas fa-chevron-right"></i>
         </button>
     `;
 
+<<<<<<< HEAD
     paginationContainer.innerHTML = paginationHTML;
 }
 
@@ -250,11 +371,37 @@ function openChangePasswordModal(userId) {
  * Xử lý sự kiện submit form đổi mật khẩu.
  * @param {Event} e - Sự kiện submit.
  */
+=======
+    pagination.innerHTML = paginationHTML;
+}
+
+function changePage(p) {
+    if (p < 1 || p > totalPages) return;
+    currentPage = p;
+    loadUsers();
+}
+
+function getRoleName(roleId) {
+    const roles = {
+        1: 'Admin',
+        2: 'Nhân viên',
+        3: 'Người dùng'
+    };
+    return roles[roleId] || 'Không xác định';
+}
+
+async function openChangePasswordModal(userId) {
+    document.getElementById('changePasswordUserId').value = userId;
+    changePasswordModal.style.display = 'block';
+}
+
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
 async function handleChangePassword(e) {
     e.preventDefault();
     const userId = document.getElementById('changePasswordUserId').value;
     const newPassword = document.getElementById('newPassword').value;
 
+<<<<<<< HEAD
     if (!newPassword || newPassword.length < 6) { // Ví dụ: yêu cầu mật khẩu tối thiểu 6 ký tự
         alert('Mật khẩu mới phải có ít nhất 6 ký tự.');
         return;
@@ -268,10 +415,19 @@ async function handleChangePassword(e) {
         document.getElementById('changePasswordForm').reset();
     } catch (error) {
         console.error('Lỗi khi đổi mật khẩu:', error);
+=======
+    try {
+        const result = await staffUserAPI.changePassword(userId, newPassword);
+        alert(result.message || 'Đổi mật khẩu thành công');
+        changePasswordModal.style.display = 'none';
+        document.getElementById('changePasswordForm').reset();
+    } catch (error) {
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
         alert('Lỗi khi đổi mật khẩu: ' + error.message);
     }
 }
 
+<<<<<<< HEAD
 /**
  * Mở modal sửa thông tin người dùng và điền dữ liệu.
  * @param {object} user - Đối tượng người dùng chứa thông tin chi tiết.
@@ -320,10 +476,55 @@ async function handleEditUser(e) {
         await loadUsers(); // Tải lại danh sách người dùng sau khi cập nhật
     } catch (error) {
         console.error('Lỗi khi cập nhật thông tin người dùng:', error);
+=======
+async function openEditModal(userId) {
+    try {
+        const user = await staffUserAPI.fetchUserList({
+            page: 1,
+            pageSize: 1,
+            groupUserId: 0,
+            keyword: userId.toString()
+        }).then(data => data.users[0]);
+
+        if (!user) throw new Error('Không tìm thấy người dùng');
+
+        document.getElementById('editUserId').value = user.id;
+        document.getElementById('editUsername').value = user.username;
+        document.getElementById('editEmail').value = user.email;
+        document.getElementById('editName').value = user.name;
+        document.getElementById('editRole').value = user.role_id;
+        document.getElementById('editAvatar').value = user.avatar || '';
+
+        editUserModal.style.display = 'block';
+    } catch (error) {
+        alert('Lỗi khi tải thông tin người dùng: ' + error.message);
+    }
+}
+
+async function handleEditUser(e) {
+    e.preventDefault();
+    const userId = document.getElementById('editUserId').value;
+    const userData = {
+        id: userId,
+        username: document.getElementById('editUsername').value,
+        email: document.getElementById('editEmail').value,
+        name: document.getElementById('editName').value,
+        role_id: document.getElementById('editRole').value,
+        avatar: document.getElementById('editAvatar').value
+    };
+
+    try {
+        const result = await staffUserAPI.updateUser(userData);
+        alert(result.message || 'Cập nhật thành công');
+        editUserModal.style.display = 'none';
+        loadUsers();
+    } catch (error) {
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
         alert('Lỗi khi cập nhật thông tin: ' + error.message);
     }
 }
 
+<<<<<<< HEAD
 /**
  * Xóa người dùng sau khi xác nhận.
  * @param {number|string} userId - ID của người dùng cần xóa.
@@ -351,3 +552,16 @@ window.openEditModal = openEditModal;
 window.openChangePasswordModal = openChangePasswordModal;
 window.deleteUser = deleteUser;
 window.changePage = changePage;
+=======
+async function deleteUser(userId) {
+    if (!confirm('Bạn có chắc chắn muốn xóa người dùng này?')) return;
+
+    try {
+        const result = await staffUserAPI.deleteUser(userId);
+        alert(result.message || 'Xóa người dùng thành công');
+        loadUsers();
+    } catch (error) {
+        alert('Lỗi khi xóa người dùng: ' + error.message);
+    }
+}
+>>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)

@@ -1,4 +1,4 @@
-const API_ACCOUNT_URL = window.APP_CONFIG.API_BASE_URL +'/account/';
+const API_ACCOUNT_URL = window.APP_CONFIG.API_BASE_URL +'/user/';
 
 // Lấy thông tin tài khoản
 async function getAccountInfo() {
@@ -61,9 +61,8 @@ async function updatePassword(oldPassword, newPassword) {
         throw error;
     }
 }
-
-// Cập nhật email
-async function updateEmail(newEmail) {
+// Cập nhật toàn bộ thông tin người dùng (name, avatar, email)
+async function updateProfile({ name, avatar, email }) {
     const token = localStorage.getItem('token');
     if (!token) {
         throw new Error('Không tìm thấy token');
@@ -71,9 +70,11 @@ async function updateEmail(newEmail) {
 
     try {
         const formData = new URLSearchParams();
-        formData.append('email', newEmail);
+        if (name) formData.append('name', name);
+        if (avatar) formData.append('avatar', avatar);
+        if (email) formData.append('email', email);
 
-        const response = await fetch(`${API_ACCOUNT_URL}update/email`, {
+        const response = await fetch(`${API_ACCOUNT_URL}me/update`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -84,13 +85,12 @@ async function updateEmail(newEmail) {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Không thể cập nhật email');
+            throw new Error(error.message || 'Không thể cập nhật thông tin');
         }
 
-        const data = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
-        console.error('Lỗi khi cập nhật email:', error);
+        console.error('Lỗi khi cập nhật thông tin:', error);
         throw error;
     }
 }

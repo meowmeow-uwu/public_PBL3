@@ -20,10 +20,14 @@
     <div class="profile-main">
       <div class="profile-avatar">
         <img id="avatarImg" src="../../../Assets/Images/default-avatar.png" alt="Avatar">
-        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
-        <button class="btn" onclick="document.getElementById('avatarInput').click()">Đổi ảnh</button>
+        <!-- <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+        <button class="btn" onclick="document.getElementById('avatarInput').click()">Đổi ảnh</button> -->
       </div>
       <form class="profile-info" id="profileForm" autocomplete="off">
+        <div class="form-group">
+          <label>Tên đăng nhập</label>
+          <input type="text" id="userName" required readonly>
+        </div>
         <div class="form-group">
           <label>Họ tên</label>
           <input type="text" id="fullName" required>
@@ -33,32 +37,10 @@
           <input type="email" id="email" required>
         </div>
         <div class="form-group">
-          <label>Số điện thoại</label>
-          <input type="tel" id="phone">
+          <label>Avatar</label>
+          <input type="url" id="avatar" required>
         </div>
-        <div class="form-group">
-          <label>Ngày sinh</label>
-          <input type="date" id="dob">
-        </div>
-        <div class="form-group">
-          <label>Giới tính</label>
-          <select id="gender">
-            <option value="">Chọn</option>
-            <option value="male">Nam</option>
-            <option value="female">Nữ</option>
-            <option value="other">Khác</option>
-          </select>
-        </div>
-        <!-- Chỉ dành cho User -->
-        <div class="form-group only-user">
-          <label>Mục tiêu học tập</label>
-          <input type="text" id="goal">
-        </div>
-        <!-- Chỉ dành cho User -->
-        <div class="form-group only-user">
-          <label>Tiến độ học tập, thành tích</label>
-          <div id="progress">Chưa có dữ liệu</div>
-        </div>
+       
         <div class="form-actions">
           <button type="submit" class="btn btn-success">Lưu thay đổi</button>
           <button type="button" class="btn" onclick="openChangePassword()">Đổi mật khẩu</button>
@@ -73,9 +55,23 @@
       <span class="close" onclick="closeChangePassword()">&times;</span>
       <h3>Đổi mật khẩu</h3>
       <form id="changePasswordForm" autocomplete="off">
-        <input type="password" placeholder="Mật khẩu hiện tại" required>
-        <input type="password" placeholder="Mật khẩu mới" required>
-        <input type="password" placeholder="Nhập lại mật khẩu mới" required>
+        <div class="form-row">
+          <div class="form-group">
+              <label>Mật khẩu cũ <span>*</span></label>
+              <input type="password" id="oldpassword" required>
+          </div>
+          <div class="form-group">
+              <label>Mật khẩu mới<span>*</span></label>
+              <input type="password" id="newpassword" required>
+          </div>
+          <div class="form-group">
+              <label>Nhập lại mật khẩu <span>*</span></label>
+              <input type="password" id="renewpassword" required>
+          </div>
+      </div>
+        <div style="position: relative;">
+          <span id="togglePasswordText" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: blue; text-decoration: underline;">Hiện mật khẩu</span>
+      </div>
         <button type="submit" class="btn btn-success">Xác nhận</button>
       </form>
     </div>
@@ -92,42 +88,6 @@
   <script src="../../../Javascript/components/sideBar.js"></script>
   <script src="../../../Javascript/components/profile.js"></script>
   <script src="../../../Javascript/GetAPI/profileAPI.js"></script>
-  <!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Lấy role từ localStorage
-      // Ẩn/hiện nội dung theo vai trò
-      document.querySelectorAll('.only-user').forEach(el => {
-        el.style.display = (role === "2") ? "" : "none";
-      });
-      document.querySelectorAll('.only-admin').forEach(el => {
-        el.style.display = (role === "1" || role === "3") ? "" : "none";
-      });
 
-      // Đổi ảnh đại diện (giả lập)
-      document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(evt) {
-            document.getElementById('avatarImg').src = evt.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Đổi mật khẩu modal
-      function openChangePassword() {
-        document.getElementById('changePasswordModal').style.display = 'block';
-      }
-      function closeChangePassword() {
-        document.getElementById('changePasswordModal').style.display = 'none';
-      }
-      document.getElementById('changePasswordForm').onsubmit = function(e) {
-        e.preventDefault();
-        alert('Đổi mật khẩu thành công (giả lập)');
-        closeChangePassword();
-      };
-    });
-  </script> -->
 </body>
 </html>

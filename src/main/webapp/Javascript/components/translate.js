@@ -171,11 +171,67 @@ async function showResult(word, from, to) {
 
 // Hiển thị chi tiết từ
 async function showWordDetail(wordId) {
-    resultBox.innerHTML = '<div class="loader"></div>';
+    // Hiển thị loader
+    resultBox.innerHTML = '';
+    // Lấy các phần tử trong result-card
+    const wordImage = document.getElementById('wordImage');
+    const wordText = document.getElementById('wordText');
+    const phoneticText = document.getElementById('phoneticText');
+    const definitionsContainer = document.getElementById('definitionsContainer');
+    const soundBtn = document.getElementById('soundBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // Nếu chưa có result-card (lần đầu), render lại mẫu
+    if (!wordImage || !wordText || !phoneticText || !definitionsContainer) {
+        resultBox.innerHTML = `
+        <div class="result-card">
+          <div class="result-header">
+            <div class="header-content">
+              <img src="" alt="" class="translate-image" id="wordImage">
+              <div class="word-info">
+                <span class="word" id="wordText"></span>
+                <span class="phonetic" id="phoneticText"></span>
+              </div>
+              <button class="sound-btn" id="soundBtn">
+                <i class="fas fa-volume-up"></i>
+              </button>
+            </div>
+            <button class="save-btn" id="saveBtn">Lưu</button>
+          </div>
+          <div class="result-body">
+            <div class="definitions-container" id="definitionsContainer"></div>
+          </div>
+        </div>`;
+    }
+
+    // Lấy lại các phần tử sau khi render mẫu
+    const imgEl = document.getElementById('wordImage');
+    const wordEl = document.getElementById('wordText');
+    const phoneticEl = document.getElementById('phoneticText');
+    const defsEl = document.getElementById('definitionsContainer');
+    const soundEl = document.getElementById('soundBtn');
+    const saveEl = document.getElementById('saveBtn');
+
     try {
         const wordDetail = await fetchWordDetail(wordId);
 
-        const definitionsHtml = wordDetail.definitions.map(def => `
+        // Gán ảnh nếu có
+        if (wordDetail.image) {
+            imgEl.src = wordDetail.image;
+            imgEl.alt = wordDetail.word;
+            imgEl.style.display = '';
+        } else {
+            imgEl.src = '';
+            imgEl.alt = '';
+            imgEl.style.display = 'none';
+        }
+
+        // Gán từ và phiên âm
+        wordEl.textContent = wordDetail.word || '';
+        phoneticEl.textContent = wordDetail.phonetic ? `/${wordDetail.phonetic}/` : '';
+
+        // Gán các định nghĩa
+        defsEl.innerHTML = wordDetail.definitions.map(def => `
             <div class="definition-item">
                 <div class="word-type">(${escapeHtml(def.word_type)})</div>
                 <div class="meaning"><b>${escapeHtml(def.meaning)}</b></div>
@@ -183,35 +239,23 @@ async function showWordDetail(wordId) {
             </div>
         `).join('');
 
-        // Chỉ hiển thị nút lưu nếu user có group_user_id = 2
-        const saveButtonHtml = groupUserId === 2 ? 
-            `<button class="save-btn" onclick="(async function() { await openSaveModal('${escapeHtml(wordDetail.word)}', '${escapeHtml(wordDetail.definitions[0]?.meaning || '')}', ${wordId}); })()">Lưu</button>` : 
-            '';
+        // Gán sự kiện phát âm
+        soundEl.onclick = function() {
+            playSound(wordDetail.word);
+        };
 
-        const resultHtml = `
-            <div class="result-card">
-                <div class="result-header" style="background:#4285f4;color:#fff;border-radius:12px 12px 0 0;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <span class="word" style="font-size:2rem;font-weight:bold;color:#fff;">${escapeHtml(wordDetail.word)}</span>
-                        <span class="phonetic" style="font-size:1.1rem;color:#e3f0fc;">/${escapeHtml(wordDetail.phonetic)}/</span>
-                        <button class="sound-btn" onclick="playSound('${escapeHtml(wordDetail.word)}')" style="background:none;border:none;cursor:pointer;color:#fff;font-size:1.3rem;">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                    </div>
-                    ${saveButtonHtml}
-                </div>
-                <div style="padding:18px;">
-                    <div class="definitions-container">
-                        ${definitionsHtml}
-                    </div>
-                </div>
-            </div>
-        `;
-
-        resultBox.innerHTML = resultHtml;
+        // Gán sự kiện lưu từ (nếu có quyền)
+        if (groupUserId === 2) {
+            saveEl.style.display = '';
+            saveEl.onclick = function() {
+                openSaveModal(wordDetail.word, wordDetail.definitions[0]?.meaning || '', wordId);
+            };
+        } else {
+            saveEl.style.display = 'none';
+        }
     } catch (error) {
         console.error('Lỗi khi hiển thị chi tiết từ:', error);
-        resultBox.innerHTML += `<div style="text-align:center;padding:32px 0;color:#f00;">Có lỗi xảy ra khi lấy chi tiết từ.</div>`;
+        resultBox.innerHTML = `<div style="text-align:center;padding:32px 0;color:#f00;">Có lỗi xảy ra khi lấy chi tiết từ.</div>`;
     }
 }
 

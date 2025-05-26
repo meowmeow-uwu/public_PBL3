@@ -87,6 +87,7 @@ public class WordService implements ServiceInterface<Word> {
             result.put("word", word.getWord_name());
             result.put("phonetic", word.getPronunciation());
             result.put("sound", word.getSound());
+            result.put("image", word.getImage());
 
             // Lấy tất cả định nghĩa
             ArrayList<Definition> definitions = definitionDAO.selectAllByWordID(wordId);

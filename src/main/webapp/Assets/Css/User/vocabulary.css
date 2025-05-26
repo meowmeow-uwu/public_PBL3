@@ -66,6 +66,12 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
         }
 
         .word, .meaning {
@@ -73,6 +79,10 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 10px;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            text-align: center;
         }
 
         .phonetic {
@@ -161,25 +171,35 @@
         }
 
         .modal {
-            display: none;
+            display: flex;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
         }
 
         .modal-content {
             position: relative;
             background-color: #fff;
-            margin: 15% auto;
+            margin: 0;
             padding: 20px;
-            width: 80%;
+            width: 90vw;
             max-width: 500px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .modal-header {
@@ -205,13 +225,14 @@
         .collection-list {
             max-height: 300px;
             overflow-y: auto;
+            width: 100%;
         }
 
         .collection-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 0%;
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -546,4 +567,11 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.definition, .definition-vi, .example, .example-vi, .meaning-en, .meaning-vi {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    text-align: center;
 }

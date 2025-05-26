@@ -41,7 +41,7 @@ async function init() {
         }
 
         // Lấy danh sách bộ sưu tập công khai
-        publicCollections = await window.collectionManagementAPI.getAllPublicCollections();
+        publicCollections = await window.collectionManagementAPI.getAllCollections();
         console.log('Danh sách bộ sưu tập công khai:', publicCollections);
 
         // Tạo topic cards từ danh sách bộ sưu tập

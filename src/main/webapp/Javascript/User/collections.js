@@ -471,6 +471,7 @@ async function startFlashcards(collectionId) {
                         definition_vi: targetDefinition?.definition || '',
                         example_vi: targetDefinition?.example || '',
                         image: sourceWord.image || '',
+                        image_vi: targetWord.image || '',
                     });
                 }
             } catch (error) {
@@ -502,28 +503,27 @@ async function startFlashcards(collectionId) {
                         <div class="flashcard">
                             <div class="flashcard-inner">
                                 <div class="flashcard-front">
-                                    ${card.image ? `<img src="${card.image}" alt="${card.word}" class="flashcard-image" style="max-width:160px;max-height:120px;margin-bottom:12px;border-radius:12px;box-shadow:0 2px 8px #0001;">` : ''}
-                                    <h2 class="word">${card.word}</h2>
-                                    <div class="phonetic">${card.pronunciation ? '/' + card.pronunciation + '/' : ''}</div>
+                                    <h2 class="word" style="font-size:2.7rem;">${card.word}</h2>
+                                    <div class="phonetic" style="font-size:1.3rem;">${card.pronunciation ? '/' + card.pronunciation + '/' : ''}</div>
                                     ${card.sound ? `
                                         <button class="sound-btn" onclick="event.stopPropagation(); playWordSound('${card.sound}')">
                                             <i class="fas fa-volume-up"></i> Nghe phát âm
                                         </button>
                                     ` : ''}
+                                    ${card.image ? `<img src="${card.image}" alt="${card.word}" class="flashcard-image" style="max-width:220px;max-height:160px;margin:18px 0 12px 0;border-radius:14px;box-shadow:0 2px 12px #0001;">` : ''}
                                     <div class="word-type">${card.type}</div>
                                     <div class="definition">${card.definition_en}</div>
                                     <div class="example">${card.example_en}</div>
-                                    <div class="hint">👉 Bấm vào thẻ để xem nghĩa</div>
                                 </div>
                                 <div class="flashcard-back">
-                                    ${card.image ? `<img src="${card.image}" alt="${card.word}" class="flashcard-image" style="max-width:160px;max-height:120px;margin-bottom:12px;border-radius:12px;box-shadow:0 2px 8px #0001;">` : ''}
-                                    <h2 class="meaning">${card.meaning}</h2>
-                                    <div class="phonetic-vi">${card.pronunciation_vi ? '/' + card.pronunciation_vi + '/' : ''}</div>
+                                    <h2 class="meaning" style="font-size:2.3rem;">${card.meaning}</h2>
+                                    <div class="phonetic-vi" style="font-size:1.2rem;">${card.pronunciation_vi ? '/' + card.pronunciation_vi + '/' : ''}</div>
                                     ${card.sound_vi ? `
                                         <button class="sound-btn" onclick="event.stopPropagation(); playWordSound('${card.sound_vi}')">
                                             <i class="fas fa-volume-up"></i> Nghe phát âm
                                         </button>
                                     ` : ''}
+                                    ${card.image_vi ? `<img src="${card.image_vi}" alt="${card.word}" class="flashcard-image" style="max-width:220px;max-height:160px;margin:18px 0 12px 0;border-radius:14px;box-shadow:0 2px 12px #0001;">` : ''}
                                     <div class="word-type-vi">${card.type_vi}</div>
                                     <div class="definition-vi">${card.definition_vi}</div>
                                     <div class="example-vi">${card.example_vi}</div>

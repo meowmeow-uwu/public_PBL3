@@ -254,9 +254,21 @@ select.input-field {
 
 .flashcard {
     width: 100%;
-    height: 400px;
+    max-width: 480px;
+    height: 480px;
     position: relative;
     cursor: pointer;
+    margin: 0 auto;
+}
+
+.flashcard-image {
+    display: block;
+    margin: 18px auto 12px auto;
+    max-width: 220px;
+    max-height: 160px;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px #0001;
+    background: #f6fafd;
 }
 
 .flashcard-inner {
@@ -304,10 +316,10 @@ select.input-field {
 }
 /* === Kết thúc Flashcard styles === */
 
-
 .word { 
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2.7rem;
+    font-weight: bold;
+    margin-bottom: 0.7rem;
 }
 
 .phonetic, .phonetic-vi { 
@@ -327,8 +339,9 @@ select.input-field {
 }
 
 .meaning { 
-    font-size: 2rem; 
-    margin-bottom: 1rem;
+    font-size: 2.7rem; 
+    font-weight: bold;
+    margin-bottom: 0.7rem;
 }
 
 .example, .example-vi { 
@@ -342,7 +355,6 @@ select.input-field {
   margin-bottom: 1rem;
   color: #444; 
 }
-
 
 .flashcard-nav {
     display: flex;

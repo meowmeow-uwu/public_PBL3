@@ -200,7 +200,21 @@ public class CollectionOfWordDAO implements DAOInterface<CollectionOfWord> {
             return 0;
         }
     }
-
+    public int deleteByWordId(int wordId)
+    {
+        try (Connection conn = DBUtil.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 "DELETE FROM collection_has_word WHERE word_id = ?")) {
+            
+            ps.setInt(1, wordId);
+            return ps.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+                    
     public int deleteWordFromCollection(int collectionId, int wordId) {
         try (Connection conn = DBUtil.makeConnection();
              PreparedStatement ps = conn.prepareStatement(

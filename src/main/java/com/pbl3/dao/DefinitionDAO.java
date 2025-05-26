@@ -16,6 +16,19 @@ import java.util.ArrayList;
  * @author Hoang Duong
  */
 public class DefinitionDAO implements DAOInterface<Definition> {
+    // Singleton instance
+    private static DefinitionDAO instance;
+    
+    // Private constructor để ngăn việc tạo instance từ bên ngoài
+    private DefinitionDAO() {}
+    
+    // Method để lấy instance
+    public static synchronized DefinitionDAO getInstance() {
+        if (instance == null) {
+            instance = new DefinitionDAO();
+        }
+        return instance;
+    }
     @Override
     public int insert(Definition definition) {
         Connection c = null;
@@ -83,6 +96,20 @@ public class DefinitionDAO implements DAOInterface<Definition> {
         return 0;
     }
 
+    public int DeleteByWordId(int wordId)
+    {
+        try (Connection conn = DBUtil.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 "DELETE FROM definition WHERE word_id = ?")) {
+            
+            ps.setInt(1, wordId);
+            return ps.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
     @Override
     public ArrayList<Definition> selectAll() {
         Connection c = null;

@@ -32,28 +32,6 @@ async function fetchWithAuth(url, options = {}) {
 // Cache cho thông tin user để tránh gọi API nhiều lần
 let userInfoCache = null;
 
-// Định nghĩa fetchUserInfo cho header_footer.js sử dụng
-window.fetchUserInfo = async function() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        userInfoCache = null;
-        return null;
-    }
-    if (userInfoCache) {
-        return userInfoCache;
-    }
-    try {
-        const response = await fetchWithAuth(`${API_BASE_URL}/auth/info`);
-        if (!response) throw new Error('No response from server');
-        userInfoCache = response;
-        return response;
-    } catch (error) {
-        console.error('Error fetching user info:', error);
-        userInfoCache = null;
-        return null;
-    }
-};
-
 window.clearUserInfoCache = function() {
     userInfoCache = null;
 };

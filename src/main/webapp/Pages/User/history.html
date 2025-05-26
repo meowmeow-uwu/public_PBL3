@@ -54,16 +54,15 @@
   </div>
 
   <div id="footer"></div>
+  
+    <script src="../../Javascript/config.js"></script>
+    <script>
+        window.APP_CONFIG = window.APP_CONFIG || {};
+        window.APP_CONFIG.BASE_PATH = '../../';
+    </script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
 
-  <!-- Load scripts in the correct order -->
-  <script src="../../Javascript/config.js"></script>
-  <script>
-    window.APP_CONFIG = window.APP_CONFIG || {};
-    window.APP_CONFIG.BASE_PATH = '../../';
-  </script>
-  <!-- Load history.js first as it contains fetchUserInfo -->
+    <script src="../../Javascript/components/header_footer.js"></script>
   <script src="../../Javascript/User/history.js"></script>
-  <!-- Then load header_footer.js which depends on fetchUserInfo -->
-  <script src="../../Javascript/components/header_footer.js"></script>
 </body>
 </html>

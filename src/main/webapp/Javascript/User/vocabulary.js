@@ -17,7 +17,6 @@ const progressText = document.querySelector('.progress-text');
 const prevBtn = document.querySelector('.prev-btn');
 const nextBtn = document.querySelector('.next-btn');
 const audioBtn = document.querySelector('.audio-btn');
-const imageBtn = document.querySelector('.image-btn');
 const markLearnedBtn = document.querySelector('.mark-learned-btn');
 const currentNumberElement = document.querySelector('.current-number');
 const totalNumberElement = document.querySelector('.total-number');
@@ -42,7 +41,7 @@ async function init() {
         }
 
         // Lấy danh sách bộ sưu tập công khai
-        publicCollections = await window.collectionManagementAPI.getAllPublicCollections();
+        publicCollections = await window.collectionManagementAPI.getAllCollections();
         console.log('Danh sách bộ sưu tập công khai:', publicCollections);
 
         // Tạo topic cards từ danh sách bộ sưu tập
@@ -69,9 +68,7 @@ async function init() {
         if (audioBtn) {
             audioBtn.addEventListener('click', playAudio);
         }
-        if (imageBtn) {
-            imageBtn.addEventListener('click', showImage);
-        }
+        
         if (markLearnedBtn) {
             markLearnedBtn.addEventListener('click', toggleLearned);
         }
@@ -89,24 +86,42 @@ async function init() {
     }
 }
 
-// Tạo topic card
+// Tạo màu ngẫu nhiên
+function getRandomColor() {
+    const colors = [
+        '#FF6B6B', // Đỏ hồng
+        '#4ECDC4', // Xanh ngọc
+        '#45B7D1', // Xanh dương
+        '#96CEB4', // Xanh lá nhạt
+        '#FFEEAD', // Vàng nhạt
+        '#D4A5A5', // Hồng nhạt
+        '#9B59B6', // Tím
+        '#3498DB', // Xanh dương đậm
+        '#E67E22', // Cam
+        '#2ECC71'  // Xanh lá đậm
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Tạo thẻ chủ đề từ vựng
 function createTopicCard(collection) {
     const card = document.createElement('div');
     card.className = 'topic-card';
+    card.onclick = () => startCollection(collection);
+    
+    const randomColor = getRandomColor();
+    
     card.innerHTML = `
-        <div class="topic-icon">
-            <i class="fas fa-book"></i>
-        </div>
+        <div class="topic-icon" style="color: ${randomColor}">📚</div>
         <h3>${collection.name}</h3>
         <div class="topic-info">
             <span>${collection.wordCount || 0} từ</span>
-            <span class="level-badge">${collection.level || 'A1'}</span>
         </div>
         <button class="save-collection-btn" onclick="event.stopPropagation(); saveCollection(${collection.collectionId})">
             <i class="fas fa-bookmark"></i> Lưu bộ sưu tập
         </button>
     `;
-    card.addEventListener('click', () => startCollection(collection));
+
     return card;
 }
 
@@ -148,7 +163,12 @@ async function showCurrentWord(word) {
         // Lấy thông tin flashcard của từ
         const flashcardData = await window.wordAPI.getFlashcard(word.wordId);
         console.log('Flashcard data:', flashcardData); // Debug log
-        
+
+        // Hiển thị ảnh nếu có
+        const imageUrl = flashcardData.sourceWord.image || '';
+        const imageHtml = imageUrl ? `<img src="${imageUrl}" alt="${flashcardData.sourceWord.word_name}" class="flashcard-image">` : '';
+        const imageViUrl = flashcardData.targetWord.image || '';
+        const imageViHtml = imageViUrl ? `<img src="${imageViUrl}" alt="${flashcardData.targetWord.word_name}" class="flashcard-image">` : '';
         // Cập nhật số thứ tự
         if (currentNumberElement) {
             currentNumberElement.textContent = currentWordIndex + 1;
@@ -156,10 +176,15 @@ async function showCurrentWord(word) {
         if (totalNumberElement) {
             totalNumberElement.textContent = currentWords.length;
         }
-        
+
         // Cập nhật mặt trước của thẻ
         if (wordElement) {
             wordElement.textContent = flashcardData.sourceWord.word_name;
+        }
+        // Hiển thị ảnh mặt trước
+        const imageElement = document.querySelector('.image');
+        if (imageElement) {
+            imageElement.innerHTML = imageHtml;
         }
         if (phoneticElement) {
             phoneticElement.textContent = flashcardData.sourceWord.pronunciation;
@@ -176,10 +201,15 @@ async function showCurrentWord(word) {
         if (exampleElement) {
             exampleElement.textContent = flashcardData.sourceDefinition?.example || '';
         }
-        
+
         // Cập nhật mặt sau của thẻ
         if (meaningElement) {
             meaningElement.textContent = flashcardData.targetWord.word_name;
+        }
+        // Hiển thị ảnh mặt sau
+        const imageViElement = document.querySelector('.image-vi');
+        if (imageViElement) {
+            imageViElement.innerHTML = imageViHtml;
         }
         if (meaningViElement) {
             meaningViElement.textContent = flashcardData.targetDefinition?.meaning || '';
@@ -190,12 +220,12 @@ async function showCurrentWord(word) {
         if (exampleViElement) {
             exampleViElement.textContent = flashcardData.targetDefinition?.example || '';
         }
-        
+
         // Reset thẻ về mặt trước
         if (flashcard) {
             flashcard.classList.remove('flipped');
         }
-        
+
         // Cập nhật nút điều hướng
         if (prevBtn) {
             prevBtn.disabled = currentWordIndex === 0;
@@ -203,12 +233,13 @@ async function showCurrentWord(word) {
         if (nextBtn) {
             nextBtn.disabled = currentWordIndex === currentWords.length - 1;
         }
-        
+
         // Cập nhật trạng thái đã học
         updateLearnedStatus();
     } catch (error) {
         console.error('Lỗi khi hiển thị từ:', error);
         alert('Có lỗi xảy ra khi tải thông tin từ vựng');
+        showPreviousWord();
     }
 }
 
@@ -244,12 +275,6 @@ function playAudio() {
             console.error('Lỗi khi phát âm:', error);
         });
     }
-}
-
-// Hiển thị hình ảnh
-function showImage() {
-    // Implement image display logic
-    alert('Tính năng đang được phát triển');
 }
 
 // Đánh dấu đã học

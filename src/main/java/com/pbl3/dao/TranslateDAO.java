@@ -17,6 +17,19 @@ import java.util.ArrayList;
  */
 public class TranslateDAO implements DAOInterface<Translate> {
 
+    // Singleton instance
+    private static TranslateDAO instance;
+    
+    // Private constructor để ngăn việc tạo instance từ bên ngoài
+    private TranslateDAO() {}
+    
+    // Method để lấy instance
+    public static synchronized TranslateDAO getInstance() {
+        if (instance == null) {
+            instance = new TranslateDAO();
+        }
+        return instance;
+    }
     @Override
     public int insert(Translate t) {
         Connection c = null;
@@ -84,7 +97,19 @@ public class TranslateDAO implements DAOInterface<Translate> {
         }
         return 0;
     }
-
+    public int deleteByWordId(int wordId){
+        try (Connection conn = DBUtil.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 "DELETE FROM translate WHERE word_id = ?")) {
+            
+            ps.setInt(1, wordId);
+            return ps.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
     @Override
     public ArrayList<Translate> selectAll() {
         Connection c = null;

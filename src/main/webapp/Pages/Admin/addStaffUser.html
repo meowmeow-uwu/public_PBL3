@@ -28,8 +28,8 @@
                         <input type="email" id="email" placeholder="abc@gmail.com" required>
                     </div>
                     <div class="form-group">
-                        <label>Link Avatar <span>*</span></label>
-                        <input type="url" id="avatar" placeholder="https://example.com/avatar.jpg" required>
+                        <label>Link Avatar </label>
+                        <input type="url" id="avatar" placeholder="https://www.pinterest.com/pin/552887291765008493/">
                     </div>
                 </div>
                 <div class="form-row">
@@ -42,6 +42,9 @@
                         <input type="password" id="repassword" required>
                     </div>
                 </div>
+                <div style="position: relative;">
+                    <span id="togglePasswordText" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: blue; text-decoration: underline;">Hiện mật khẩu</span>
+                </div>
                 <div class="form-group">
                     <label>Phân quyền</label>
                     <select id="role_id">
@@ -50,23 +53,6 @@
                         <option value="2" selected>Học viên</option>
                     </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Ngày tạo</label>
-                        <input type="date" id="created" value="" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Trạng thái</label>
-                        <select id="status">
-                            <option value="active">Đang hoạt động</option>
-                            <option value="locked">Đã khóa</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group toggle-switch">
-                    <input type="checkbox" id="forceChangePassword">
-                    <label for="forceChangePassword">Bắt buộc đổi mật khẩu lần đầu</label>
-                </div>
                 <div class="btn-group">
                     <button type="submit" class="btn btn-success">Lưu</button>
                     <button type="button" class="btn btn-outline" onclick="resetForm()">Làm mới</button>
@@ -74,16 +60,15 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> 
 
     <script src="../../Javascript/config.js"></script>
     <script>
         window.APP_CONFIG.BASE_PATH = '../../';
     </script>
-    <!-- <script src="../../Javascript/GetAPI/userManagementAPI.js"></script> -->
     <script src="../../Javascript/GetAPI/getInfor.js"></script>
     <script src="../../Javascript/components/sideBar.js"></script>
-    <script src="../../Javascript/Admin/addStaffUser.js"></script>
+    <script src="../../Javascript//Admin/addStaffUser.js"></script>
     <script src="../../Javascript/GetAPI/addStaffUserAPI.js"></script>
 </body>
 </html> 

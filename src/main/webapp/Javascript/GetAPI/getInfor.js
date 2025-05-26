@@ -1,4 +1,4 @@
-const API_LgRgt_URL = window.APP_CONFIG.API_BASE_URL + '/auth/';
+//const API_LgRgt_URL = window.APP_CONFIG.API_BASE_URL + '/auth/';
 const API_getIF_URL = window.APP_CONFIG.API_BASE_URL + '/user/me';
 
 function getToken() {

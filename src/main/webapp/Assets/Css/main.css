@@ -162,7 +162,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Button style chung cho toàn bộ website */
-button,
+/* button,
 input[type="submit"],
 input[type="button"],
 a.btn,
@@ -176,7 +176,7 @@ a.btn,
     cursor: pointer;
     text-align: center;
     text-decoration: none;
-    color: #fff;
+    color: #367d97;
     background: linear-gradient(90deg, #1fd655 0%, #00c3ff 100%);
     transition: background 0.3s, filter 0.2s;
     box-shadow: 0 2px 8px rgba(31, 214, 85, 0.08);
@@ -189,5 +189,4 @@ a.btn:hover,
 .btn:hover {
     filter: brightness(0.95);
     background: linear-gradient(90deg, #00c3ff 0%, #1fd655 100%);
-    /* Đảo màu gradient khi hover */
-}
+} */

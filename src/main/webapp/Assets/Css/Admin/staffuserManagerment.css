@@ -22,11 +22,11 @@
 .search-box {
     display: flex;
     gap: 1rem;
-    flex: 1;
+    flex:1 ;
 }
 
 .search-box input[type="text"] {
-    flex: 1;
+    flex: 3;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -34,11 +34,16 @@
 }
 
 .search-box select {
+    flex: 1;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1rem;
     min-width: 150px;
+}
+.search-box button{
+    flex: 1;
+    padding: 8px 20px;
 }
 
 /* Table Styles */
@@ -112,31 +117,51 @@
     gap: 0.5rem;
     margin-top: 2rem;
 }
+.pagination .btnn {
+    /* Các thuộc tính đã có với !important */
+    background: #508bcf !important;
+    color: #007bff !important;
+    border: 1px solid #0a6d5b !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transition: all 0.2s !important;
+    padding: 0.5rem 1rem !important; /* Giữ padding này nếu bạn muốn nó nhỏ hơn main.css */
+    border-radius: 5px !important; /* Giữ border-radius này nếu bạn muốn nó khác main.css */
+    cursor: pointer !important;
 
-.pagination button {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    background: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.2s;
+    /* Bổ sung/điều chỉnh các thuộc tính font và các thuộc tính khác nếu cần */
+    font-size: 0.9rem !important;  /* Hoặc kích thước mong muốn khác */
+    font-weight: normal !important; /* Hoặc độ đậm mong muốn khác */
+    /* Đảm bảo các thuộc tính khác như text-decoration, line-height (nếu cần) cũng được đặt */
+    text-decoration: none !important;
+    line-height: normal !important; /* Hoặc giá trị cụ thể */
 }
 
-.pagination button:hover {
-    background-color: #f8f9fa;
+/* Đừng quên các trạng thái khác */
+.pagination .btnn:hover {
+    background: #b3d8fd !important;
+    color: #0056b3 !important;
+    /* Các thuộc tính font cũng nên nhất quán nếu cần */
+    font-size: 0.9rem !important;
+    font-weight: normal !important;
 }
 
-.pagination button.active {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
+.pagination .btnn.active {
+    background: #007bff !important;
+    color: #fff !important;
+    border-color: #007bff !important;
+    /* Các thuộc tính font cũng nên nhất quán nếu cần */
+    font-size: 0.9rem !important;
+    font-weight: normal !important; /* Hoặc có thể bold nếu muốn nút active nổi bật hơn */
 }
 
-.pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.pagination .btnn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    /* Các thuộc tính font cũng nên nhất quán nếu cần */
+    font-size: 0.9rem !important;
+    font-weight: normal !important;
 }
-
 /* Modal Styles */
 .modal {
     display: none;
@@ -158,6 +183,8 @@
     width: 90%;
     max-width: 500px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .close {
@@ -202,7 +229,7 @@
 }
 
 /* Button Styles */
-.btn {
+.bttn {
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 5px;
@@ -211,22 +238,22 @@
     transition: all 0.2s;
 }
 
-.btn-primary {
+.bttn-primary {
     background-color: #007bff;
     color: white;
 }
 
-.btn-success {
+.bttn-success {
     background-color: #28a745;
     color: white;
 }
 
-.btn-danger {
+.bttn-danger {
     background-color: #dc3545;
     color: white;
 }
 
-.btn:hover {
+.bttn:hover {
     opacity: 0.9;
 }
 
@@ -253,5 +280,11 @@
     .modal-content {
         width: 95%;
         margin: 5% auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        max-height: 60vh;
     }
 }

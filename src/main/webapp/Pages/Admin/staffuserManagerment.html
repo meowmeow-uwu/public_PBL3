@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý người dùng</title>
-    <link rel="stylesheet" href="../../Assets/Css/main.css">
+    <!--<link rel="stylesheet" href="../../Assets/Css/main.css">-->
     <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
     <link rel="stylesheet" href="../../Assets/Css/Admin/staffuserManagerment.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -25,9 +25,9 @@
                     <i class="fas fa-search"></i> Tìm kiếm
                 </button>
             </div>
-            <button id="addUserBtn" class="btn btn-success">
+            <!-- <button id="addUserBtn" class="btn btn-success">
                 <i class="fas fa-plus"></i> Thêm người dùng
-            </button>
+            </button> -->
         </div>
 
         <!-- User List Table -->
@@ -71,15 +71,15 @@
         </div>
 
         <!-- Edit User Modal -->
-        <div id="editUserModal" class="modal">
+        <div id="editUserModal" class="modal" style="overflow-y: auto;">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>✏️ Sửa thông tin người dùng</h2>
+                <h2>✏️ Chỉnh sửa người dùng</h2>
                 <form id="editUserForm">
                     <input type="hidden" id="editUserId">
                     <div class="form-group">
                         <label>Username:</label>
-                        <input type="text" id="editUsername" required>
+                        <input type="text" id="editUsername" required readonly>
                     </div>
                     <div class="form-group">
                         <label>Email:</label>
@@ -91,20 +91,21 @@
                     </div>
                     <div class="form-group">
                         <label>Vai trò:</label>
-                        <select id="editRole" required>
+                        <select id="editRole">
                             <option value="1">Admin</option>
                             <option value="3">Nhân viên</option>
                             <option value="2">Người dùng</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Avatar URL:</label>
+                        <label>Avatar:</label>
                         <input type="text" id="editAvatar">
                     </div>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                 </form>
             </div>
         </div>
+
     </div>
     <script src="../../Javascript/config.js"></script>
     <script>

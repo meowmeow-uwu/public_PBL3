@@ -28,8 +28,9 @@ public class UserDAO implements DAOInterface<User> {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
         System.out.print(u);
-
-        System.out.println(d.getNumberPage(1, 2, ""));
+        Map<String,Object> dds = d.getUserByPage(1, 1, 1, "");
+        
+        System.out.println(dds.get("users"));
     }
 
     private UserDAO() {
@@ -84,10 +85,10 @@ public class UserDAO implements DAOInterface<User> {
             s.setString(1, t.getName());
             s.setString(2, t.getAvatar());
             s.setInt(3, t.getGroup_user_id());
-            s.setInt(4, t.getUser_id());
-            s.setString(5, t.getUsername());
-            s.setString(6, t.getEmail());
-            s.setString(7, t.getPassword());
+            s.setInt(7, t.getUser_id());
+            s.setString(4, t.getUsername());
+            s.setString(5, t.getEmail());
+            s.setString(6, t.getPassword());
             int result = s.executeUpdate();
             s.close();
             return result;

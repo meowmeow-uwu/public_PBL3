@@ -1,7 +1,7 @@
-// API functions for user management (admin)
+
 const USER_BASE_URL = window.APP_CONFIG.API_BASE_URL + '/admin/users';
 
-function getToken() {
+function getTokens() {
     return localStorage.getItem('token');
 }
 
@@ -18,7 +18,7 @@ async function createUser({ username, password, email, name, role_id, avatar }) 
         const response = await fetch(`${USER_BASE_URL}/create`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': `Bearer ${getTokens()}`,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: toFormUrlEncoded({ username, password, email, name, role_id, avatar })

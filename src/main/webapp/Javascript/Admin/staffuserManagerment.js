@@ -1,11 +1,4 @@
-// File: ../../Javascript/Admin/staffuserManagerment.js
-
-// Định nghĩa các vai trò người dùng
-const ROLE_MAP = {
-    1: "Admin",
-    3: "Nhân viên",
-    2: "User" // Hoặc "Người dùng" tùy theo hiển thị mong muốn
-};
+// Sử dụng ROLE_MAP từ staffuserManagermentAPI.js
 
 // Biến cục bộ cho việc phân trang và tìm kiếm
 let currentPage = 1;
@@ -16,11 +9,11 @@ let currentKeyword = "";
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
-const roleFilterSelect = document.getElementById('roleFilter'); // Đổi tên biến để rõ ràng hơn
+const roleFilterSelect = document.getElementById('roleFilter');
 const searchBtn = document.getElementById('searchBtn');
 const addUserBtn = document.getElementById('addUserBtn');
 const userTableBody = document.getElementById('userTableBody');
-const paginationContainer = document.getElementById('pagination'); // Đổi tên biến để rõ ràng hơn
+const paginationContainer = document.getElementById('pagination');
 const changePasswordModal = document.getElementById('changePasswordModal');
 const editUserModal = document.getElementById('editUserModal');
 
@@ -69,11 +62,11 @@ function setupEventListeners() {
     });
 
     // Nút thêm người dùng mới
-    addUserBtn.addEventListener('click', () => {
-        // Giả sử bạn có một trang addStaffUser.html để thêm người dùng
-        // Đường dẫn này cần khớp với cấu trúc thư mục của bạn
-        window.location.href = '../Admin/addStaffUser.html'; 
-    });
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', () => {
+            window.location.href = '../Admin/addStaffUser.html';
+        });
+    }
 
     // Nút đóng cho các modal
     document.querySelectorAll('.modal .close').forEach(btn => {
@@ -92,9 +85,16 @@ function setupEventListeners() {
     });
 
     // Xử lý submit form đổi mật khẩu
-    document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', handleChangePassword);
+    }
+
     // Xử lý submit form sửa thông tin người dùng
-    document.getElementById('editUserForm').addEventListener('submit', handleEditUser);
+    const editUserForm = document.getElementById('editUserForm');
+    if (editUserForm) {
+        editUserForm.addEventListener('submit', handleEditUser);
+    }
 }
 
 /**
@@ -103,7 +103,6 @@ function setupEventListeners() {
 async function loadUsers() {
     try {
         console.log('Đang tải người dùng với các tham số:', { page: currentPage, pageSize, groupUserId: currentRoleFilter, keyword: currentKeyword });
-        // Gọi hàm từ staffUserAPI (được nạp từ staffuserManagermentAPI.js)
         const data = await staffUserAPI.fetchUserList({
             page: currentPage,
             pageSize: pageSize,
@@ -124,8 +123,7 @@ async function loadUsers() {
     } catch (error) {
         console.error('Lỗi khi tải danh sách người dùng:', error);
         userTableBody.innerHTML = `<tr><td colspan="6">Lỗi khi tải dữ liệu: ${error.message}. Vui lòng thử lại.</td></tr>`;
-        renderPagination(0); // Không có trang nào nếu lỗi
-        // Không nên dùng alert ở đây vì có thể gây khó chịu, log lỗi là đủ
+        renderPagination(0);
     }
 }
 
@@ -141,7 +139,7 @@ function renderUserTable(users) {
 
     userTableBody.innerHTML = users.map(user => `
         <tr>
-            <td>${user.id}</td>
+            <td>${user.user_id}</td>
             <td>${user.username || "N/A"}</td>
             <td>${user.name || "N/A"}</td>
             <td>${user.email || "N/A"}</td>
@@ -150,10 +148,10 @@ function renderUserTable(users) {
                 <button class="action-btn edit" title="Sửa" onclick='openEditModal(${JSON.stringify(user)})'>
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="action-btn password" title="Đổi mật khẩu" onclick="openChangePasswordModal(${user.id})">
+                <button class="action-btn password" title="Đổi mật khẩu" onclick="openChangePasswordModal(${user.user_id})">
                     <i class="fas fa-key"></i>
                 </button>
-                <button class="action-btn delete" title="Xóa" onclick="deleteUser(${user.id})">
+                <button class="action-btn delete" title="Xóa" onclick="deleteUser(${user.user_id})">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
@@ -166,22 +164,22 @@ function renderUserTable(users) {
  * @param {number} totalPagesParam - Tổng số trang.
  */
 function renderPagination(totalPagesParam) {
-    totalPages = totalPagesParam; // Cập nhật biến global totalPages
+    totalPages = totalPagesParam;
     let paginationHTML = '';
 
     if (totalPages <= 0) {
-        paginationContainer.innerHTML = ''; // Xóa phân trang nếu không có trang nào
+        paginationContainer.innerHTML = '';
         return;
     }
 
     // Nút Previous
     paginationHTML += `
-        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} title="Trang trước">
+        <button class="btnn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} title="Trang trước">
             <i class="fas fa-chevron-left"></i>
         </button>
     `;
 
-    // Logic hiển thị các nút số trang (có thể cải thiện để hiển thị dấu "...")
+    // Logic hiển thị các nút số trang
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
 
@@ -193,15 +191,15 @@ function renderPagination(totalPagesParam) {
     }
     
     if (startPage > 1) {
-        paginationHTML += `<button onclick="changePage(1)">1</button>`;
+        paginationHTML += `<button class="btnn" onclick="changePage(1)">1</button>`;
         if (startPage > 2) {
-            paginationHTML += `<button disabled>...</button>`;
+            paginationHTML += `<button class="btnn" disabled>...</button>`;
         }
     }
 
     for (let i = startPage; i <= endPage; i++) {
         paginationHTML += `
-            <button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">
+            <button class="btnn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
                 ${i}
             </button>
         `;
@@ -209,15 +207,14 @@ function renderPagination(totalPagesParam) {
 
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
-            paginationHTML += `<button disabled>...</button>`;
+            paginationHTML += `<button class="btnn" disabled>...</button>`;
         }
-        paginationHTML += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+        paginationHTML += `<button class="btnn" onclick="changePage(${totalPages})">${totalPages}</button>`;
     }
-    
 
     // Nút Next
     paginationHTML += `
-        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} title="Trang sau">
+        <button class="btnn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} title="Trang sau">
             <i class="fas fa-chevron-right"></i>
         </button>
     `;
@@ -241,7 +238,7 @@ function changePage(pageNumber) {
  */
 function openChangePasswordModal(userId) {
     document.getElementById('changePasswordUserId').value = userId;
-    document.getElementById('newPassword').value = ''; // Xóa mật khẩu cũ
+    document.getElementById('newPassword').value = '';
     changePasswordModal.style.display = 'block';
     document.getElementById('newPassword').focus();
 }
@@ -255,13 +252,12 @@ async function handleChangePassword(e) {
     const userId = document.getElementById('changePasswordUserId').value;
     const newPassword = document.getElementById('newPassword').value;
 
-    if (!newPassword || newPassword.length < 6) { // Ví dụ: yêu cầu mật khẩu tối thiểu 6 ký tự
+    if (!newPassword || newPassword.length < 6) {
         alert('Mật khẩu mới phải có ít nhất 6 ký tự.');
         return;
     }
 
     try {
-        // Gọi hàm từ staffUserAPI
         const result = await staffUserAPI.changePassword(userId, newPassword);
         alert(result.message || 'Đổi mật khẩu thành công!');
         changePasswordModal.style.display = 'none';
@@ -276,16 +272,16 @@ async function handleChangePassword(e) {
  * Mở modal sửa thông tin người dùng và điền dữ liệu.
  * @param {object} user - Đối tượng người dùng chứa thông tin chi tiết.
  */
-function openEditModal(user) { // Nhận toàn bộ đối tượng user
+function openEditModal(user) {
     if (!user) {
         alert('Không thể tải thông tin người dùng để sửa.');
         return;
     }
-    document.getElementById('editUserId').value = user.id;
+    document.getElementById('editUserId').value = user.user_id;
     document.getElementById('editUsername').value = user.username || '';
     document.getElementById('editEmail').value = user.email || '';
     document.getElementById('editName').value = user.name || '';
-    document.getElementById('editRole').value = user.group_user_id; // group_user_id từ API
+    document.getElementById('editRole').value = user.group_user_id;
     document.getElementById('editAvatar').value = user.avatar || '';
 
     editUserModal.style.display = 'block';
@@ -302,7 +298,7 @@ async function handleEditUser(e) {
         username: document.getElementById('editUsername').value.trim(),
         email: document.getElementById('editEmail').value.trim(),
         name: document.getElementById('editName').value.trim(),
-        role_id: parseInt(document.getElementById('editRole').value), // role_id cho API
+        role_id: parseInt(document.getElementById('editRole').value),
         avatar: document.getElementById('editAvatar').value.trim()
     };
 
@@ -313,11 +309,10 @@ async function handleEditUser(e) {
 
     try {
         console.log('Đang cập nhật người dùng với dữ liệu:', userData);
-        // Gọi hàm từ staffUserAPI
         const result = await staffUserAPI.updateUser(userData);
         alert(result.message || 'Cập nhật thông tin người dùng thành công!');
         editUserModal.style.display = 'none';
-        await loadUsers(); // Tải lại danh sách người dùng sau khi cập nhật
+        await loadUsers();
     } catch (error) {
         console.error('Lỗi khi cập nhật thông tin người dùng:', error);
         alert('Lỗi khi cập nhật thông tin: ' + error.message);
@@ -332,12 +327,10 @@ async function deleteUser(userId) {
     if (!confirm(`Bạn có chắc chắn muốn xóa người dùng có ID: ${userId}?`)) return;
 
     try {
-        // Gọi hàm từ staffUserAPI
         const result = await staffUserAPI.deleteUser(userId);
         alert(result.message || 'Xóa người dùng thành công!');
-        // Tải lại danh sách người dùng, có thể cần điều chỉnh currentPage nếu trang hiện tại trống sau khi xóa
         if (userTableBody.rows.length === 1 && currentPage > 1) {
-             currentPage--; // Nếu xóa item cuối cùng của trang và không phải trang đầu, lùi về trang trước
+            currentPage--;
         }
         await loadUsers();
     } catch (error) {
@@ -346,7 +339,7 @@ async function deleteUser(userId) {
     }
 }
 
-// Các hàm global (nếu có) để các inline onclick có thể gọi được
+// Các hàm global để các inline onclick có thể gọi được
 window.openEditModal = openEditModal;
 window.openChangePasswordModal = openChangePasswordModal;
 window.deleteUser = deleteUser;

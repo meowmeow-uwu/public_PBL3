@@ -4,5 +4,5 @@ target/
 *.class
 *.lst
 src/main/java/com/pbl3/util/DBUtil.java
-config.js
+src\main\webapp\Javascript\config.js
 

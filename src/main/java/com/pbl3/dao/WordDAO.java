@@ -43,22 +43,24 @@ public class WordDAO implements DAOInterface<Word> {
             ResultSet hasWord = s1.executeQuery();
             PreparedStatement s;
             if (hasWord.next()) {
-                String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=? WHERE word_id=?";
+                String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=? , image = ? WHERE word_id=?";
                 s = c.prepareStatement(query);
                 s.setInt(1, word.getLanguage_id());
                 s.setString(2, word.getWord_name());
                 s.setString(3, word.getPronunciation());
                 s.setString(4, word.getSound());
                 s.setBoolean(5, word.is_deleted());
-                s.setInt(6, hasWord.getInt("word_id"));
+                s.setString(6, word.getImage());
+                s.setInt(7, hasWord.getInt("word_id"));
             } else {
-                String query = "INSERT INTO word (language_id, word_name, pronunciation, sound, is_deleted) VALUES (?, ?, ?, ?, ?)";
+                String query = "INSERT INTO word (language_id, word_name, pronunciation, sound, is_deleted, image) VALUES (?, ?, ?, ?, ?, ?)";
                 s = c.prepareStatement(query);
                 s.setInt(1, word.getLanguage_id());
                 s.setString(2, word.getWord_name());
                 s.setString(3, word.getPronunciation());
                 s.setString(4, word.getSound());
                 s.setBoolean(5, word.is_deleted());
+                s.setString(6, word.getImage());
             }
             s1.close();
 
@@ -78,14 +80,15 @@ public class WordDAO implements DAOInterface<Word> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=? WHERE word_id=?";
+            String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=?, image = ? WHERE word_id=?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, word.getLanguage_id());
             s.setString(2, word.getWord_name());
             s.setString(3, word.getPronunciation());
             s.setString(4, word.getSound());
             s.setBoolean(5, word.is_deleted());
-            s.setInt(6, word.getWord_id());
+            s.setString(6, word.getImage());
+            s.setInt(7, word.getWord_id());
 
             int result = s.executeUpdate();
             s.close();
@@ -104,26 +107,6 @@ public class WordDAO implements DAOInterface<Word> {
         try {
             c = DBUtil.makeConnection();
 
-            // 1. Xóa collection_has_word
-            String deleteCollectionHasWord = "DELETE FROM collection_has_word WHERE word_id = ?";
-            PreparedStatement s1 = c.prepareStatement(deleteCollectionHasWord);
-            s1.setInt(1, id);
-            s1.executeUpdate();
-            s1.close();
-
-            // 2. Xóa translate
-            String deleteTranslate = "DELETE FROM translate WHERE word_id = ?";
-            PreparedStatement s2 = c.prepareStatement(deleteTranslate);
-            s2.setInt(1, id);
-            s2.executeUpdate();
-            s2.close();
-
-            // 3. Xóa definition
-            String deleteDefinition = "DELETE FROM definition WHERE word_id = ?";
-            PreparedStatement s3 = c.prepareStatement(deleteDefinition);
-            s3.setInt(1, id);
-            s3.executeUpdate();
-            s3.close();
 
             String query = "UPDATE word SET  is_deleted=1 WHERE word_id=?";
             PreparedStatement s = c.prepareStatement(query);
@@ -157,7 +140,8 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),
-                        rs.getBoolean("is_deleted")
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image")
                 ));
             }
             rs.close();
@@ -188,7 +172,8 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),
-                        rs.getBoolean("is_deleted")
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image")
                 );
             }
             rs.close();
@@ -225,7 +210,8 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),
-                        rs.getBoolean("is_deleted")
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image")
                 ));
             }
             rs.close();
@@ -255,7 +241,8 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),
-                        rs.getBoolean("is_deleted")
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image")
                 );
             }
             rs.close();
@@ -294,7 +281,8 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),
-                        rs.getBoolean("is_deleted")
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image")
                 ));
             }
             rs.close();
@@ -374,7 +362,8 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),
-                        rs.getBoolean("is_deleted")
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image")
                 );
                 Map<String, Word> wordMap = new HashMap<>();
                 wordMap.put("word", word);

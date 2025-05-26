@@ -28,8 +28,9 @@ public class UserDAO implements DAOInterface<User> {
         UserDAO d = new UserDAO();
         User u = d.selectByID(1);
         System.out.print(u);
-
-        System.out.println(d.getNumberPage(1, 2, ""));
+        Map<String,Object> dds = d.getUserByPage(1, 1, 1, "");
+        
+        System.out.println(dds.get("users"));
     }
 
     private UserDAO() {

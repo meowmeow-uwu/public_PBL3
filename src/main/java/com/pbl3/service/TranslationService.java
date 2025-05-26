@@ -14,7 +14,7 @@ import java.util.Set;
 public class TranslationService {
 
     private WordDAO wordDAO = WordDAO.getInstance();
-    private TranslateDAO translateDAO = new TranslateDAO();
+    private TranslateDAO translateDAO =  TranslateDAO.getInstance();
 
     // Định nghĩa constant cho language
     private static final int ENG_VIET_TYPE = 1;

@@ -162,7 +162,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Button style chung cho toàn bộ website */
-/* button,
+ button,
 input[type="submit"],
 input[type="button"],
 a.btn,
@@ -189,4 +189,4 @@ a.btn:hover,
 .btn:hover {
     filter: brightness(0.95);
     background: linear-gradient(90deg, #00c3ff 0%, #1fd655 100%);
-} */
+} 

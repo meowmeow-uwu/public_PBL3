@@ -1,277 +1,162 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
+// Định nghĩa các vai trò người dùng
+const ROLE_MAP = {
+    1: "Admin",
+    3: "Nhân viên",
+    2: "User" // Hoặc "Người dùng" tùy theo hiển thị mong muốn
+};
 
+// Định nghĩa API endpoints
+const API_BASE = window.APP_CONFIG.API_BASE_URL + '/admin/users';
+
+function getToken() {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+}
+
+// Định nghĩa staffUserAPI object
 const staffUserAPI = {
-    /**
-     * Lấy Authorization header từ localStorage.
-     * @returns {string} Chuỗi Authorization header hoặc chuỗi rỗng.
-     */
-    getAuthHeader() {
-        const token = localStorage.getItem('token');
-        return token ? `Bearer ${token}` : '';
-    },
-
-    /**
-     * Gọi API để lấy danh sách người dùng theo trang, vai trò và từ khóa.
-     * @param {object} params - Tham số bao gồm page, pageSize, groupUserId, keyword.
-     * @returns {Promise<object>} Promise chứa danh sách người dùng và tổng số trang.
-     */
+    // Lấy danh sách người dùng
     async fetchUserList({ page, pageSize, groupUserId, keyword }) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        let url = `${baseUrl}/admin/users/list/${page}/${pageSize}/${groupUserId}`;
-        if (keyword) {
-            url += `?keyword=${encodeURIComponent(keyword)}`;
-        }
+        try {
+            const token = getToken();
+            if (!token) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
 
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': this.getAuthHeader()
+            const _page = page || 1;
+            const _pageSize = pageSize || 10;
+            const _groupUserId = groupUserId || 1;
+            const _keyword = keyword || '';
+
+            const url = `${API_BASE}/list/${_page}/${_pageSize}/${_groupUserId}?keyword=${encodeURIComponent(_keyword)}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: { 
+                    'Authorization': token
+                },
+                credentials: 'include',
+                mode: 'cors'
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+                throw new Error('Có lỗi xảy ra khi lấy danh sách người dùng');
             }
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi tải danh sách người dùng`);
+
+            const data = await response.json();
+            console.log('Response data:', data); // Log để debug
+            // Chuyển đổi cấu trúc dữ liệu từ backend sang frontend
+            return {
+                users: data._user.map(item => item.user),
+                totalPages: data.totalPages
+            };
+        } catch (error) {
+            console.error('Lỗi khi lấy danh sách người dùng:', error);
+            throw error;
         }
-        
-        const data = await response.json();
-        // Backend trả về { _user: [ {user: {...}}, ... ], totalPages: X }
-        return {
-            users: data._user ? data._user.map(item => ({
-                id: item.user.user_id,
-                username: item.user.username,
-                name: item.user.name,
-                email: item.user.email,
-                avatar: item.user.avatar,
-                group_user_id: item.user.group_user_id
-            })) : [], // Trả về mảng rỗng nếu _user không tồn tại
-            totalPages: data.totalPages || 0 // Trả về 0 nếu totalPages không tồn tại
-        };
     },
 
-    /**
-     * Gọi API để cập nhật thông tin người dùng.
-     * @param {object} userData - Dữ liệu người dùng cần cập nhật.
-     * @returns {Promise<object>} Promise chứa kết quả từ API.
-     */
+    // Cập nhật thông tin người dùng
     async updateUser(userData) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        const formData = new FormData();
-        formData.append('user_id', userData.id); // Backend Java mong đợi user_id
-        formData.append('username', userData.username);
-        formData.append('email', userData.email);
-        formData.append('name', userData.name);
-        formData.append('role_id', userData.role_id); // Backend Java mong đợi role_id
-        formData.append('avatar', userData.avatar || '');
+        try {
+            const token = getToken();
+            if (!token) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
 
-        const response = await fetch(`${baseUrl}/admin/users/change-info`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': this.getAuthHeader()
-                // 'Content-Type' sẽ được tự động thiết lập bởi browser khi dùng FormData
-            },
-            body: formData
-        });
+            // Tạo body dạng form-urlencoded
+            const body = new URLSearchParams();
+            body.append('user_id', userData.id);
+            body.append('username', userData.username);
+            body.append('email', userData.email);
+            body.append('name', userData.name);
+            body.append('role_id', userData.role_id);
+            body.append('avatar', userData.avatar);
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi cập nhật người dùng`);
-        }
-        return await response.json();
-    },
+            const response = await fetch(`${API_BASE}/change-info`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: body.toString(),
+                credentials: 'include',
+                mode: 'cors'
+            });
 
-    /**
-     * Gọi API để xóa người dùng.
-     * @param {number|string} userId - ID của người dùng cần xóa.
-     * @returns {Promise<object>} Promise chứa kết quả từ API.
-     */
-    async deleteUser(userId) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        const response = await fetch(`${baseUrl}/admin/users/delete/${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': this.getAuthHeader()
+            if (!response.ok) {
+                if (response.status === 401) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+                throw new Error('Có lỗi xảy ra khi cập nhật thông tin người dùng');
             }
-        });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi xóa người dùng`);
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thông tin người dùng:', error);
+            throw error;
         }
-        return await response.json();
     },
 
-    /**
-     * Gọi API để thay đổi mật khẩu người dùng.
-     * @param {number|string} userId - ID của người dùng.
-     * @param {string} password - Mật khẩu mới.
-     * @returns {Promise<object>} Promise chứa kết quả từ API.
-     */
-    async changePassword(userId, password) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        const formData = new FormData();
-        formData.append('userId', userId); // Backend Java mong đợi userId
-        formData.append('password', password);
+    // Đổi mật khẩu người dùng
+    async changePassword(userId, newPassword) {
+        try {
+            const token = getToken();
+            if (!token) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
 
-        const response = await fetch(`${baseUrl}/admin/users/change-password`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': this.getAuthHeader()
-                // 'Content-Type' sẽ được tự động thiết lập bởi browser khi dùng FormData
-            },
-            body: formData
-        });
+            // Tạo body dạng form-urlencoded
+            const body = new URLSearchParams();
+            body.append('userId', userId);
+            body.append('password', newPassword);
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi đổi mật khẩu`);
+            const response = await fetch(`${API_BASE}/change-password`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: body.toString(),
+                credentials: 'include',
+                mode: 'cors'
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+                throw new Error('Có lỗi xảy ra khi đổi mật khẩu');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi đổi mật khẩu:', error);
+            throw error;
         }
-        return await response.json();
+    },
+
+    // Xóa người dùng
+    async deleteUser(userId) {
+        try {
+            const token = getToken();
+            if (!token) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+
+            const response = await fetch(`${API_BASE}/delete/${userId}`, {
+                method: 'DELETE',
+                headers: { 
+                    'Authorization': token,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include',
+                mode: 'cors'
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
+                throw new Error('Có lỗi xảy ra khi xóa người dùng');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi xóa người dùng:', error);
+            throw error;
+        }
     }
 };
-=======
-const API_BASE = window.APP_CONFIG.API_URL + '/admin/users';
-=======
->>>>>>> aa76187 (fix bug giao diện)
 
-const staffUserAPI = {
-    /**
-     * Lấy Authorization header từ localStorage.
-     * @returns {string} Chuỗi Authorization header hoặc chuỗi rỗng.
-     */
-    getAuthHeader() {
-        const token = localStorage.getItem('token');
-        return token ? `Bearer ${token}` : '';
-    },
-
-    /**
-     * Gọi API để lấy danh sách người dùng theo trang, vai trò và từ khóa.
-     * @param {object} params - Tham số bao gồm page, pageSize, groupUserId, keyword.
-     * @returns {Promise<object>} Promise chứa danh sách người dùng và tổng số trang.
-     */
-    async fetchUserList({ page, pageSize, groupUserId, keyword }) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        let url = `${baseUrl}/admin/users/list/${page}/${pageSize}/${groupUserId}`;
-        if (keyword) {
-            url += `?keyword=${encodeURIComponent(keyword)}`;
-        }
-
-<<<<<<< HEAD
-window.staffUserAPI = { fetchUserList };
->>>>>>> 0952e51 (đăng ký user/staff/admin thanh cong)
-=======
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': this.getAuthHeader()
-            }
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi tải danh sách người dùng`);
-        }
-        
-        const data = await response.json();
-        // Backend trả về { _user: [ {user: {...}}, ... ], totalPages: X }
-        return {
-            users: data._user ? data._user.map(item => ({
-                id: item.user.user_id,
-                username: item.user.username,
-                name: item.user.name,
-                email: item.user.email,
-                avatar: item.user.avatar,
-                group_user_id: item.user.group_user_id
-            })) : [], // Trả về mảng rỗng nếu _user không tồn tại
-            totalPages: data.totalPages || 0 // Trả về 0 nếu totalPages không tồn tại
-        };
-    },
-
-    /**
-     * Gọi API để cập nhật thông tin người dùng.
-     * @param {object} userData - Dữ liệu người dùng cần cập nhật.
-     * @returns {Promise<object>} Promise chứa kết quả từ API.
-     */
-    async updateUser(userData) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        const formData = new FormData();
-        formData.append('user_id', userData.id); // Backend Java mong đợi user_id
-        formData.append('username', userData.username);
-        formData.append('email', userData.email);
-        formData.append('name', userData.name);
-        formData.append('role_id', userData.role_id); // Backend Java mong đợi role_id
-        formData.append('avatar', userData.avatar || '');
-
-        const response = await fetch(`${baseUrl}/admin/users/change-info`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': this.getAuthHeader()
-                // 'Content-Type' sẽ được tự động thiết lập bởi browser khi dùng FormData
-            },
-            body: formData
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi cập nhật người dùng`);
-        }
-        return await response.json();
-    },
-
-    /**
-     * Gọi API để xóa người dùng.
-     * @param {number|string} userId - ID của người dùng cần xóa.
-     * @returns {Promise<object>} Promise chứa kết quả từ API.
-     */
-    async deleteUser(userId) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        const response = await fetch(`${baseUrl}/admin/users/delete/${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': this.getAuthHeader()
-            }
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi xóa người dùng`);
-        }
-        return await response.json();
-    },
-
-    /**
-     * Gọi API để thay đổi mật khẩu người dùng.
-     * @param {number|string} userId - ID của người dùng.
-     * @param {string} password - Mật khẩu mới.
-     * @returns {Promise<object>} Promise chứa kết quả từ API.
-     */
-    async changePassword(userId, password) {
-        const baseUrl = window.APP_CONFIG.API_BASE_URL;
-        const formData = new FormData();
-        formData.append('userId', userId); // Backend Java mong đợi userId
-        formData.append('password', password);
-
-        const response = await fetch(`${baseUrl}/admin/users/change-password`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': this.getAuthHeader()
-                // 'Content-Type' sẽ được tự động thiết lập bởi browser khi dùng FormData
-            },
-            body: formData
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Lỗi không xác định khi parse JSON response' }));
-            console.error('API Error Response:', errorData);
-            throw new Error(errorData.error || `Lỗi ${response.status} khi đổi mật khẩu`);
-        }
-        return await response.json();
-    }
-};
->>>>>>> aa76187 (fix bug giao diện)
+// Export staffUserAPI để sử dụng ở các file khác
+window.staffUserAPI = staffUserAPI;

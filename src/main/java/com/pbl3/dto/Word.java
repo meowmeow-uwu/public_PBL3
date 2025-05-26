@@ -29,4 +29,5 @@ public class Word implements Serializable{
     private String pronunciation;
     private String sound;
     private boolean is_deleted;
+    private String image;
 }

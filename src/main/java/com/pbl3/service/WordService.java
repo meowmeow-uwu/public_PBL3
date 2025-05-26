@@ -4,6 +4,7 @@
  */
 package com.pbl3.service;
 
+import com.pbl3.dao.CollectionOfWordDAO;
 import com.pbl3.dao.DefinitionDAO;
 import com.pbl3.dao.TranslateDAO;
 import java.util.ArrayList;
@@ -22,10 +23,10 @@ import java.util.Map;
  */
 public class WordService implements ServiceInterface<Word> {
 
-    private final DefinitionDAO definitionDAO = new DefinitionDAO();
+    private final DefinitionDAO definitionDAO =  DefinitionDAO.getInstance();
     private final WordDAO wordDAO = WordDAO.getInstance();
-    private final TranslateDAO translateDAO = new TranslateDAO();
-
+    private final TranslateDAO translateDAO =  TranslateDAO.getInstance();
+    private final CollectionOfWordDAO collectionOfWordDAO = CollectionOfWordDAO.getInstance();
     @Override
     public int insert(Word Word) {
         int result = wordDAO.insert(Word);
@@ -45,6 +46,9 @@ public class WordService implements ServiceInterface<Word> {
 
     @Override
     public int delete(int wid) {
+        collectionOfWordDAO.deleteByWordId(wid);
+        translateDAO.deleteByWordId(wid);
+        definitionDAO.DeleteByWordId(wid);
         return wordDAO.delete(wid);
     }
 
@@ -83,6 +87,7 @@ public class WordService implements ServiceInterface<Word> {
             result.put("word", word.getWord_name());
             result.put("phonetic", word.getPronunciation());
             result.put("sound", word.getSound());
+            result.put("image", word.getImage());
 
             // Lấy tất cả định nghĩa
             ArrayList<Definition> definitions = definitionDAO.selectAllByWordID(wordId);

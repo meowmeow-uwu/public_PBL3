@@ -133,10 +133,17 @@ body {
 }
 .input-field {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin: 10px 0;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+.input-field:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 .popup-actions {
   display: flex;
@@ -178,7 +185,7 @@ body {
   padding: 10px;
 }
 .words-list-container {
-  max-height: 70vh;
+  max-height: 60vh; 
   overflow-y: auto;
 }
 .words-list {
@@ -200,18 +207,6 @@ body {
   margin-bottom: 5px;
   color: #333;
   font-weight: 500;
-}
-.input-field {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1em;
-}
-.input-field:focus {
-  border-color: #4CAF50;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 .btn-secondary {
   background: #666;
@@ -236,9 +231,218 @@ body {
 }
 select.input-field {
   appearance: none;
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 1em;
-  padding-right: 30px;
+  padding-right: 30px; 
+}
+
+/* === Flashcard styles === */
+.flashcard-container {
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; 
+    padding: 20px;
+}
+
+.flashcard {
+    width: 100%;
+    max-width: 480px;
+    height: 480px;
+    position: relative;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.flashcard-image {
+    display: block;
+    margin: 18px auto 12px auto;
+    max-width: 220px;
+    max-height: 160px;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px #0001;
+    background: #f6fafd;
+}
+
+.flashcard-inner {
+    position: relative; 
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d; 
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute; 
+    width: 100%;       
+    height: 100%;      
+    top: 0;            
+    left: 0;           
+    backface-visibility: hidden; 
+    -webkit-backface-visibility: hidden; 
+    border-radius: 15px; 
+    padding: 2rem;        
+    display: flex;         
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;   
+    background: white;     
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    text-align: center; /* Thêm để đảm bảo nội dung chữ được căn giữa */
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.flashcard-front {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+/* === Kết thúc Flashcard styles === */
+
+.word { 
+    font-size: 2.7rem;
+    font-weight: bold;
+    margin-bottom: 0.7rem;
+}
+
+.phonetic, .phonetic-vi { 
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.word-type, .word-type-vi { 
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.hint { 
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 1rem;
+}
+
+.meaning { 
+    font-size: 2.7rem; 
+    font-weight: bold;
+    margin-bottom: 0.7rem;
+}
+
+.example, .example-vi { 
+    font-size: 1.1rem;
+    margin-bottom: 1rem; 
+    font-style: italic;
+}
+
+.definition, .definition-vi {
+  font-size: 1.1rem; 
+  margin-bottom: 1rem;
+  color: #444; 
+}
+
+.flashcard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem; 
+    margin-top: 20px;
+    width: 100%;
+    gap: 16px;
+}
+
+.nav-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    background: #4CAF50;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+    min-width: 120px;
+    justify-content: center;
+    font-size: 1.1em;
+}
+
+.nav-btn:hover {
+    background: #45a049;
+}
+
+.progress-info {
+    font-size: 1.2rem;
+    color: #666;
+    background: #f5f5f5;
+    padding: 8px 16px;
+    border-radius: 20px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.bottom-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.action-btn { 
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .flashcard {
+        height: 350px; 
+    }
+    .flashcard-front .word { 
+        font-size: 2em;
+    }
+    .flashcard-back .meaning { 
+        font-size: 1.7em; 
+    }
+    .flashcard .phonetic,
+    .flashcard .phonetic-vi {
+        font-size: 1em;
+    }
+    .flashcard .definition, 
+    .flashcard .definition-vi {
+      font-size: 0.9em;
+    }
+    .flashcard .example, .flashcard .example-vi {
+        font-size: 0.9em; 
+    }
+    .nav-btn {
+        padding: 8px 12px; 
+        font-size: 0.9em;
+        min-width: 100px; 
+    }
+    .progress-info {
+        font-size: 1em;
+        padding: 6px 12px;
+    }
 }

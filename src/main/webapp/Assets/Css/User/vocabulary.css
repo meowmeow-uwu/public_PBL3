@@ -1,3 +1,281 @@
+        /* ... existing styles ... */
+
+        .save-collection-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .save-collection-btn:hover {
+            background-color: #45a049;
+        }
+
+        .save-collection-btn i {
+            font-size: 16px;
+        }
+
+        .topic-card {
+            position: relative;
+            padding-bottom: 50px; /* Tạo khoảng trống cho nút */
+        }
+
+        .flashcard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .back-btn {
+            background-color: #f0f0f0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .word-number {
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .flashcard-front, .flashcard-back {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+
+        .word, .meaning {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .phonetic {
+            font-size: 18px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .word-type {
+            font-size: 16px;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        .meaning-en, .meaning-vi {
+            font-size: 20px;
+            color: #333;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+
+        .definition, .definition-vi {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .example, .example-vi {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+            border-left: 3px solid #4CAF50;
+            padding-left: 15px;
+            line-height: 1.6;
+        }
+
+        .hint {
+            margin-top: auto;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #45a049;
+        }
+
+        .progress-info {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 8px 16px;
+            border-radius: 20px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .bottom-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .modal {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+            width: 90vw;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .collection-list {
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .collection-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0%;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .collection-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .collection-item .collection-info {
+            flex: 1;
+        }
+
+        .collection-item .collection-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .collection-item .word-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .save-to-collection-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .save-to-collection-btn:hover {
+            background-color: #45a049;
+        }
+
 /* Container */
 .vocabulary-container {
     max-width: 1200px;
@@ -156,9 +434,7 @@
     gap: 0.5rem;
     transition: background-color 0.3s ease;
 }
-
-.nav-btn:hover {
-}
+ 
 
 .progress-info {
     font-size: 1.2rem;
@@ -182,9 +458,7 @@
     gap: 0.5rem;
     transition: background-color 0.3s ease;
 }
-
-.action-btn:hover {
-}
+ 
 
 .card-actions {
     display: flex;
@@ -282,4 +556,22 @@
 
 .save-btn i {
     font-size: 14px;
+}
+
+.flashcard-image {
+    max-width: 160px;
+    max-height: 120px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.definition, .definition-vi, .example, .example-vi, .meaning-en, .meaning-vi {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    text-align: center;
 }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @author Hoang Duong
  */
 public class DefinitionService implements ServiceInterface<Definition>{
-    private final DefinitionDAO definitionDAO = new DefinitionDAO();
+    private final DefinitionDAO definitionDAO = DefinitionDAO.getInstance();
 
     @Override
     public int insert(Definition t) {

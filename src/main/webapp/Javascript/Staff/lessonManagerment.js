@@ -387,7 +387,16 @@ window.deleteEntity = async (entityType, id) => { /* ... logic như cũ ... */
     const displayName = getEntityTypeDisplayName(entityType);
     if (confirm(`Bạn có chắc muốn xóa ${displayName} này (ID: ${id}) không?`)) {
         try {
-            if (entityType === 'topic') await topicAPI.delete(id);
+if (entityType === 'topic') {
+                        try {
+                            const response = await topicAPI.delete(id);
+                            const text = await response.text(); // Lấy phản hồi dưới dạng text
+                            console.log("Response:", text); // Kiểm tra nội dung phản hồi
+                            const jsonData = JSON.parse(text); // Chuyển đổi sang JSON
+                        } catch (error) {
+                            console.error("Lỗi:", error);
+                        }
+                    }
             else if (entityType === 'subtopic') await subTopicAPI.delete(id);
             else if (entityType === 'post') await postAPI.delete(id);
             else if (entityType === 'exam') await examAPI.delete(id);
@@ -596,21 +605,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (currentEntityType === 'question') data.question_id = currentEditingId;
                     else if (currentEntityType === 'answer') data.answer_id = currentEditingId;
 
-                    if (currentEntityType === 'topic') await topicAPI.update(currentEditingId, data);
+                    if (currentEntityType === 'topic') {
+                        try {
+                            const response = await topicAPI.update(currentEditingId, data);
+                            const text = await response.text(); // Lấy phản hồi dưới dạng text
+                            console.log("Response:", text); // Kiểm tra nội dung phản hồi
+                            const jsonData = JSON.parse(text); // Chuyển đổi sang JSON
+                        } catch (error) {
+                            console.error("Lỗi:", error);
+                        }
+                    }
                     else if (currentEntityType === 'subtopic') await subTopicAPI.update(currentEditingId, data);
                     else if (currentEntityType === 'post') await postAPI.update(currentEditingId, data);
                     else if (currentEntityType === 'exam') await examAPI.update(currentEditingId, data);
                     else if (currentEntityType === 'question') await questionAPI.update(currentEditingId, data);
                     else if (currentEntityType === 'answer') await answerAPI.update(currentEditingId, data);
                 } else {
-                    if (currentEntityType === 'topic') await topicAPI.create(data);
+                    if (currentEntityType === 'topic') {
+                        try {
+                            const response = await topicAPI.create(data);
+                            const text = await response.text(); // Lấy phản hồi dưới dạng text
+                            console.log("Response:", text); // Kiểm tra nội dung phản hồi
+                            const jsonData = JSON.parse(text); // Chuyển đổi sang JSON
+                        } catch (error) {
+                            console.error("Lỗi:", error);
+                        }
+                    }
                     else if (currentEntityType === 'subtopic') await subTopicAPI.create(data);
                     else if (currentEntityType === 'post') await postAPI.create(data);
                     else if (currentEntityType === 'exam') await examAPI.create(data);
                     else if (currentEntityType === 'question') await questionAPI.create(data);
                     else if (currentEntityType === 'answer') await answerAPI.create(data);
                 }
-                alert(`${currentEditingId ? 'Cập nhật' : 'Thêm mới'} thành công!`);
+                await alert(`${currentEditingId ? 'Cập nhật' : 'Thêm mới'} thành công!`);
                 window.closeModal('formModal');
                 
                 if (currentEntityType === 'question' && currentExamIdForQuestionsManagement) {

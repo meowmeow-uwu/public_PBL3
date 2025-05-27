@@ -16,7 +16,7 @@ public class TopicDAO implements DAOInterface<Topic>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "INSERT INTO topics (topic_name) VALUES (?)";
+            String sql = "INSERT INTO topic (topic_name) VALUES (?)";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setString(1, t.getName());
             int result = pstmt.executeUpdate();

@@ -107,7 +107,6 @@ public class WordDAO implements DAOInterface<Word> {
         try {
             c = DBUtil.makeConnection();
 
-
             String query = "UPDATE word SET  is_deleted=1 WHERE word_id=?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
@@ -357,8 +356,8 @@ public class WordDAO implements DAOInterface<Word> {
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
                 Word word = new Word(
-                        rs.getInt("word_id"),
                         rs.getInt("language_id"),
+                        rs.getInt("word_id"),
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <title>Quản lý từ vựng</title>
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/Staff/wordManagement.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </head>
+    <body>
+        <div class="container">
+            <!-- Sidebar -->
+            <div id="sidebar-container"></div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="header">
+                    <h1>Quản lý từ vựng</h1>
+                    <div class="search-bar">
+                        <select id="mainLanguageFilter" class="language-select">
+                            <option value="1">Tiếng Anh</option>
+                            <option value="2">Tiếng Việt</option>
+                        </select>
+                        <input type="text" id="mainSearchInput" placeholder="Tìm kiếm từ vựng...">
+                        <button onclick="searchWords()">Tìm kiếm</button>
+                    </div>
+                    <button class="add-btn" onclick="openAddWordModal()">
+                        <i class="fas fa-plus"></i> Thêm từ mới
+                    </button>
+                </div>
+
+                <!-- Word List -->
+                <div class="word-list" id="wordList">
+                    <!-- Words will be loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Word Modal -->
+        <div id="wordModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modalTitle">Thêm từ mới</h2>
+                <form id="wordForm">
+                    <input type="hidden" id="wordId">
+                    <div class="form-group">
+                        <label>Từ:</label>
+                        <input type="text" id="wordName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phát âm:</label>
+                        <input type="text" id="pronunciation">
+                    </div>
+                    <div class="form-group">
+                        <label>Ngôn ngữ:</label>
+                        <select id="languageId" required>
+                            <option value="1">Tiếng Anh</option>
+                            <option value="2">Tiếng Việt</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hình ảnh (link):</label>
+                        <input type="text" id="imageLink" placeholder="Nhập link hình ảnh">
+                    </div>
+                    <div class="form-group">
+                        <label>Âm thanh (link):</label>
+                        <input type="text" id="soundLink" placeholder="Nhập link âm thanh">
+                    </div>
+                    <button type="submit">Lưu</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Definition Modal -->
+        <div id="definitionModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Quản lý định nghĩa</h2>
+                <div class="definition-list" id="definitionList">
+                    <!-- Definitions will be loaded here -->
+                </div>
+                <button onclick="openAddDefinitionModal()">Thêm định nghĩa mới</button>
+            </div>
+        </div>
+
+        <!-- Add/Edit Definition Modal -->
+        <div id="addDefinitionModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="definitionModalTitle">Thêm định nghĩa mới</h2>
+                <form id="definitionForm">
+                    <input type="hidden" id="definitionId">
+                    <input type="hidden" id="definitionWordId">
+                    <div class="form-group">
+                        <label>Loại từ:</label>
+                        <input type="text" id="wordType" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nghĩa:</label>
+                        <textarea id="meaning" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ví dụ:</label>
+                        <textarea id="example"></textarea>
+                    </div>
+                    <button type="submit">Lưu</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Translation Modal -->
+        <div id="translationModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Quản lý bản dịch</h2>
+                <div class="translation-list" id="translationList">
+                    <!-- Translations will be loaded here -->
+                </div>
+                <button onclick="openAddTranslationModal()">Thêm bản dịch mới</button>
+            </div>
+        </div>
+
+        <!-- Add/Edit Translation Modal -->
+        <div id="addTranslationModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="translationModalTitle">Thêm bản dịch mới</h2>
+                <form id="translationForm">
+                    <input type="hidden" id="translationId">
+                    <input type="hidden" id="sourceWordId">
+                    <input type="hidden" id="currentWord">
+                    <div class="form-group">
+                        <label>Loại bản dịch:</label>
+                        <select id="typeTranslateId" required>
+                            <option value="1">Anh - Việt</option>
+                            <option value="2">Việt - Anh</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Từ hiện tại:</label>
+                        <input type="text" id="currentWordDisplay" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Chọn từ để dịch:</label>
+                        <div class="modal-search-box">
+                            <select id="searchLanguageId" class="language-select">
+                                <option value="1">Tiếng Anh</option>
+                                <option value="2">Tiếng Việt</option>
+                            </select>
+                            <input type="text" id="searchTargetWord" placeholder="Nhập từ cần tìm...">
+                            <button type="button" onclick="searchTargetWords()">Tìm kiếm</button>
+                        </div>
+                        <div id="translationWordList" class="word-list">
+                            <!-- Danh sách từ sẽ được hiển thị ở đây -->
+                        </div>
+                    </div>
+                    <button type="submit">Lưu</button>
+                </form>
+            </div>
+        </div>
+
+        <script src="../../Javascript/config.js"></script>
+        <script>
+            window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/components/sideBar.js"></script>
+        <script src="../../Javascript/GetAPI/wordManagermentAPI.js"></script>
+        <script src="../../Javascript/GetAPI/definitionManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/translateManagementAPI.js"></script>
+        <script src="../../Javascript/Staff/wordManagement.js"></script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+    </body>
+</html>

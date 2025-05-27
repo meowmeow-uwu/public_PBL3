@@ -357,8 +357,8 @@ public class WordDAO implements DAOInterface<Word> {
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
                 Word word = new Word(
+                       rs.getInt("language_id"),
                         rs.getInt("word_id"),
-                        rs.getInt("language_id"),
                         rs.getString("word_name"),
                         rs.getString("pronunciation"),
                         rs.getString("sound"),

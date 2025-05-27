@@ -1,132 +1,118 @@
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
- */
-
-const API_BASE = window.APP_CONFIG.API_BASE_URL + '/admin/collections';
+const API_BASE_URL = window.APP_CONFIG.API_BASE_URL + '/admin/collections';
 
 function getToken() {
     const token = localStorage.getItem('token');
-    if (!token) return null;
+    if (!token) throw new Error('Vui lòng đăng nhập lại');
     return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 }
 
-function toFormUrlEncoded(obj) {
-    return Object.keys(obj)
-        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]))
-        .join('&');
-}
-
-async function safeJsonResponse(res, defaultError) {
-    const text = await res.text();
-    if (!res.ok) {
-        try {
-            const err = JSON.parse(text);
-            throw new Error(err.error || defaultError);
-        } catch {
-            throw new Error(defaultError);
-        }
-    }
-    return text ? JSON.parse(text) : {};
-}
-
-// 1. Tạo bộ sưu tập mới
+// 1. Tạo bộ sưu tập (luôn công khai)
 async function createCollection(name) {
-    const res = await fetch(`${API_BASE}/create`, {
+    const token = getToken();
+    const formData = new URLSearchParams();
+    formData.append('name', name);
+
+    const response = await fetch(`${API_BASE_URL}/create`, {
         method: 'POST',
         headers: {
-            'Authorization': getToken(),
+            'Authorization': token,
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: toFormUrlEncoded({ name })
+        body: formData.toString()
     });
-    return await safeJsonResponse(res, "Lỗi tạo bộ sưu tập");
+    if (!response.ok) throw new Error('Không thể tạo bộ sưu tập');
+    return await response.json();
 }
 
 // 2. Thêm từ vào bộ sưu tập
 async function addWordToCollection(collectionId, wordId) {
-    const res = await fetch(`${API_BASE}/${collectionId}/words/${wordId}`, {
+    const token = getToken();
+    const response = await fetch(`${API_BASE_URL}/${collectionId}/words/${wordId}`, {
         method: 'POST',
-        headers: { 'Authorization': getToken() }
+        headers: { 'Authorization': token }
     });
-    return await safeJsonResponse(res, "Lỗi thêm từ vào bộ sưu tập");
+    if (!response.ok) throw new Error('Không thể thêm từ vào bộ sưu tập');
+    return true;
 }
 
-// 3. Lấy danh sách bộ sưu tập công khai
+// 3. Lấy tất cả bộ sưu tập công khai
 async function getAllCollections() {
-    try {
-        console.log('Đang gọi API lấy danh sách bộ sưu tập...');
-        const token = getToken();
-        if (!token) {
-            throw new Error('Unauthorized: Vui lòng đăng nhập lại');
-        }
-
-        const res = await fetch(`${API_BASE}/all`, {
-            headers: { 'Authorization': token }
-        });
-
-        if (!res.ok) {
-            if (res.status === 401) {
-                throw new Error('Unauthorized: Vui lòng đăng nhập lại');
-            }
-            if (res.status === 404) {
-                throw new Error('Không tìm thấy bộ sưu tập');
-            }
-            throw new Error('Có lỗi xảy ra khi lấy danh sách bộ sưu tập');
-        }
-
-        const data = await res.json();
-        console.log('Danh sách bộ sưu tập:', data);
-        return data;
-    } catch (error) {
-        console.error('Lỗi khi lấy danh sách bộ sưu tập:', error);
-        throw error;
-    }
+    const token = getToken();
+    const response = await fetch(`${API_BASE_URL}/all`, {
+        method: 'GET',
+        headers: { 'Authorization': token }
+    });
+    if (!response.ok) throw new Error('Không thể lấy danh sách bộ sưu tập');
+    return await response.json();
 }
 
 // 4. Cập nhật bộ sưu tập
-async function updateCollection(collectionId, { name, isPublic }) {
-    const res = await fetch(`${API_BASE}/${collectionId}`, {
+async function updateCollection(collectionId, name, isPublic = true) {
+    const token = getToken();
+    const formData = new URLSearchParams();
+    formData.append('name', name);
+    formData.append('isPublic', isPublic);
+
+    const response = await fetch(`${API_BASE_URL}/${collectionId}`, {
         method: 'PUT',
         headers: {
-            'Authorization': getToken(),
+            'Authorization': token,
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: toFormUrlEncoded({ name, isPublic })
+        body: formData.toString()
     });
-    return await safeJsonResponse(res, "Lỗi cập nhật bộ sưu tập");
+    if (!response.ok) throw new Error('Không thể cập nhật bộ sưu tập');
+    return true;
 }
 
-// 5. Xóa bộ sưu tập
+// 5. Xoá bộ sưu tập
 async function deleteCollection(collectionId) {
-    if (!confirm("Bạn chắc chắn muốn xoá bộ sưu tập này?")) return;
-    
-    const res = await fetch(`${API_BASE}/${collectionId}`, {
+    const token = getToken();
+    const response = await fetch(`${API_BASE_URL}/${collectionId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': getToken() }
+        headers: { 'Authorization': token }
     });
-    return await safeJsonResponse(res, "Lỗi xóa bộ sưu tập");
+    if (!response.ok) throw new Error('Không thể xoá bộ sưu tập');
+    return true;
 }
 
-// 6. Xóa từ khỏi bộ sưu tập
+// 6. Xoá 1 từ khỏi bộ sưu tập
 async function deleteWordFromCollection(collectionId, wordId) {
-    const res = await fetch(`${API_BASE}/${collectionId}/delete-word`, {
+    const token = getToken();
+    const formData = new URLSearchParams();
+    formData.append('wordId', wordId);
+    alert(API_BASE_URL);
+    const response = await fetch(`${API_BASE_URL}/${collectionId}/delete-word`, {
         method: 'DELETE',
         headers: {
-            'Authorization': getToken(),
+            'Authorization': token,
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: toFormUrlEncoded({ wordId })
+        body: formData.toString()
     });
-    return await safeJsonResponse(res, "Lỗi xóa từ khỏi bộ sưu tập");
+    if (!response.ok) throw new Error('Không thể xoá từ khỏi bộ sưu tập');
+    return true;
 }
 
-// Export các hàm để sử dụng ở các file khác
+// API lấy danh sách từ theo page, language, keyword
+async function getWordsByPageLanguageKeyword(page = 1, pageSize = 10, languageId = 1, keyword = '') {
+    const token = localStorage.getItem('token');
+    const url = `${window.APP_CONFIG.API_BASE_URL}/admin/words/list/${page}/${pageSize}/${languageId}?keyword=${encodeURIComponent(keyword)}`;
+    const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Không thể lấy danh sách từ');
+    return await response.json();
+}
+
+
+// Export
 window.collectionManagementAPI = {
     createCollection,
     addWordToCollection,
     getAllCollections,
     updateCollection,
     deleteCollection,
-    deleteWordFromCollection
+    deleteWordFromCollection,
+    getWordsByPageLanguageKeyword,
 };

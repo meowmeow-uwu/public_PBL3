@@ -5,20 +5,67 @@
 // lessonManagerment.js có bị nhúng 2 lần vào HTML không.
 
 async function fetchAPI(url, options = {}) {
-    const currentToken = getToken();
+    // Giả sử bạn có hàm getToken() và window.APP_CONFIG.API_BASE_URL
+    const currentToken = getToken(); 
+
     const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}${url}`, {
         headers: {
             'Authorization': currentToken,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json', // Default, có thể bị ghi đè bởi options
             ...options.headers,
         },
         ...options,
     });
+
+    // 1. Xử lý các phản hồi lỗi (!response.ok)
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Lỗi không xác định từ máy chủ." }));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        let errorData = { error: `HTTP error! status: ${response.status}` }; // Default error
+        try {
+            // Cố gắng đọc lỗi dưới dạng JSON (vì nhiều API trả lỗi JSON)
+            const errorJson = await response.json();
+            errorData = errorJson || errorData; 
+        } catch (e) {
+            try {
+                // Nếu không phải JSON, thử đọc text
+                const errorText = await response.text();
+                errorData = { error: errorText || errorData.error };
+            } catch (textError) {
+                 // Nếu không đọc được gì, giữ lỗi default
+            }
+        }
+        // Ném lỗi với thông điệp rõ ràng
+        throw new Error(errorData.error || errorData.message || `HTTP error! status: ${response.status}`);
     }
-    return response.status === 204 ? null : response.json();
+
+    // 2. Xử lý các phản hồi thành công (response.ok)
+
+    // Nếu là 204 No Content, trả về null
+    if (response.status === 204) {
+        return null;
+    }
+
+    // Lấy Content-Type header
+    const contentType = response.headers.get("content-type");
+
+    // Nếu header chỉ ra là JSON, thì parse JSON
+    if (contentType && contentType.includes("application/json")) {
+        try {
+            return await response.json();
+        } catch (jsonError) {
+            // Xử lý trường hợp header nói là JSON nhưng body rỗng hoặc lỗi
+            console.warn("Server indicated JSON, but parsing failed. Body might be empty.", jsonError);
+            return null; // Hoặc trả về một giá trị mặc định khác
+        }
+    } 
+    // Nếu không phải JSON (hoặc không có header), thì trả về text
+    else {
+        try {
+            return await response.text(); 
+        } catch (textError) {
+            console.error("Could not read response body as text.", textError);
+            throw new Error("Failed to read server response.");
+        }
+    }
 }
 
 // --- API Definitions ---
@@ -383,41 +430,94 @@ window.closeModal = (modalId) => {
     }
 };
 
-window.deleteEntity = async (entityType, id) => { /* ... logic như cũ ... */ 
+/**
+ * Xử lý việc xóa một thực thể (Topic, SubTopic, Post, Exam, Question, Answer).
+ * @param {string} entityType - Loại thực thể cần xóa ('topic', 'subtopic', v.v.).
+ * @param {number|string} id - ID của thực thể cần xóa.
+ */
+window.deleteEntity = async (entityType, id) => {
+    // Hàm này (bạn cần tự định nghĩa) để lấy tên hiển thị đẹp hơn
+    const getEntityTypeDisplayName = (type) => {
+        const names = {
+            topic: 'Chủ đề',
+            subtopic: 'Chủ đề con',
+            post: 'Bài viết',
+            exam: 'Bài kiểm tra',
+            question: 'Câu hỏi',
+            answer: 'Câu trả lời'
+        };
+        return names[type] || type;
+    };
+
     const displayName = getEntityTypeDisplayName(entityType);
+
+    // Xác nhận trước khi xóa
     if (confirm(`Bạn có chắc muốn xóa ${displayName} này (ID: ${id}) không?`)) {
+        
+        let apiCallPromise;
+
+        // 1. Xác định API cần gọi bằng switch case
+        switch (entityType) {
+            case 'topic':
+                apiCallPromise = topicAPI.delete(id);
+                break;
+            case 'subtopic':
+                apiCallPromise = subTopicAPI.delete(id);
+                break;
+            case 'post':
+                apiCallPromise = postAPI.delete(id);
+                break;
+            case 'exam':
+                apiCallPromise = examAPI.delete(id);
+                break;
+            case 'question':
+                apiCallPromise = questionAPI.delete(id);
+                break;
+            case 'answer':
+                apiCallPromise = answerAPI.delete(id);
+                break;
+            default:
+                alert("Lỗi: Loại thực thể không xác định để xóa!");
+                return; // Dừng nếu không hợp lệ
+        }
+
+        // 2. Thực hiện lời gọi API và xử lý kết quả
         try {
-if (entityType === 'topic') {
-                        try {
-                            const response = await topicAPI.delete(id);
-                            const text = await response.text(); // Lấy phản hồi dưới dạng text
-                            console.log("Response:", text); // Kiểm tra nội dung phản hồi
-                            const jsonData = JSON.parse(text); // Chuyển đổi sang JSON
-                        } catch (error) {
-                            console.error("Lỗi:", error);
-                        }
-                    }
-            else if (entityType === 'subtopic') await subTopicAPI.delete(id);
-            else if (entityType === 'post') await postAPI.delete(id);
-            else if (entityType === 'exam') await examAPI.delete(id);
-            else if (entityType === 'question') await questionAPI.delete(id);
-            else if (entityType === 'answer') await answerAPI.delete(id);
+            console.log(`Đang xóa ${entityType} với ID: ${id}`);
             
+            // Đợi API hoàn thành (sử dụng fetchAPI đã cải tiến)
+            const result = await apiCallPromise; 
+            
+            console.log("Phản hồi xóa:", result); // Log kết quả (có thể là text hoặc null)
+
+            // Thông báo thành công
             alert(`Xóa ${displayName} thành công!`);
 
+            // 3. Render lại giao diện phù hợp
+            // (Giữ nguyên logic render phức tạp của bạn)
             if (entityType === 'question' && currentExamIdForQuestionsManagement) {
-                 await renderQuestionsForExam(currentExamIdForQuestionsManagement);
+                await renderQuestionsForExam(currentExamIdForQuestionsManagement);
             } else if (entityType === 'answer' && currentQuestionId) {
-                 if(formModal && formModal.style.display === 'flex' && currentView === 'questionDetail') { // Nếu đang ở modal quản lý answer
+                 // Giả sử các biến này tồn tại và được quản lý đúng
+                const formModal = document.getElementById('formModal'); 
+                const detailModal = document.getElementById('detailModal');
+
+                if(formModal && formModal.style.display === 'flex' && currentView === 'questionDetail') { 
                     await window.manageAnswersForQuestion(currentQuestionId, currentQuestionContent, currentExamIdForQuestionsManagement);
-                 } else if (detailModal && detailModal.style.display === 'flex' && currentExamIdForQuestionsManagement){ // Nếu đang ở detail exam
+                } else if (detailModal && detailModal.style.display === 'flex' && currentExamIdForQuestionsManagement){
                     await renderQuestionsForExam(currentExamIdForQuestionsManagement); 
-                 }
+                } else {
+                   renderTable(); // Fallback nếu không khớp
+                }
             } else {
-                renderTable();
+                renderTable(); // Render lại bảng chính
             }
+
         } catch (error) {
-             if (error.message && error.message.toLowerCase().includes("can't delete default")) {
+            // 4. Xử lý lỗi
+            console.error(`Lỗi khi xóa ${displayName}:`, error);
+            // Kiểm tra thông báo lỗi cụ thể (ví dụ: không cho xóa mặc định)
+            if (error.message && error.message.toLowerCase().includes("can't delete default")) {
                 alert(`Không thể xoá ${displayName} mặc định.`);
             } else {
                 alert(`Lỗi xóa ${displayName}: ${error.message}`);
@@ -576,82 +676,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Gán event listeners
-    if (entityForm) {
-        entityForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            let data = Object.fromEntries(formData.entries());
+if (entityForm) {
+    entityForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        let data = Object.fromEntries(formData.entries());
+
+        // --- 1. Chuẩn bị dữ liệu ---
+        // Gán ID cha (parent_id)
+        if (currentEntityType === 'subtopic') data.topic_id = parseInt(currentParentId);
+        else if (currentEntityType === 'post') data.sub_topic_id = parseInt(currentParentId);
+        else if (currentEntityType === 'exam') data.sub_topic_id = parseInt(currentParentId);
+        else if (currentEntityType === 'question') data.exam_id = parseInt(currentParentId);
+        else if (currentEntityType === 'answer') data.question_id = parseInt(currentParentId);
+
+        // Chuyển đổi kiểu dữ liệu nếu cần
+        if (data.question_type_id) data.question_type_id = parseInt(data.question_type_id);
+
+        // Xử lý checkbox 'isCorrect'
+        if (currentEntityType === 'answer') {
+            const isCorrectCheckbox = document.getElementById('modalIsCorrect');
+            data.isCorrect = isCorrectCheckbox ? isCorrectCheckbox.checked : false;
+        }
+
+        // Gán ID thực thể khi chỉnh sửa (cho payload)
+        if (currentEditingId) {
+            if (currentEntityType === 'topic') data.topic_id = currentEditingId;
+            else if (currentEntityType === 'subtopic') data.sub_topic_id = currentEditingId;
+            else if (currentEntityType === 'post') data.post_id = currentEditingId;
+            else if (currentEntityType === 'exam') data.exam_id = currentEditingId;
+            else if (currentEntityType === 'question') data.question_id = currentEditingId;
+            else if (currentEntityType === 'answer') data.answer_id = currentEditingId;
+        }
+
+        // --- 2. Xác định API cần gọi ---
+        let apiCallPromise;
+        const entityId = currentEditingId;
+
+        switch (currentEntityType) {
+            case 'topic':
+                apiCallPromise = entityId ? topicAPI.update(entityId, data) : topicAPI.create(data);
+                break;
+            case 'subtopic':
+                apiCallPromise = entityId ? subTopicAPI.update(entityId, data) : subTopicAPI.create(data);
+                break;
+            case 'post':
+                apiCallPromise = entityId ? postAPI.update(entityId, data) : postAPI.create(data);
+                break;
+            case 'exam':
+                apiCallPromise = entityId ? examAPI.update(entityId, data) : examAPI.create(data);
+                break;
+            case 'question':
+                apiCallPromise = entityId ? questionAPI.update(entityId, data) : questionAPI.create(data);
+                break;
+            case 'answer':
+                apiCallPromise = entityId ? answerAPI.update(entityId, data) : answerAPI.create(data);
+                break;
+            default:
+                alert("Lỗi: Loại thực thể không xác định!");
+                return; // Dừng nếu không có API phù hợp
+        }
+
+        // --- 3. Thực hiện và xử lý kết quả ---
+        try {
+            console.log(`Đang ${entityId ? 'cập nhật' : 'tạo mới'} ${currentEntityType}:`, data);
             
-            if (currentEntityType === 'subtopic') data.topic_id = parseInt(currentParentId);
-            else if (currentEntityType === 'post') data.sub_topic_id = parseInt(currentParentId);
-            else if (currentEntityType === 'exam') data.sub_topic_id = parseInt(currentParentId);
-            else if (currentEntityType === 'question') data.exam_id = parseInt(currentParentId);
-            else if (currentEntityType === 'answer') data.question_id = parseInt(currentParentId);
-            
-            if (data.question_type_id) data.question_type_id = parseInt(data.question_type_id);
-            
-            if (currentEntityType === 'answer') {
-                const isCorrectCheckbox = document.getElementById('modalIsCorrect');
-                data.isCorrect = isCorrectCheckbox ? isCorrectCheckbox.checked : false;
+            // Đợi lời gọi API hoàn thành. Hàm fetchAPI sẽ trả về null (cho 204)
+            // hoặc đối tượng JSON, hoặc ném lỗi.
+            const result = await apiCallPromise; 
+
+            console.log("Phản hồi từ API:", result);
+
+            // Nếu không có lỗi nào được ném ra, tức là thành công
+            await alert(`${entityId ? 'Cập nhật' : 'Thêm mới'} thành công!`);
+            window.closeModal('formModal');
+
+            // Render lại giao diện
+            if (currentEntityType === 'question' && currentExamIdForQuestionsManagement) {
+                await renderQuestionsForExam(currentExamIdForQuestionsManagement);
+            } else if (currentEntityType === 'answer' && currentQuestionId) {
+                await window.manageAnswersForQuestion(currentQuestionId, currentQuestionContent, currentExamIdForQuestionsManagement);
+            } else {
+                renderTable(); // Hàm render chung
             }
 
-            try {
-                if (currentEditingId) {
-                    // Gán ID cho data object cho API update
-                    if (currentEntityType === 'topic') data.topic_id = currentEditingId;
-                    else if (currentEntityType === 'subtopic') data.sub_topic_id = currentEditingId;
-                    else if (currentEntityType === 'post') data.post_id = currentEditingId;
-                    else if (currentEntityType === 'exam') data.exam_id = currentEditingId;
-                    else if (currentEntityType === 'question') data.question_id = currentEditingId;
-                    else if (currentEntityType === 'answer') data.answer_id = currentEditingId;
-
-                    if (currentEntityType === 'topic') {
-                        try {
-                            const response = await topicAPI.update(currentEditingId, data);
-                            const text = await response.text(); // Lấy phản hồi dưới dạng text
-                            console.log("Response:", text); // Kiểm tra nội dung phản hồi
-                            const jsonData = JSON.parse(text); // Chuyển đổi sang JSON
-                        } catch (error) {
-                            console.error("Lỗi:", error);
-                        }
-                    }
-                    else if (currentEntityType === 'subtopic') await subTopicAPI.update(currentEditingId, data);
-                    else if (currentEntityType === 'post') await postAPI.update(currentEditingId, data);
-                    else if (currentEntityType === 'exam') await examAPI.update(currentEditingId, data);
-                    else if (currentEntityType === 'question') await questionAPI.update(currentEditingId, data);
-                    else if (currentEntityType === 'answer') await answerAPI.update(currentEditingId, data);
-                } else {
-                    if (currentEntityType === 'topic') {
-                        try {
-                            const response = await topicAPI.create(data);
-                            const text = await response.text(); // Lấy phản hồi dưới dạng text
-                            console.log("Response:", text); // Kiểm tra nội dung phản hồi
-                            const jsonData = JSON.parse(text); // Chuyển đổi sang JSON
-                        } catch (error) {
-                            console.error("Lỗi:", error);
-                        }
-                    }
-                    else if (currentEntityType === 'subtopic') await subTopicAPI.create(data);
-                    else if (currentEntityType === 'post') await postAPI.create(data);
-                    else if (currentEntityType === 'exam') await examAPI.create(data);
-                    else if (currentEntityType === 'question') await questionAPI.create(data);
-                    else if (currentEntityType === 'answer') await answerAPI.create(data);
-                }
-                await alert(`${currentEditingId ? 'Cập nhật' : 'Thêm mới'} thành công!`);
-                window.closeModal('formModal');
-                
-                if (currentEntityType === 'question' && currentExamIdForQuestionsManagement) {
-                    await renderQuestionsForExam(currentExamIdForQuestionsManagement);
-                } else if (currentEntityType === 'answer' && currentQuestionId) {
-                     await window.manageAnswersForQuestion(currentQuestionId, currentQuestionContent, currentExamIdForQuestionsManagement);
-                } else {
-                    renderTable();
-                }
-            } catch (error) {
-                alert(`Lỗi: ${error.message}`);
-            }
-        };
-    }
+        } catch (error) {
+            // Bất kỳ lỗi nào từ fetchAPI (bao gồm lỗi mạng, lỗi !response.ok, 
+            // và lỗi parse JSON) sẽ được bắt ở đây.
+            console.error("Đã xảy ra lỗi trong quá trình xử lý form:", error);
+            alert(`Xảy ra lỗi: ${error.message}`);
+        }
+    };
+}
 
     if (searchBtn && searchInput) {
         searchBtn.addEventListener('click', () => {

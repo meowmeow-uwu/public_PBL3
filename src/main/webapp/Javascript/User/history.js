@@ -1,6 +1,5 @@
 // Assets/Javascript/User/history.js
-const API_BASE_URL = window.APP_CONFIG.API_BASE_URL; // Ví dụ: 'http://localhost:8080/PBL3_WebsiteHocTiengAnh'
-
+const API_BASE_URL = window.APP_CONFIG.API_BASE_URL; 
 // Hàm fetchWithAuth để thực hiện request kèm token
 async function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem("token");

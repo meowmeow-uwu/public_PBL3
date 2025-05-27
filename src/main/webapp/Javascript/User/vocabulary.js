@@ -117,9 +117,11 @@ function createTopicCard(collection) {
         <div class="topic-info">
             <span>${collection.wordCount || 0} từ</span>
         </div>
-        <button class="save-collection-btn" onclick="event.stopPropagation(); saveCollection(${collection.collectionId})">
-            <i class="fas fa-bookmark"></i> Lưu bộ sưu tập
-        </button>
+        <div class="topic-card-actions">
+            <button class="save-collection-btn" onclick="event.stopPropagation(); saveCollection(${collection.collectionId})">
+                <i class="fas fa-bookmark"></i> Lưu bộ sưu tập
+            </button>
+        </div>
     `;
 
     return card;
@@ -371,7 +373,7 @@ async function showCollectionModal() {
         });
         
         // Hiển thị modal
-        collectionModal.style.display = 'block';
+        collectionModal.classList.add('active');
     } catch (error) {
         console.error('Lỗi khi lấy danh sách bộ sưu tập:', error);
         alert('Có lỗi xảy ra khi tải danh sách bộ sưu tập');
@@ -380,7 +382,7 @@ async function showCollectionModal() {
 
 // Đóng modal
 function closeCollectionModal() {
-    collectionModal.style.display = 'none';
+    collectionModal.classList.remove('active');
 }
 
 // Lưu từ vào bộ sưu tập

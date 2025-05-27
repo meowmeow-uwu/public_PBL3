@@ -66,6 +66,10 @@ public class SubTopicDAO implements DAOInterface<SubTopic>{
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
             int result = pstmt.executeUpdate();
+            sql = "update exam set sub_topic_id = 1 where sub_topic_id = ?";
+            pstmt = c.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            result = Math.min(result, pstmt.executeUpdate());
             sql = "DELETE FROM sub_topic WHERE sub_topic_id = ?";
             pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);

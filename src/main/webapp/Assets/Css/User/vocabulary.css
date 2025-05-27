@@ -188,7 +188,7 @@
         .modal-content {
             position: relative;
             background-color: #fff;
-            margin: 0;
+            margin: 6% auto;
             padding: 20px;
             width: 90vw;
             max-width: 500px;

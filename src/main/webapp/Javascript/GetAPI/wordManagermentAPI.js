@@ -32,15 +32,53 @@ async function getWordList({ page = 1, size = 20, language_id = 1, keyword = '' 
     if (keyword)
         url += `?keyword=${encodeURIComponent(keyword)}`;
     
-    const res = await fetch(url, {
-        headers: {
-            'Authorization': token,
-            'Content-Type': 'application/json'
+    console.log('Request URL:', url);
+    
+    try {
+        const res = await fetch(url, {
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('API Error:', {
+                status: res.status,
+                statusText: res.statusText,
+                body: errorText
+            });
+            throw new Error(`Không thể lấy danh sách từ vựng: ${res.statusText}`);
         }
-    });
-    if (!res.ok)
-        throw new Error('Không thể lấy danh sách từ vựng');
-    return await res.json();
+        
+        const data = await res.json();
+        console.log('API Response:', data);
+        
+        // Kiểm tra và chuẩn hóa dữ liệu
+        if (!data) {
+            console.error('Invalid response format:', data);
+            throw new Error('Định dạng dữ liệu không hợp lệ');
+        }
+        
+        // Nếu data là mảng, chuyển đổi thành object có cấu trúc chuẩn
+        const words = Array.isArray(data) ? data : (data.words || []);
+        
+        return {
+            words: (data.words || []).map(item => ({
+                word_id: item.word.word_id,
+                word_name: item.word.word_name,
+                pronunciation: item.word.pronunciation,
+                image: item.word.image,
+                sound: item.word.sound,
+                language_id: item.word.language_id
+            })),
+            totalPages: data.totalPages || 1
+        };
+    } catch (error) {
+        console.error('Error in getWordList:', error);
+        throw error;
+    }
 }
 
 // 3. Thêm từ mới (POST /create)
@@ -48,22 +86,17 @@ async function createWord(wordData) {
     const token = getToken();
     if (!token) throw new Error('Unauthorized');
     
-    // wordData là object: { word_name, pronunciation, image, sound, language_id }
     const formData = new FormData();
-
-    // Thêm các trường dữ liệu cơ bản
     formData.append('word_name', wordData.word_name);
-    formData.append('pronunciation', wordData.pronunciation);
+    formData.append('pronunciation', wordData.pronunciation || '');
     formData.append('language_id', wordData.language_id);
 
-    // Thêm file hình ảnh nếu có
     if (wordData.image instanceof File) {
         formData.append('image', wordData.image);
     } else if (wordData.image) {
         formData.append('image', wordData.image);
     }
 
-    // Thêm file âm thanh nếu có
     if (wordData.sound instanceof File) {
         formData.append('sound', wordData.sound);
     } else if (wordData.sound) {
@@ -78,8 +111,11 @@ async function createWord(wordData) {
         body: formData
     });
 
-    if (!res.ok)
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Create word error:', errorText);
         throw new Error('Thêm từ mới thất bại');
+    }
     return await res.json();
 }
 
@@ -88,23 +124,18 @@ async function updateWord(wordData) {
     const token = getToken();
     if (!token) throw new Error('Unauthorized');
     
-    // wordData phải có id và các trường cần cập nhật
     const formData = new FormData();
-
-    // Thêm ID và các trường dữ liệu cơ bản
     formData.append('id', wordData.id);
     formData.append('word_name', wordData.word_name);
-    formData.append('pronunciation', wordData.pronunciation);
+    formData.append('pronunciation', wordData.pronunciation || '');
     formData.append('language_id', wordData.language_id);
 
-    // Thêm file hình ảnh nếu có
     if (wordData.image instanceof File) {
         formData.append('image', wordData.image);
     } else if (wordData.image) {
         formData.append('image', wordData.image);
     }
 
-    // Thêm file âm thanh nếu có
     if (wordData.sound instanceof File) {
         formData.append('sound', wordData.sound);
     } else if (wordData.sound) {
@@ -114,19 +145,21 @@ async function updateWord(wordData) {
     const res = await fetch(`${WORD_API_BASE}/update`, {
         method: 'PUT',
         headers: {
-            'Authorization': token,
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Authorization': token
         },
         body: formData
     });
 
-    if (!res.ok)
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Update word error:', errorText);
         throw new Error('Cập nhật từ thất bại');
+    }
     return await res.json();
 }
 
 // 5. Xóa từ (DELETE /delete/{id})
-async function deleteWord(id) {
+async function deleteWordAPI(id) {
     const token = getToken();
     if (!token) throw new Error('Unauthorized');
     
@@ -134,10 +167,13 @@ async function deleteWord(id) {
         method: 'DELETE',
         headers: {
             'Authorization': token,
-            'Content-Type': 'application/json'
         }
     });
-    if (!res.ok)
+    
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Delete word error:', errorText);
         throw new Error('Xóa từ thất bại');
+    }
     return await res.json();
 }

@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
  */
 
-const BASE_URL = window.APP_CONFIG.BASE_PATH + "api";
+const BASE_URL = window.APP_CONFIG.API_BASE_URL + '/definitions';
 
 // Lấy định nghĩa theo ID
 async function getDefinitionById(id) {
     try {
-        const response = await fetch(`${BASE_URL}/definitions/${id}`, {
+        const response = await fetch(`${BASE_URL}/${id}`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -30,7 +30,7 @@ async function getDefinitionById(id) {
 // Lấy tất cả định nghĩa của một từ theo wordId
 async function getDefinitionsByWordId(wordId) {
     try {
-        const response = await fetch(`${BASE_URL}/definitions/word/${wordId}`, {
+        const response = await fetch(`${BASE_URL}/word/${wordId}`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -52,18 +52,19 @@ async function getDefinitionsByWordId(wordId) {
 // Thêm định nghĩa mới
 async function addDefinition(wordId, meaning, example, wordType) {
     try {
-        const formData = new FormData();
+        const formData = new URLSearchParams();
         formData.append('word_id', wordId);
         formData.append('meaning', meaning);
         formData.append('example', example);
         formData.append('word_type', wordType);
 
-        const response = await fetch(`${BASE_URL}/definitions/create`, {
+        const response = await fetch(`${BASE_URL}/create`, {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            body: formData.toString()
         });
         
         if (!response.ok) {
@@ -78,21 +79,22 @@ async function addDefinition(wordId, meaning, example, wordType) {
 }
 
 // Cập nhật định nghĩa
-async function updateDefinition(definitionId, wordId, meaning, example, wordType) {
+async function updateDefinition(definitionData) {
     try {
-        const formData = new FormData();
-        formData.append('definition_id', definitionId);
-        formData.append('word_id', wordId);
-        formData.append('meaning', meaning);
-        formData.append('example', example);
-        formData.append('word_type', wordType);
+        const formData = new URLSearchParams();
+        formData.append('definition_id', definitionData.definition_id);
+        formData.append('word_id', definitionData.word_id);
+        formData.append('meaning', definitionData.meaning);
+        formData.append('example', definitionData.example);
+        formData.append('word_type', definitionData.word_type);
 
-        const response = await fetch(`${BASE_URL}/definitions/update`, {
+        const response = await fetch(`${BASE_URL}/update`, {
             method: 'PUT',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            body: formData.toString()
         });
         
         if (!response.ok) {
@@ -107,9 +109,9 @@ async function updateDefinition(definitionId, wordId, meaning, example, wordType
 }
 
 // Xóa định nghĩa
-async function deleteDefinition(id) {
+async function deleteDefinitionAPI(id) {
     try {
-        const response = await fetch(`${BASE_URL}/definitions/delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/delete/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token'),

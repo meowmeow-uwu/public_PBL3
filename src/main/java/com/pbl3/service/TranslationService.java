@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TranslationService {
+public class TranslationService implements ServiceInterface<Translate>{
 
     private WordDAO wordDAO = WordDAO.getInstance();
     private TranslateDAO translateDAO =  TranslateDAO.getInstance();
@@ -96,6 +96,45 @@ public class TranslationService {
         } catch (Exception e) {
             throw new RuntimeException("Error translating word: " + e.getMessage(), e);
         }
+    }
+
+    public ArrayList<Translate> selectAllByWordIdAndType(int wid, int typeId)
+    {
+        return translateDAO.selectAllBySourceWordIDAndType(wid, typeId);
+    }
+    @Override
+    public int insert(Translate t) {
+        return translateDAO.insert(t);
+    }
+
+    @Override
+    public int update(Translate t) {
+
+        return translateDAO.update(t);
+    }
+
+    @Override
+    public int delete(int t) {
+
+        return translateDAO.delete(t);
+    }
+
+    @Override
+    public ArrayList<Translate> selectAll() {
+
+        return translateDAO.selectAll();
+    }
+
+    @Override
+    public Translate selectByID(int id) {
+
+        return translateDAO.selectByID(id);
+    }
+
+    @Override
+    public Translate selectByCondition(String condition) {
+
+        return translateDAO.selectByCondition(condition);
     }
 
 }

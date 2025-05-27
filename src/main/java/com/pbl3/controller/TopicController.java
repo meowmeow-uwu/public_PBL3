@@ -153,7 +153,7 @@ public class TopicController {
         if(result == -1) 
             return Response.status(400).entity("Can't delete default topic").build();
         if (result == 0) {
-            return Response.status(400).entity("Failed to delete topic").build();
+            return Response.status(409).entity("Failed to delete topic").build();
         }
         return Response.status(200).entity("Topic deleted successfully").build();
     }

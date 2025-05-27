@@ -61,7 +61,7 @@ public class TopicDAO implements DAOInterface<Topic>{
             sql = "DELETE FROM topic WHERE topic_id = ?";
             pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, id);
-            result = Math.min(result, pstmt.executeUpdate());
+            result = pstmt.executeUpdate();
             return result;
         } catch (SQLException e) {
             e.printStackTrace();

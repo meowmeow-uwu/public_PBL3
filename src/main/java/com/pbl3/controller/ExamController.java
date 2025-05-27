@@ -108,7 +108,7 @@ public class ExamController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if(!new AuthService().isContentManagerOrAdmin(token)) {
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
         int result = examService.insert(exam);

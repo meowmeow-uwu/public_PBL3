@@ -89,7 +89,7 @@ const postAPI = {
     getById: (id) => fetchAPI(`/post/${id}`),
     create: (data) => fetchAPI('/post/', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => fetchAPI(`/post/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    delete: (id) => fetchAPI(`/post/delete/${id}`, { method: 'PUT', body: JSON.stringify({ post_id: id, is_deleted: true }) }),
+    delete: (id) => fetchAPI(`/post/delete/${id}`, { method: 'PUT'}),
 };
 const examAPI = {
     getById: (id) => fetchAPI(`/exam/${id}`),

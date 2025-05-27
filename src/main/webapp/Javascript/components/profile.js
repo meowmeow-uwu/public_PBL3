@@ -80,7 +80,7 @@ function updateProfileInfo(userInfo) {
         avatarImg.src = userInfo.avatar || window.APP_CONFIG.BASE_PATH + 'Assets/Images/default-avatar.png';
     }
     // Cập nhật các thông tin khác
-    document.getElementById('userName').value = userInfo.username||'';
+    document.getElementById('username').value = userInfo.username||'';
     document.getElementById('fullName').value = userInfo.name || '';
     document.getElementById('email').value = userInfo.email || '';
     document.getElementById('avatar').value = userInfo.avatar || '';

@@ -7,6 +7,7 @@ package com.pbl3.service;
 import com.pbl3.dao.DefinitionDAO;
 import com.pbl3.dto.Definition;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -50,6 +51,11 @@ public class DefinitionService implements ServiceInterface<Definition>{
     @Override
     public Definition selectByCondition(String condition) {
         return null;
+    }
+    
+    public List<Definition> selectByWordId(int wid)
+    {
+        return definitionDAO.selectAllByWordID(wid);
     }
 
 }

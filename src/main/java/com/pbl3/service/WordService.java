@@ -30,11 +30,7 @@ public class WordService implements ServiceInterface<Word> {
     @Override
     public int insert(Word Word) {
         int result = wordDAO.insert(Word);
-        if (result > 0) {
-            System.out.println("Word inserted successfully.");
-        } else {
-            System.out.println("Failed to insert Word.");
-        }
+        
         return result;
     }
 

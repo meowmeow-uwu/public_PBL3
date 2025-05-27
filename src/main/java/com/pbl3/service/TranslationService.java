@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TranslationService {
+public class TranslationService implements ServiceInterface<Translate>{
 
     private WordDAO wordDAO = WordDAO.getInstance();
     private TranslateDAO translateDAO =  TranslateDAO.getInstance();
@@ -26,12 +26,7 @@ public class TranslationService {
     public static void main(String s[]) {
         int j = 1;
         TranslationService sa = new TranslationService();
-        List<Map<String, Object>> li = sa.translateWord("h", ENG_VIET_TYPE, ENG_VIET_TYPE);
-        for (Object ss : li) {
-            System.out.println(ss.toString() + j);
-            j++;
-
-        }
+        
     }
 
     // API tìm kiếm từ cơ bản
@@ -96,6 +91,54 @@ public class TranslationService {
         } catch (Exception e) {
             throw new RuntimeException("Error translating word: " + e.getMessage(), e);
         }
+    }
+
+    public ArrayList<Translate> selectAllByWordIdAndType(int wid, int typeId)
+    {
+        return translateDAO.selectAllBySourceWordIDAndType(wid, typeId);
+    }
+    @Override
+    public int insert(Translate t) {
+        ArrayList<Translate> existingTranslations = translateDAO.selectAllBySourceWordIDAndType(t.getSource_word_id(), t.getType_translate_id());
+        if (existingTranslations != null) {
+            for (Translate existing : existingTranslations) {
+                if (existing.getTrans_word_id() == t.getTrans_word_id()) {
+                   
+                    return -1; // Hoặc một mã lỗi khác cho biết đã tồn tại
+                }
+            }
+        }
+        return translateDAO.insert(t);
+    }
+
+    @Override
+    public int update(Translate t) {
+
+        return translateDAO.update(t);
+    }
+
+    @Override
+    public int delete(int t) {
+
+        return translateDAO.delete(t);
+    }
+
+    @Override
+    public ArrayList<Translate> selectAll() {
+
+        return translateDAO.selectAll();
+    }
+
+    @Override
+    public Translate selectByID(int id) {
+
+        return translateDAO.selectByID(id);
+    }
+
+    @Override
+    public Translate selectByCondition(String condition) {
+
+        return translateDAO.selectByCondition(condition);
     }
 
 }

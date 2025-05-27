@@ -8,6 +8,7 @@ import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -62,9 +63,9 @@ public class TranslationController {
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTranslate(@HeaderParam("authorization") String authHeader,
-            @PathParam("sourceId") int sourceId,
-            @PathParam("targetId") int targetId,
-            @PathParam("typeTranslateId") int typeTranslateId) {
+            @FormParam("sourceId") int sourceId,
+            @FormParam("targetId") int targetId,
+            @FormParam("typeTranslateId") int typeTranslateId) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
@@ -78,8 +79,8 @@ public class TranslationController {
         translate.setTrans_word_id(targetId);
         translate.setType_translate_id(typeTranslateId);
         int isInserted = translationService.insert(translate);
-
-        if (isInserted != 0) {
+        
+        if (isInserted > 0) {
             return Response.status(Response.Status.CREATED)
                     .entity("{\"message\":\"Translate created successfully\"}")
                     .build();
@@ -93,10 +94,10 @@ public class TranslationController {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTranslate(@HeaderParam("authorization") String authHeader,
-            @PathParam("id") int id,
-            @PathParam("sourceId") int sourceId,
-            @PathParam("targetId") int targetId,
-            @PathParam("typeTranslateId") int typeTranslateId) {
+            @FormParam("id") int id,
+            @FormParam("sourceId") int sourceId,
+            @FormParam("targetId") int targetId,
+            @FormParam("typeTranslateId") int typeTranslateId) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();

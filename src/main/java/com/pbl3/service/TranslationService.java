@@ -26,12 +26,7 @@ public class TranslationService implements ServiceInterface<Translate>{
     public static void main(String s[]) {
         int j = 1;
         TranslationService sa = new TranslationService();
-        List<Map<String, Object>> li = sa.translateWord("h", ENG_VIET_TYPE, ENG_VIET_TYPE);
-        for (Object ss : li) {
-            System.out.println(ss.toString() + j);
-            j++;
-
-        }
+        
     }
 
     // API tìm kiếm từ cơ bản
@@ -104,6 +99,15 @@ public class TranslationService implements ServiceInterface<Translate>{
     }
     @Override
     public int insert(Translate t) {
+        ArrayList<Translate> existingTranslations = translateDAO.selectAllBySourceWordIDAndType(t.getSource_word_id(), t.getType_translate_id());
+        if (existingTranslations != null) {
+            for (Translate existing : existingTranslations) {
+                if (existing.getTrans_word_id() == t.getTrans_word_id()) {
+                   
+                    return -1; // Hoặc một mã lỗi khác cho biết đã tồn tại
+                }
+            }
+        }
         return translateDAO.insert(t);
     }
 

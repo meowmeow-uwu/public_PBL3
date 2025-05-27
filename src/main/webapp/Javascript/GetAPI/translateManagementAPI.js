@@ -6,7 +6,10 @@
 const TRANSLATE_API_BASE = window.APP_CONFIG.API_BASE_URL + '/translate';
 
 function getToken() {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token)
+        return null;
+    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 }
 
 // 1. Dịch từ
@@ -15,7 +18,7 @@ async function translateWord(sourceWord, sourceLanguageId, targetLanguageId) {
         const response = await fetch(`${TRANSLATE_API_BASE}/${sourceWord}/${sourceLanguageId}/${targetLanguageId}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': `${getToken()}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -34,21 +37,23 @@ async function translateWord(sourceWord, sourceLanguageId, targetLanguageId) {
 // 2. Tạo bản dịch mới
 async function createTranslate(sourceId, targetId, typeTranslateId) {
     try {
-        const formData = new FormData();
-        formData.append('sourceId', sourceId);
-        formData.append('targetId', targetId);
-        formData.append('typeTranslateId', typeTranslateId);
+        const body = new URLSearchParams();
+        body.append('sourceId', sourceId);
+        body.append('targetId', targetId);
+        body.append('typeTranslateId', typeTranslateId);
 
         const response = await fetch(`${TRANSLATE_API_BASE}/create`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': `${getToken()}`,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            body: body.toString()
         });
         
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Create translate error:', errorText);
             throw new Error('Không thể tạo bản dịch');
         }
         
@@ -62,22 +67,24 @@ async function createTranslate(sourceId, targetId, typeTranslateId) {
 // 3. Cập nhật bản dịch
 async function updateTranslate(id, sourceId, targetId, typeTranslateId) {
     try {
-        const formData = new FormData();
-        formData.append('id', id);
-        formData.append('sourceId', sourceId);
-        formData.append('targetId', targetId);
-        formData.append('typeTranslateId', typeTranslateId);
+        const body = new URLSearchParams();
+        body.append('id', id);
+        body.append('sourceId', sourceId);
+        body.append('targetId', targetId);
+        body.append('typeTranslateId', typeTranslateId);
 
         const response = await fetch(`${TRANSLATE_API_BASE}/update`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': `${getToken()}`,
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            body: body.toString()
         });
         
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Update translate error:', errorText);
             throw new Error('Không thể cập nhật bản dịch');
         }
         
@@ -89,12 +96,12 @@ async function updateTranslate(id, sourceId, targetId, typeTranslateId) {
 }
 
 // 4. Xóa bản dịch
-async function deleteTranslate(id) {
+async function deleteTranslateAPI(id) {
     try {
         const response = await fetch(`${TRANSLATE_API_BASE}/delete/${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': `${getToken()}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -116,7 +123,7 @@ async function getTranslateByWordId(wordId, typeId) {
         const response = await fetch(`${TRANSLATE_API_BASE}/get/${wordId}/${typeId}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': `${getToken()}`,
                 'Content-Type': 'application/json'
             }
         });

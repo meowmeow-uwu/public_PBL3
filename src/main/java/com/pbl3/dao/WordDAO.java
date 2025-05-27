@@ -34,45 +34,48 @@ public class WordDAO implements DAOInterface<Word> {
 
     @Override
     public int insert(Word word) {
-        Connection c = null;
-        try {
-            c = DBUtil.makeConnection();
-            String queryCheck = "SELECT * FROM  word WHERE word_name = ? and is_delete = 1";
-            PreparedStatement s1 = c.prepareStatement(queryCheck);
-            s1.setString(1, word.getWord_name());
-            ResultSet hasWord = s1.executeQuery();
-            PreparedStatement s;
-            if (hasWord.next()) {
-                String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=? , image = ? WHERE word_id=?";
-                s = c.prepareStatement(query);
-                s.setInt(1, word.getLanguage_id());
-                s.setString(2, word.getWord_name());
-                s.setString(3, word.getPronunciation());
-                s.setString(4, word.getSound());
-                s.setBoolean(5, word.is_deleted());
-                s.setString(6, word.getImage());
-                s.setInt(7, hasWord.getInt("word_id"));
-            } else {
-                String query = "INSERT INTO word (language_id, word_name, pronunciation, sound, is_deleted, image) VALUES (?, ?, ?, ?, ?, ?)";
-                s = c.prepareStatement(query);
-                s.setInt(1, word.getLanguage_id());
-                s.setString(2, word.getWord_name());
-                s.setString(3, word.getPronunciation());
-                s.setString(4, word.getSound());
-                s.setBoolean(5, word.is_deleted());
-                s.setString(6, word.getImage());
-            }
-            s1.close();
+        String queryCheckExistingDeleted = "SELECT word_id FROM word WHERE word_name = ? AND is_deleted = 1";
+        String queryUpdate = "UPDATE word SET language_id = ?, word_name = ?, pronunciation = ?, sound = ?, is_deleted = ?, image = ? WHERE word_id = ?";
+        String queryInsert = "INSERT INTO word (language_id, word_name, pronunciation, sound, is_deleted, image) VALUES (?, ?, ?, ?, ?, ?)";
 
-            int result = s.executeUpdate();
-            s.close();
-            return result;
+        try (Connection conn = DBUtil.makeConnection()) {
+            Integer existingSoftDeletedWordId = null;
+
+            try (PreparedStatement psCheck = conn.prepareStatement(queryCheckExistingDeleted)) {
+                psCheck.setString(1, word.getWord_name());
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (rs.next()) {
+                        existingSoftDeletedWordId = rs.getInt("word_id");
+                    }
+                }
+            }
+
+            if (existingSoftDeletedWordId != null) {
+                try (PreparedStatement psUpdate = conn.prepareStatement(queryUpdate)) {
+                    psUpdate.setInt(1, word.getLanguage_id());
+                    psUpdate.setString(2, word.getWord_name());
+                    psUpdate.setString(3, word.getPronunciation());
+                    psUpdate.setString(4, word.getSound());
+                    psUpdate.setBoolean(5, word.is_deleted());
+                    psUpdate.setString(6, word.getImage());
+                    psUpdate.setInt(7, existingSoftDeletedWordId);
+                    return psUpdate.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement psInsert = conn.prepareStatement(queryInsert)) {
+                    psInsert.setInt(1, word.getLanguage_id());
+                    psInsert.setString(2, word.getWord_name());
+                    psInsert.setString(3, word.getPronunciation());
+                    psInsert.setString(4, word.getSound());
+                    psInsert.setBoolean(5, word.is_deleted());
+                    psInsert.setString(6, word.getImage());
+                    return psInsert.executeUpdate();
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            DBUtil.closeConnection(c);
+            return 0; // Indicates failure or 0 rows affected, maintaining original behavior.
         }
-        return 0;
     }
 
     @Override
@@ -80,7 +83,7 @@ public class WordDAO implements DAOInterface<Word> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "UPDATE word SET language_id=?, word_name=?, pronunciation=?, sound=?, is_deleted=?, image = ? WHERE word_id=?";
+            String query = "UPDATE word SET language_id = ?, word_name = ?, pronunciation = ?, sound = ?, is_deleted = ?, image = ? WHERE word_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, word.getLanguage_id());
             s.setString(2, word.getWord_name());

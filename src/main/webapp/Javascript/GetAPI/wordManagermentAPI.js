@@ -24,14 +24,31 @@ async function getWordList({ page = 1, size = 20, language_id = 1, keyword = '' 
     return await res.json();
 }
 
-// 3. Thêm từ mới (POST /search/{id})
-async function createWord(language_id, wordData) {
-    // wordData là object: { word, meaning, ... }
-    const formData = new URLSearchParams();
-    for (const key in wordData) {
-        formData.append(key, wordData[key]);
+// 3. Thêm từ mới (POST /create)
+async function createWord(wordData) {
+    // wordData là object: { word_name, pronunciation, image, sound, language_id }
+    const formData = new FormData();
+    
+    // Thêm các trường dữ liệu cơ bản
+    formData.append('word_name', wordData.word_name);
+    formData.append('pronunciation', wordData.pronunciation);
+    formData.append('language_id', wordData.language_id);
+    
+    // Thêm file hình ảnh nếu có
+    if (wordData.image instanceof File) {
+        formData.append('image', wordData.image);
+    } else if (wordData.image) {
+        formData.append('image', wordData.image);
     }
-    const res = await fetch(`${WORD_API_BASE}/search/${language_id}`, {
+    
+    // Thêm file âm thanh nếu có
+    if (wordData.sound instanceof File) {
+        formData.append('sound', wordData.sound);
+    } else if (wordData.sound) {
+        formData.append('sound', wordData.sound);
+    }
+
+    const res = await fetch(`${WORD_API_BASE}/create`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${getToken()}`,
@@ -39,6 +56,7 @@ async function createWord(language_id, wordData) {
         },
         body: formData
     });
+    
     if (!res.ok) throw new Error('Thêm từ mới thất bại');
     return await res.json();
 }
@@ -46,10 +64,28 @@ async function createWord(language_id, wordData) {
 // 4. Cập nhật từ (PUT /update)
 async function updateWord(wordData) {
     // wordData phải có id và các trường cần cập nhật
-    const formData = new URLSearchParams();
-    for (const key in wordData) {
-        formData.append(key, wordData[key]);
+    const formData = new FormData();
+    
+    // Thêm ID và các trường dữ liệu cơ bản
+    formData.append('id', wordData.id);
+    formData.append('word_name', wordData.word_name);
+    formData.append('pronunciation', wordData.pronunciation);
+    formData.append('language_id', wordData.language_id);
+    
+    // Thêm file hình ảnh nếu có
+    if (wordData.image instanceof File) {
+        formData.append('image', wordData.image);
+    } else if (wordData.image) {
+        formData.append('image', wordData.image);
     }
+    
+    // Thêm file âm thanh nếu có
+    if (wordData.sound instanceof File) {
+        formData.append('sound', wordData.sound);
+    } else if (wordData.sound) {
+        formData.append('sound', wordData.sound);
+    }
+
     const res = await fetch(`${WORD_API_BASE}/update`, {
         method: 'PUT',
         headers: {
@@ -58,6 +94,7 @@ async function updateWord(wordData) {
         },
         body: formData
     });
+    
     if (!res.ok) throw new Error('Cập nhật từ thất bại');
     return await res.json();
 }

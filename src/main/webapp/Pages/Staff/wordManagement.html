@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
         <title>Quản lý từ vựng</title>
         <link rel="stylesheet" href="../../Assets/Css/main.css">
-        <link rel="stylesheet" href="../../Assets/Css/Staff/wordManagement.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+        <link rel="stylesheet" href="../../Assets/Css/Staff/wordManagement.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
     <body>
+        <!-- Sidebar -->
+        <div id="sidebar"></div>
         <div class="container">
-            <!-- Sidebar -->
-            <div id="sidebar-container"></div>
 
             <!-- Main Content -->
             <div class="main-content">
+                <h1>Quản lý từ vựng</h1>
                 <div class="header">
-                    <h1>Quản lý từ vựng</h1>
                     <div class="search-bar">
                         <select id="mainLanguageFilter" class="language-select">
                             <option value="1">Tiếng Anh</option>
@@ -173,11 +169,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
         <script>
             window.APP_CONFIG.BASE_PATH = '../../';
         </script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
         <script src="../../Javascript/components/sideBar.js"></script>
         <script src="../../Javascript/GetAPI/wordManagermentAPI.js"></script>
         <script src="../../Javascript/GetAPI/definitionManagementAPI.js"></script>
         <script src="../../Javascript/GetAPI/translateManagementAPI.js"></script>
         <script src="../../Javascript/Staff/wordManagement.js"></script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
     </body>
 </html>

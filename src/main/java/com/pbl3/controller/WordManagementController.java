@@ -73,7 +73,7 @@ public class WordManagementController {
         if (keyword == null || keyword.equalsIgnoreCase("null")) {
             keyword = "";
         }
-        Map<String,Object> list = wordService.getWordsByPage(pageNumber, pageSize, languageId, keyword);
+        Map<String, Object> list = wordService.getWordsByPage(pageNumber, pageSize, languageId, keyword);
         if (list == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\":\"Word not found\"}")
@@ -88,6 +88,7 @@ public class WordManagementController {
     public Response insertWord(@HeaderParam("authorization") String authHeader,
             @FormParam("word_name") String wordName,
             @FormParam("pronunciation") String pronunciation,
+            @FormParam("image") String image,
             @FormParam("sound") String sound,
             @FormParam("language_id") int languageId) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -103,6 +104,7 @@ public class WordManagementController {
         word.setPronunciation(pronunciation);
         word.setSound(sound);
         word.setWord_name(wordName);
+        word.setImage(image);
         word.set_deleted(false);
         int isInserted = wordService.insert(word);
 
@@ -124,6 +126,7 @@ public class WordManagementController {
             @FormParam("id") int id,
             @FormParam("word_name") String wordName,
             @FormParam("pronunciation") String pronunciation,
+            @FormParam("image") String image,
             @FormParam("sound") String sound,
             @FormParam("language_id") int languageId) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -139,6 +142,7 @@ public class WordManagementController {
         word.setLanguage_id(languageId);
         word.setPronunciation(pronunciation);
         word.setSound(sound);
+        word.setImage(image);
         word.setWord_name(wordName);
         word.set_deleted(false);
         int isUpdated = wordService.update(word);

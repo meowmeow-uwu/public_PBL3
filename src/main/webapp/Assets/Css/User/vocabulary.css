@@ -316,13 +316,9 @@
 }
 
 .topic-info {
-<<<<<<< HEAD
-    margin: 2px auto;
-=======
     margin-bottom: 10px;
     margin-top: 4px;
     width: 100%;
->>>>>>> ec77d64688a01006a96782a0f4901911f17d5c42
     display: flex;
     justify-content: center;
 }

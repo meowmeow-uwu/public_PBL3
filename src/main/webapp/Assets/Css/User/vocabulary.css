@@ -319,6 +319,7 @@
 }
 
 .topic-info {
+    margin: 2px auto;
     display: flex;
     justify-content: center;
     gap: 1rem;

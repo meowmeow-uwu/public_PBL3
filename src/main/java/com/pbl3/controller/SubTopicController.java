@@ -155,7 +155,7 @@ public class SubTopicController {
             return Response.status(400).entity("Can't delete default subtopic").build();
         }
         if (result == 0) {
-            return Response.status(400).entity("Failed to delete subtopic").build();
+            return Response.status(409).entity("Failed to delete subtopic").build();
         }
         return Response.status(200).entity("Subtopic deleted successfully").build();
     }

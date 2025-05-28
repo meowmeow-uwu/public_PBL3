@@ -124,7 +124,7 @@ public class PostController {
     @PUT
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteSubTopic(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Post post) {
+    public Response deleteSubTopic(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
@@ -139,10 +139,11 @@ public class PostController {
         if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
+        Post post = postService.selectByID(id);
         post.set_deleted(true);
         int result = postService.update(post);
         if (result == 0) {
-            return Response.status(400).entity("Failed to delete post").build();
+            return Response.status(409).entity("Failed to delete post").build();
         }
         return Response.status(200).entity("Post deleted successfully").build();
     }

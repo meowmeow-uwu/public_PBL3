@@ -25,7 +25,7 @@ public class AnswerDAO implements DAOInterface<Answer>{
             int result = s.executeUpdate();
             s.close();
             return result;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             DBUtil.closeConnection(c);

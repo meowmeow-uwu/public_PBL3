@@ -17,6 +17,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -43,7 +44,7 @@ public class AnswerController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAnswer(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, @HeaderParam("type") Integer type) {
+    public Response getAnswer(@HeaderParam("Authorization") String authHeader, @HeaderParam("type") Integer type, @PathParam("id") int id) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
@@ -89,7 +90,11 @@ public class AnswerController {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAnswer(@HeaderParam("Authorization") String authHeader, Answer answer, @HeaderParam("type") Integer type) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createAnswer(@HeaderParam("Authorization") String authHeader, @HeaderParam("type") Integer type, Answer answer) {
+
+    System.out.println(">>> [POST] Received Answer: " + (answer == null ? "NULL" : answer.toString())); 
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
@@ -106,6 +111,7 @@ public class AnswerController {
         if (type != null) {
             chooseAnswerService(type);
         }
+        // if(answer.isCorrect()) answer.set
         int result = answerService.insert(answer);
         if (result > 0) {
             return Response.status(Response.Status.CREATED).build();

@@ -5,16 +5,24 @@
 // lessonManagerment.js có bị nhúng 2 lần vào HTML không.
 
 async function fetchAPI(url, options = {}) {
-    // Giả sử bạn có hàm getToken() và window.APP_CONFIG.API_BASE_URL
     const currentToken = getToken(); 
 
+    // 1. Lấy headers tùy chỉnh từ options, mặc định là đối tượng rỗng
+    const customHeaders = options.headers || {};
+
+    // 2. Tạo một bản sao của options ĐỂ XÓA headers đi
+    const otherOptions = { ...options };
+    delete otherOptions.headers; // Xóa key 'headers' để nó không ghi đè khi spread
+
     const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}${url}`, {
+        // 4. Spread các options khác (method, body,...)
+        ...otherOptions, 
+        // 3. Xây dựng headers bằng cách merge
         headers: {
             'Authorization': currentToken,
-            'Content-Type': 'application/json', // Default, có thể bị ghi đè bởi options
-            ...options.headers,
+            'Content-Type': 'application/json',
+            ...customHeaders, // Merge các headers tùy chỉnh vào đây
         },
-        ...options,
     });
 
     // 1. Xử lý các phản hồi lỗi (!response.ok)
@@ -95,17 +103,17 @@ const examAPI = {
     getById: (id) => fetchAPI(`/exam/${id}`),
     create: (data) => fetchAPI('/exam/', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => fetchAPI(`/exam/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    delete: (id) => fetchAPI(`/exam/delete/${id}`, { method: 'PUT', body: JSON.stringify({ exam_id: id, is_deleted: true }) }),
+    delete: (id) => fetchAPI(`/exam/delete/${id}`, { method: 'PUT'}),
 };
 const questionAPI = {
     getByExamId: (examId) => fetchAPI(`/questions/exam/${examId}`),
     getById: (id) => fetchAPI(`/questions/${id}`),
-    create: (data) => fetchAPI('/questions/', { method: 'POST', body: JSON.stringify(data) }),
+    create: (id, data) => fetchAPI(`/questions/${id}`, { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => fetchAPI(`/questions/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id) => fetchAPI(`/questions/${id}`, { method: 'DELETE' }),
 };
 const answerAPI = {
-    getByQuestionId: (questionId) => fetchAPI(`/questions/${questionId}/answers`, { headers: { 'type': '0' } }),
+    getByQuestionId: (questionId) => fetchAPI(`/questions/${questionId}/answers`),
     getById: (id) => fetchAPI(`/answers/${id}`, { headers: { 'type': '0' } }),
     create: (data) => fetchAPI('/answers/', { method: 'POST', body: JSON.stringify(data), headers: { 'type': '0' } }),
     update: (id, data) => fetchAPI(`/answers/${id}`, { method: 'PUT', body: JSON.stringify(data), headers: { 'type': '0' } }),
@@ -356,64 +364,161 @@ window.switchContentType = (type) => {
 };
 
 window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = null) => {
+    // 1. Kiểm tra các thành phần Modal
     if (!formModal || !modalTitle || !formFields || !entityForm) {
-        console.error("Modal elements not found in openFormModal"); return;
+        console.error("Modal elements not found in openFormModal");
+        return;
     }
+
+    // 2. Cập nhật biến toàn cục
     currentEditingId = id;
     currentEntityType = entityType;
     currentParentId = parentIdFromCall;
 
+    // 3. Reset form và chuẩn bị dữ liệu
     entityForm.reset();
     formFields.innerHTML = '';
     let entityData = {};
     modalTitle.textContent = `${mode === 'edit' ? 'Chỉnh sửa' : 'Thêm mới'} ${getEntityTypeDisplayName(entityType)}`;
 
+    // 4. Lấy dữ liệu nếu là chế độ chỉnh sửa
     if (mode === 'edit' && id !== null) {
         try {
+            // Lấy dữ liệu từ API tương ứng
             if (entityType === 'topic') entityData = await topicAPI.getById(id);
             else if (entityType === 'subtopic') entityData = await subTopicAPI.getById(id);
             else if (entityType === 'post') entityData = await postAPI.getById(id);
             else if (entityType === 'exam') entityData = await examAPI.getById(id);
             else if (entityType === 'question') entityData = await questionAPI.getById(id);
             else if (entityType === 'answer') entityData = await answerAPI.getById(id);
-        } catch (error) { alert(`Lỗi tải dữ liệu để sửa: ${error.message}`); return; }
+        } catch (error) {
+            alert(`Lỗi tải dữ liệu để sửa: ${error.message}`);
+            return;
+        }
     }
 
-    let nameValue = entityData.name || entityData.post_name || '';
-    if (entityType === 'post' && mode === 'edit' && entityData.post_name) nameValue = entityData.post_name;
-
+    // 5. Tạo HTML cho các trường nhập liệu bằng switch case (SỬ DỤNG SNAKE_CASE)
     let fieldsHtml = '';
-    if (entityType === 'topic') {
-        fieldsHtml = `<div class="form-group"><label for="modalEntityName">Tên Chủ đề:</label><input type="text" id="modalEntityName" name="name" value="${nameValue.replace(/"/g, '&quot;')}" required></div>`;
-    } else if (entityType === 'subtopic') {
-        fieldsHtml = `<div class="form-group"><label for="modalEntityName">Tên Chủ đề con:</label><input type="text" id="modalEntityName" name="name" value="${nameValue.replace(/"/g, '&quot;')}" required></div>
-                      <input type="hidden" name="topic_id" value="${currentParentId || currentTopicId}">`;
-    } else if (entityType === 'post') {
-        fieldsHtml = `<div class="form-group"><label for="modalEntityName">Tên Bài học:</label><input type="text" id="modalEntityName" name="post_name" value="${nameValue.replace(/"/g, '&quot;')}" required></div>
-                      <div class="form-group"><label for="modalContent">Nội dung:</label><textarea id="modalContent" name="content" rows="10" required>${entityData.content || ''}</textarea></div>
-                      <input type="hidden" name="sub_topic_id" value="${currentParentId || currentSubTopicId}">`;
-    } else if (entityType === 'exam') {
-        fieldsHtml = `<div class="form-group"><label for="modalEntityName">Tên Bài KT:</label><input type="text" id="modalEntityName" name="name" value="${nameValue.replace(/"/g, '&quot;')}" required></div>
-                      <input type="hidden" name="sub_topic_id" value="${currentParentId || currentSubTopicId}">`;
-    } else if (entityType === 'question') {
-        fieldsHtml = `<div class="form-group"><label for="modalContent">Nội dung câu hỏi:</label><textarea id="modalContent" name="content" rows="3" required>${entityData.content || ''}</textarea></div>
-                      <div class="form-group"><label for="modalQuestionTypeId">Loại câu hỏi:</label><select id="modalQuestionTypeId" name="question_type_id"><option value="1" ${entityData.question_type_id === 1 ? 'selected' : ''}>Trắc nghiệm một đáp án</option><option value="2" ${entityData.question_type_id === 2 ? 'selected' : ''}>Trắc nghiệm nhiều đáp án</option></select></div>
-                      <input type="hidden" name="exam_id" value="${currentParentId || currentExamIdForQuestionsManagement}">`;
-    } else if (entityType === 'answer') {
-        fieldsHtml = `<div class="form-group"><label for="modalContentAns">Nội dung câu trả lời:</label><input type="text" id="modalContentAns" name="content" value="${entityData.content || ''}" required></div>
-                      <div class="form-group"><label for="modalIsCorrect">Là đáp án đúng?</label><input type="checkbox" id="modalIsCorrect" name="isCorrect" ${entityData.isCorrect ? 'checked' : ''}></div>
-                      <input type="hidden" name="question_id" value="${currentParentId || currentQuestionId}">`;
+    
+    // Lấy giá trị tên và nội dung (ưu tiên snake_case nếu có)
+    const nameValue = entityData.name || entityData.post_name || '';
+    const contentValue = entityData.content || '';
+
+    switch (entityType) {
+        case 'topic':
+            fieldsHtml = `
+                <div class="form-group">
+                    <label for="modalEntityName">Tên Chủ đề:</label>
+                    <input type="text" id="modalEntityName" name="name" value="${(entityData.name || '').replace(/"/g, '&quot;')}" required>
+                </div>`;
+            break;
+
+        case 'subtopic':
+            fieldsHtml = `
+                <div class="form-group">
+                    <label for="modalEntityName">Tên Chủ đề con:</label>
+                    <input type="text" id="modalEntityName" name="name" value="${(entityData.name || '').replace(/"/g, '&quot;')}" required>
+                </div>
+                <input type="hidden" name="topic_id" value="${currentParentId || entityData.topic_id || currentTopicId}">`; // SỬA: topic_id
+            break;
+
+        case 'post':
+            fieldsHtml = `
+                <div class="form-group">
+                    <label for="modalEntityName">Tên Bài học:</label>
+                    <input type="text" id="modalEntityName" name="post_name" value="${(entityData.post_name || '').replace(/"/g, '&quot;')}" required></div>
+                <div class="form-group">
+                    <label for="modalContent">Nội dung:</label>
+                    <textarea id="modalContent" name="content" rows="10" required>${contentValue}</textarea>
+                </div>
+                <input type="hidden" name="sub_topic_id" value="${currentParentId || entityData.sub_topic_id || currentSubTopicId}">`; // SỬA: sub_topic_id
+            break;
+
+        case 'exam':
+            fieldsHtml = `
+                <div class="form-group">
+                    <label for="modalEntityName">Tên Bài KT:</label>
+                    <input type="text" id="modalEntityName" name="name" value="${(entityData.name || '').replace(/"/g, '&quot;')}" required>
+                </div>
+                <input type="hidden" name="sub_topic_id" value="${currentParentId || entityData.sub_topic_id || currentSubTopicId}">`;
+                // <input type="hidden" name="is_deleted" value="false"> // SỬA: sub_topic_id
+            break;
+
+        case 'question':
+            const questionTypeValue = entityData.question_type_id || 1; // SỬA: question_type_id
+            const levelValue = entityData.level || 1;
+            const questionContentValue = entityData.content || ''; // SỬA: content
+            const examIdValue = currentParentId || entityData.exam_id || currentExamIdForQuestionsManagement; // SỬA: exam_id
+
+            fieldsHtml = `
+                <div class="form-group">
+                    <label for="modalContent">Nội dung câu hỏi:</label>
+                    <textarea id="modalContent" name="content" rows="3" required>${questionContentValue}</textarea></div> 
+
+                <div class="form-group">
+                    <label for="modalQuestionTypeId">Loại câu hỏi:</label>
+                    <select id="modalQuestionTypeId" name="question_type_id" required> 
+                        <option value="1" ${questionTypeValue === 1 ? 'selected' : ''}>Multi Choice</option>
+                        <option value="2" ${questionTypeValue === 2 ? 'selected' : ''}>Fill a blank</option>
+                        </select>
+                </div>`
+
+            break;
+
+        case 'answer':
+            const answerContentValue = entityData.content || '';
+            const isCorrectValue = entityData.is_correct || false;
+            const questionIdValue = currentParentId || entityData.question_id || currentQuestionId; // SỬA: question_id
+
+            fieldsHtml = `
+                <div class="form-group">
+                    <label for="modalContentAns">Nội dung câu trả lời:</label>
+                    <input type="text" id="modalContentAns" name="content" value="${answerContentValue}" required>
+                </div>
+                <div class="form-group">
+                    <label for="modalIsCorrect">Là đáp án đúng?</label>
+                    <input type="checkbox" id="modalIsCorrect" ${isCorrectValue ? 'checked' : ''}>
+                </div>
+                <input type="hidden" name="question_id" value="${questionIdValue}">`; // SỬA: name="question_id"
+            break;
+
+        default:
+            fieldsHtml = `<p class="error-message">Loại thực thể không được hỗ trợ: ${entityType}</p>`;
+            break;
     }
 
+    // 6. Hiển thị form
     formFields.innerHTML = fieldsHtml;
     const submitButton = entityForm.querySelector('button[type="submit"]');
-    if (submitButton) submitButton.style.display = 'block';
+    if (submitButton) {
+        submitButton.style.display = fieldsHtml.includes('<p class="error-message">') ? 'none' : 'block';
+    }
+    
     formModal.style.display = 'flex';
+    formModal.classList.add('front'); 
 };
+
+// Hàm trợ giúp (bạn cần có hàm này)
+function getEntityTypeDisplayName(type) {
+    const names = {
+        topic: 'Chủ đề',
+        subtopic: 'Chủ đề con',
+        post: 'Bài viết',
+        exam: 'Bài kiểm tra',
+        question: 'Câu hỏi',
+        answer: 'Câu trả lời'
+    };
+    return names[type] || type;
+}
 
 window.closeModal = (modalId) => {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.style.display = 'none';
+        if(modalId == 'formModal'){
+            modal.classList.remove('front');
+        }
+    }
     if (modalId === 'detailModal') {
         if (currentView === 'postDetail' && currentSubTopicId && currentSubTopicName) {
             window.navigateToLevel('posts', currentSubTopicId, currentSubTopicName);
@@ -594,9 +699,9 @@ async function renderQuestionsForExam(examId) {
                     <div class="question-item-header">
                         <span><strong>Q${q.question_id}:</strong> ${q.content} (Loại: ${q.question_type_id})</span>
                         <div class="question-actions">
-                            <button class="btn btn-sm btn-info" onclick="window.openFormModal('edit', 'question', ${q.question_id}, ${examId})"><i class="fas fa-edit"></i> Sửa</button>
-                            <button class="btn btn-sm btn-danger" onclick="window.deleteEntity('question', ${q.question_id})"><i class="fas fa-trash"></i> Xóa</button>
-                            <button class="btn btn-sm btn-primary" onclick="window.manageAnswersForQuestion(${q.question_id}, '${q.content.replace(/'/g, "\\'")}', ${examId})"><i class="fas fa-list-ol"></i> Đáp án</button>
+                            <button type="button" class="btn btn-sm btn-info" onclick="window.openFormModal('edit', 'question', ${q.question_id}, ${examId})"><i class="fas fa-edit"></i> Sửa</button>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="window.deleteEntity('question', ${q.question_id})"><i class="fas fa-trash"></i> Xóa</button>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="window.manageAnswersForQuestion(${q.question_id}, '${q.content.replace(/'/g, "\\'")}', ${examId})"><i class="fas fa-list-ol"></i> Đáp án</button>
                         </div></div></li>`;
         }
         questionsHtml += '</ul>';
@@ -625,12 +730,12 @@ window.manageAnswersForQuestion = async (questionId, questionContent, examIdForR
         const answers = await answerAPI.getByQuestionId(questionId);
         if (answers && answers.length > 0) {
             answersHtml += answers.map(ans => `
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>${ans.content} ${ans.isCorrect ? '<i class="fas fa-check-circle text-success ml-2"></i>' : ''}</span>
-                    <div>
-                        <button class="btn btn-sm btn-info" onclick="window.openFormModal('edit', 'answer', ${ans.answer_id}, ${questionId})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="window.deleteEntity('answer', ${ans.answer_id})"><i class="fas fa-trash"></i></button>
-                    </div></li>`).join('');
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>${ans.content} ${ans.isCorrect ? '<i class="fas fa-check-circle text-success ml-2"></i>' : ''}</span>
+        <div>
+            <button type="button" class="btn btn-sm btn-info" onclick="window.openFormModal('edit', 'answer', ${ans.answer_id}, ${questionId})"><i class="fas fa-edit"></i></button> 
+            <button type="button" class="btn btn-sm btn-danger" onclick="window.deleteEntity('answer', ${ans.answer_id})"><i class="fas fa-trash"></i></button> 
+        </div></li>`).join('');
         } else {
             answersHtml += '<li class="list-group-item">Chưa có câu trả lời.</li>';
         }
@@ -643,6 +748,7 @@ window.manageAnswersForQuestion = async (questionId, questionContent, examIdForR
     formFields.innerHTML = answersHtml;
     const submitButton = entityForm.querySelector('button[type="submit"]');
     if (submitButton) submitButton.style.display = 'none';
+    formModal.classList.add('front'); 
     formModal.style.display = 'flex';
     renderBreadcrumbs();
 };
@@ -687,16 +793,21 @@ if (entityForm) {
         if (currentEntityType === 'subtopic') data.topic_id = parseInt(currentParentId);
         else if (currentEntityType === 'post') data.sub_topic_id = parseInt(currentParentId);
         else if (currentEntityType === 'exam') data.sub_topic_id = parseInt(currentParentId);
-        else if (currentEntityType === 'question') data.exam_id = parseInt(currentParentId);
+        // else if (currentEntityType === 'question') data.exam_id = parseInt(currentParentId);
         else if (currentEntityType === 'answer') data.question_id = parseInt(currentParentId);
 
         // Chuyển đổi kiểu dữ liệu nếu cần
         if (data.question_type_id) data.question_type_id = parseInt(data.question_type_id);
+        // if(data.is_deleted) {
+        // const value = data.is_deleted;
+        // const isDeleted = value === "true" ? true : false;
+        // data.is_deleted = isDeleted;
+    // }
 
         // Xử lý checkbox 'isCorrect'
         if (currentEntityType === 'answer') {
             const isCorrectCheckbox = document.getElementById('modalIsCorrect');
-            data.isCorrect = isCorrectCheckbox ? isCorrectCheckbox.checked : false;
+            data.is_correct = isCorrectCheckbox ? isCorrectCheckbox.checked : false;
         }
 
         // Gán ID thực thể khi chỉnh sửa (cho payload)
@@ -727,7 +838,7 @@ if (entityForm) {
                 apiCallPromise = entityId ? examAPI.update(entityId, data) : examAPI.create(data);
                 break;
             case 'question':
-                apiCallPromise = entityId ? questionAPI.update(entityId, data) : questionAPI.create(data);
+                apiCallPromise = entityId ? questionAPI.update(entityId, data) : questionAPI.create(currentParentId, data);
                 break;
             case 'answer':
                 apiCallPromise = entityId ? answerAPI.update(entityId, data) : answerAPI.create(data);

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
@@ -25,5 +26,6 @@ public class Answer implements Serializable{
     private int answer_id;
     private int question_id;
     private String content;
+    @JsonProperty("is_correct")
     private boolean isCorrect;
 }

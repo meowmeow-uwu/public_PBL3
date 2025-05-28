@@ -111,6 +111,7 @@ public class ExamController {
         if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
+        exam.set_deleted(false);
         int result = examService.insert(exam);
         if (result == 0) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Failed to create exam").build();
@@ -133,7 +134,7 @@ public class ExamController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if(!new AuthService().isContentManagerOrAdmin(token)) {
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
         int result = examService.update(exam);
@@ -146,7 +147,7 @@ public class ExamController {
     @PUT
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteExam(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Exam exam) {
+    public Response deleteExam(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
@@ -157,9 +158,10 @@ public class ExamController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if(!new AuthService().isContentManagerOrAdmin(token)) {
+        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
+        Exam exam = examService.selectByID(id);
         exam.set_deleted(true);
         int result = examService.update(exam);
         if (result == 0) {

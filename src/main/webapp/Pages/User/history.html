@@ -1,68 +1,68 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lịch sử của tôi</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lịch sử của tôi</title>
 
-  <link rel="stylesheet" href="../../Assets/Css/main.css">
-  <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
-  <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
-  <link rel="stylesheet" href="../../Assets/Css/User/history.css">
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+        <link rel="stylesheet" href="../../Assets/Css/User/history.css">
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </head>
+    <body>
+        <div id="header"></div>
 
-</head>
-<body>
-  <div id="header"></div>
+        <div class="history-container">
+            <div class="history-header">
+                <h1>Lịch sử hoạt động</h1>
+            </div>
 
-  <div class="history-container">
-    <div class="history-header">
-      <h1>Lịch sử hoạt động</h1>
-    </div>
+            <div class="history-tabs">
+                <button class="tab-btn active" data-tab="word-history">
+                    <i class="fas fa-book"></i> Lịch sử Từ
+                </button>
+                <button class="tab-btn" data-tab="exam-history">
+                    <i class="fas fa-file-alt"></i> Lịch sử Thi
+                </button>
+                <button class="tab-btn" data-tab="post-history">
+                    <i class="fas fa-thumbtack"></i> Lịch sử Ngữ pháp </button>
+            </div>
 
-    <div class="history-tabs">
-      <button class="tab-btn active" data-tab="word-history">
-        <i class="fas fa-book"></i> Lịch sử Từ
-      </button>
-      <button class="tab-btn" data-tab="exam-history">
-        <i class="fas fa-file-alt"></i> Lịch sử Thi
-      </button>
-      <button class="tab-btn" data-tab="post-history">
-        <i class="fas fa-thumbtack"></i> Lịch sử Ngữ pháp </button>
-    </div>
+            <div id="word-history" class="tab-content active">
+                <h2>Lịch sử Từ</h2>
+                <div class="history-list-container">
+                    <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử từ...</p>
+                </div>
+            </div>
 
-    <div id="word-history" class="tab-content active">
-      <h2>Lịch sử Từ</h2>
-      <div class="history-list-container">
-        <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử từ...</p>
-      </div>
-    </div>
+            <div id="exam-history" class="tab-content">
+                <h2>Lịch sử Thi</h2>
+                <div class="history-list-container">
+                    <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử thi...</p>
+                </div>
+            </div>
 
-    <div id="exam-history" class="tab-content">
-      <h2>Lịch sử Thi</h2>
-      <div class="history-list-container">
-        <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử thi...</p>
-      </div>
-    </div>
+            <div id="post-history" class="tab-content">
+                <h2>Lịch sử Ngữ pháp</h2> <div class="history-list-container">
+                    <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử ngữ pháp...</p>
+                </div>
+            </div>
+        </div>
 
-    <div id="post-history" class="tab-content">
-      <h2>Lịch sử Ngữ pháp</h2> <div class="history-list-container">
-        <p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử ngữ pháp...</p>
-      </div>
-    </div>
-  </div>
+        <div id="footer"></div>
 
-  <div id="footer"></div>
-  
-    <script src="../../Javascript/config.js"></script>
-    <script>
-        window.APP_CONFIG = window.APP_CONFIG || {};
-        window.APP_CONFIG.BASE_PATH = '../../';
-    </script>
+        <script src="../../Javascript/config.js"></script>
+        <script>
+            window.APP_CONFIG = window.APP_CONFIG || {};
+            window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
         <script src="../../Javascript/GetAPI/getInfor.js"></script>
 
-    <script src="../../Javascript/components/header_footer.js"></script>
-  <script src="../../Javascript/User/history.js"></script>
-</body>
+        <script src="../../Javascript/components/header_footer.js"></script>
+        <script src="../../Javascript/User/history.js"></script>
+    </body>
 </html>

@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bộ sưu tập của tôi</title>
-  <link rel="stylesheet" href="../../Assets/Css/main.css">
-  <link rel="stylesheet" href="../../Assets/Css/User/collections.css">
-  <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
-  <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
-  <div id="header"></div>
-  <div class="collections-container">
-    <div class="collections-header">
-      <div class="user-info">
-        <span id="collections-username">👤 User</span>
-      </div>
-      <button id="create-collection-btn" class="btn">➕ Tạo bộ sưu tập mới</button>
-    </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bộ sưu tập của tôi</title>
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/User/collections.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
 
-    <div id="collections-list" class="collections-grid">
-      <!-- Danh sách bộ sưu tập sẽ được render ở đây -->
-    </div>
-  </div>
+    </head>
+    <body>
+        <div id="header"></div>
+        <div class="collections-container">
+            <div class="collections-header">
+                <div class="user-info">
+                    <span id="collections-username">👤 User</span>
+                </div>
+                <button id="create-collection-btn" class="btn">➕ Tạo bộ sưu tập mới</button>
+            </div>
 
-  <div id="popup" class="popup-modal" style="display:none;"></div>
-  <div id="footer"></div>
+            <div id="collections-list" class="collections-grid">
+                <!-- Danh sách bộ sưu tập sẽ được render ở đây -->
+            </div>
+        </div>
 
-  <div id="topic-detail" style="display:none;"></div>
-  <script src="../../Javascript/config.js"></script>
-    <script>
-        window.APP_CONFIG.BASE_PATH = '../../';
-    </script>
-  <script src="../../Javascript/GetAPI/getInfor.js"></script>
-  <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
-  <script src="../../Javascript/GetAPI/wordAPI.js"></script>
-  <script src="../../Javascript/components/header_footer.js"></script>
-  <script src="../../Javascript/User/collections.js"></script>
-</body>
+        <div id="popup" class="popup-modal" style="display:none;"></div>
+        <div id="footer"></div>
+
+        <div id="topic-detail" style="display:none;"></div>
+        <script src="../../Javascript/config.js"></script>
+        <script>
+            window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
+        <script src="../../Javascript/GetAPI/wordAPI.js"></script>
+        <script src="../../Javascript/components/header_footer.js"></script>
+        <script src="../../Javascript/User/collections.js"></script>
+    </body>
 </html>

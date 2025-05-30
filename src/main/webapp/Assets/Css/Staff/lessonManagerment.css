@@ -285,3 +285,7 @@
     align-items: center;
     gap: 0.3rem; /* Khoảng cách giữa icon và text */
 }
+
+.modal.front{
+    z-index : 1001;
+}

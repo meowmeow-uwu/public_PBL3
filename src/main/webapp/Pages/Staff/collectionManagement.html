@@ -1,126 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý bộ sưu tập</title>
-    <link rel="stylesheet" href="../../Assets/Css/main.css">
-    <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
-    <link rel="stylesheet" href="../../Assets/Css/Staff/collectionManagement.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <div class="wrapper">
-        <div id="sidebar"></div>
-        <div id="content">
-            <div class="container">
-                <div class="page-header">
-                    <h2 class="page-title">Quản lý bộ sưu tập</h2>
-                    <button class="btn btn-primary" id="addCollectionBtn">
-                        <i class="fas fa-plus"></i> Thêm bộ sưu tập
-                    </button>
-                </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quản lý bộ sưu tập</title>
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+        <link rel="stylesheet" href="../../Assets/Css/Staff/collectionManagement.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
 
-                <!-- Search Section Only -->
-                <div class="search-filter-section">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Nhập tên bộ sưu tập...">
-                        <button class="btn btn-search" id="searchBtn">
-                            <i class="fas fa-search"></i> Tìm kiếm
+    </head>
+    <body>
+        <div class="wrapper">
+            <div id="sidebar"></div>
+            <div id="content">
+                <div class="container">
+                    <div class="page-header">
+                        <h2 class="page-title">Quản lý bộ sưu tập</h2>
+                        <button class="btn btn-primary" id="addCollectionBtn">
+                            <i class="fas fa-plus"></i> Thêm bộ sưu tập
                         </button>
                     </div>
-                </div>
 
-                <!-- Collection List -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Tên bộ sưu tập</th>
-                                        <th>Trạng thái</th>
-                                        <th>Số từ</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="collectionsList">
-                                    <!-- Data will be populated by JavaScript -->
-                                </tbody>
-                            </table>
+                    <!-- Search Section Only -->
+                    <div class="search-filter-section">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Nhập tên bộ sưu tập...">
+                            <button class="btn btn-search" id="searchBtn">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Collection List -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên bộ sưu tập</th>
+                                            <th>Trạng thái</th>
+                                            <th>Số từ</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="collectionsList">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Add/Edit Collection Modal -->
-    <div class="modal" id="collectionModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Thêm bộ sưu tập mới</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="collectionForm">
-                    <input type="hidden" id="collectionId">
-                    <div class="form-group">
-                        <label for="collectionName">Tên bộ sưu tập</label>
-                        <input type="text" class="form-control" id="collectionName" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="isPublic">
-                            <span>Công khai</span>
-                        </label>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Lưu</button>
-                        <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
-                    </div>
-                </form>
-                <div id="collectionWordsList" style="margin-top: 1rem; max-height: 200px; overflow-y: auto;"></div>
-            </div>
-        </div>
-    </div>
-    <!-- ///////////////////////////////////// -->
-    <!-- Modal chọn từ -->
-    <div class="modal" id="addWordModal">
-        <div class="modal-content" style="max-width:800px;">
-            <div class="modal-header">
-                <h3>Chọn từ để thêm vào bộ sưu tập</h3>
-                <button class="close-btn" id="closeAddWordModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div style="display:flex;gap:10px;margin-bottom:10px;">
-                    <input type="text" id="wordSearchInput" placeholder="Tìm kiếm từ...">
-                    <select id="languageSelect">
-                        <option value="1">Tiếng Anh</option>
-                        <option value="2">Tiếng Việt</option>
-                    </select>
-                    <button id="wordSearchBtn" class="btn btn-search"><i class="fas fa-search"></i> Tìm</button>
+        <!-- Add/Edit Collection Modal -->
+        <div class="modal" id="collectionModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Thêm bộ sưu tập mới</h3>
+                    <button class="close-btn">&times;</button>
                 </div>
-                <div id="wordsTableContainer"></div>
-                <div style="margin-top:10px;display:flex;justify-content:space-between;">
-                    <div id="pagination"></div>
-                    <button id="addWordsToCollectionBtn" class="btn btn-primary">Thêm vào bộ sưu tập</button>
+                <div class="modal-body">
+                    <form id="collectionForm">
+                        <input type="hidden" id="collectionId">
+                        <div class="form-group">
+                            <label for="collectionName">Tên bộ sưu tập</label>
+                            <input type="text" class="form-control" id="collectionName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="isPublic">
+                                <span>Công khai</span>
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
+                        </div>
+                    </form>
+                    <div id="collectionWordsList" style="margin-top: 1rem; max-height: 200px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
-    </div>
+        <!-- ///////////////////////////////////// -->
+        <!-- Modal chọn từ -->
+        <div class="modal" id="addWordModal">
+            <div class="modal-content" style="max-width:800px;">
+                <div class="modal-header">
+                    <h3>Chọn từ để thêm vào bộ sưu tập</h3>
+                    <button class="close-btn" id="closeAddWordModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="display:flex;gap:10px;margin-bottom:10px;">
+                        <input type="text" id="wordSearchInput" placeholder="Tìm kiếm từ...">
+                        <select id="languageSelect">
+                            <option value="1">Tiếng Anh</option>
+                            <option value="2">Tiếng Việt</option>
+                        </select>
+                        <button id="wordSearchBtn" class="btn btn-search"><i class="fas fa-search"></i> Tìm</button>
+                    </div>
+                    <div id="wordsTableContainer"></div>
+                    <div style="margin-top:10px;display:flex;justify-content:space-between;">
+                        <div id="pagination"></div>
+                        <button id="addWordsToCollectionBtn" class="btn btn-primary">Thêm vào bộ sưu tập</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-    <script src="../../Javascript/config.js"></script>
-    <script>
-        window.APP_CONFIG.BASE_PATH = '../../';
-    </script>
-    <script src="../../Javascript/GetAPI/getInfor.js"></script>
-    <script src="../../Javascript/components/sideBar.js"></script>
-    <script src="../../Javascript/Staff/collectionManagement.js"></script>
-    <script src="../../Javascript/GetAPI/collectionManagementAPI.js"></script>
-    <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+        <script src="../../Javascript/config.js"></script>
+        <script>
+            window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/components/sideBar.js"></script>
+        <script src="../../Javascript/Staff/collectionManagement.js"></script>
+        <script src="../../Javascript/GetAPI/collectionManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
 
-</body>
+    </body>
 </html> 

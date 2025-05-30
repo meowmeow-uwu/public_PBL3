@@ -4,9 +4,11 @@
  */
 package com.pbl3.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+ import java.util.Map;
 
 /**
  *
@@ -33,6 +35,27 @@ public class JwtUtil {
                 .compact();
     }
 
+    public static String generateToken(Map<String, Object> claim ){
+        return Jwts.builder()
+                .claim("claim", claim)
+                .setExpiration(new Date(System.currentTimeMillis() + 15*60*1000))
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .compact();
+    }
+    public static Map<String, Object> getClaimFromToken(String token)
+    {
+        try{
+            Claims claim =  Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+            
+             return (Map<String , Object>) claim.get("claim");
+        } catch(Exception e)
+        {
+            return null;
+        }
+    }
     public static int getUserIdFromToken(String token) {
         try {
             return Jwts.parser()

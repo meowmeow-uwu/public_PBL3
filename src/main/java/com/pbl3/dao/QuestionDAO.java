@@ -10,27 +10,56 @@ import java.util.ArrayList;
 import com.pbl3.dto.Question;
 import com.pbl3.util.DBUtil;
 
-public class QuestionDAO implements  DAOInterface<Question>{
+public class QuestionDAO{
 
-    @Override
-    public int insert(Question t) {
-        Connection c = null;
+public int insert(Question t, int id) {
+    Connection c = null;
+    try {
+        c = DBUtil.makeConnection();
+        String query = "INSERT INTO question (content, question_type_id) VALUES (?, ?)";
+        PreparedStatement s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); // Thêm RETURN_GENERATED_KEYS
+
+        s.setString(1, t.getContent());
+        s.setInt(2, t.getQuestion_type_id());
+
+        int result = s.executeUpdate();
+        int key = -1; // Để kiểm tra nếu không lấy được key
+
+        if (result > 0) {
+            ResultSet rs = s.getGeneratedKeys();
+            if (rs.next()) {
+                key = rs.getInt(1); // Lấy khóa chính vừa được tạo
+            }
+            rs.close(); // Đóng ResultSet để tránh lỗi leak connection
+        }
+
+        if (key == -1) {
+            throw new SQLException("Failed to retrieve generated key.");
+        }
+
+        query = "INSERT INTO exam_has_question (question_id, exam_id) VALUES (?, ?)";
+        PreparedStatement s2 = c.prepareStatement(query);
+        s2.setInt(1, key);
+        s2.setInt(2, id);
+        result = s2.executeUpdate();
+        
+        s.close();
+        s2.close();
+        c.close();
+        return result;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
         try {
-            c = DBUtil.makeConnection();
-            String query = "INSERT INTO question (content, question_type_id) VALUES (?, ?)";
-            PreparedStatement s = c.prepareStatement(query);
-            s.setString(1, t.getContent());
-            s.setInt(2, t.getQuestion_type_id());
-            int result = s.executeUpdate();
-            s.close();
-            return result;
+            if (c != null) c.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
     }
+    return 0;
+}
 
-    @Override
+
     public int update(Question t) {
         Connection c = null;
         try {
@@ -51,7 +80,6 @@ public class QuestionDAO implements  DAOInterface<Question>{
         return 0;
     }
 
-    @Override
     public int delete(int id) {
         Connection c = null;
         try {
@@ -60,16 +88,15 @@ public class QuestionDAO implements  DAOInterface<Question>{
             String query = "DELETE FROM answer WHERE question_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
-            int temp = 0;
-            result = result >= (temp =s.executeUpdate()) ? temp : result;
+            result = s.executeUpdate();
             query = "DELETE FROM exam_has_question WHERE question_id = ?";
             s = c.prepareStatement(query);
             s.setInt(1, id);
-            result = result >= (temp =s.executeUpdate()) ? temp : result;
+            result = s.executeUpdate();
             query = "DELETE FROM question WHERE question_id = ?";
             s = c.prepareStatement(query);
             s.setInt(1, id);
-            result = result >= (temp =s.executeUpdate()) ? temp : result;
+            result = s.executeUpdate();
             s.close();
             return result;
         } catch (SQLException e) {
@@ -80,7 +107,6 @@ public class QuestionDAO implements  DAOInterface<Question>{
         return 0;
     }
 
-    @Override
     public ArrayList<Question> selectAll() {
         Connection c = null;
         try {
@@ -103,12 +129,11 @@ public class QuestionDAO implements  DAOInterface<Question>{
         return null;
  }
 
-    @Override
     public Question selectByID(int id) {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM question WHERE id = ?";
+            String query = "SELECT * FROM question WHERE question_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
@@ -127,7 +152,6 @@ public class QuestionDAO implements  DAOInterface<Question>{
         return null;
     }
 
-    @Override
     public Question selectByCondition(String condition) {
         return null;
     }

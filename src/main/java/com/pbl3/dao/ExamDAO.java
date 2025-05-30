@@ -70,9 +70,9 @@ public class ExamDAO implements DAOInterface<Exam> {
         try {
             c= DBUtil.makeConnection();
             PreparedStatement ps= c.prepareStatement("INSERT INTO exam (name, sub_topic_id, is_deleted) VALUES (?, ?, ?)");
-            ps.setString(2, exam.getName());
-            ps.setInt(3, exam.getSub_topic_id());
-            ps.setBoolean(4, exam.is_deleted());
+            ps.setString(1, exam.getName());
+            ps.setInt(2, exam.getSub_topic_id());
+            ps.setBoolean(3, exam.is_deleted());
             int result= ps.executeUpdate();
             ps.close();
             return result;

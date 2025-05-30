@@ -68,7 +68,7 @@ async function init() {
         if (audioBtn) {
             audioBtn.addEventListener('click', playAudio);
         }
-        
+
         if (markLearnedBtn) {
             markLearnedBtn.addEventListener('click', toggleLearned);
         }
@@ -108,9 +108,9 @@ function createTopicCard(collection) {
     const card = document.createElement('div');
     card.className = 'topic-card';
     card.onclick = () => startCollection(collection);
-    
+
     const randomColor = getRandomColor();
-    
+
     card.innerHTML = `
         <div class="topic-icon" style="color: ${randomColor}">📚</div>
         <h3>${collection.name}</h3>
@@ -134,7 +134,7 @@ async function startCollection(collection) {
         currentWordIndex = 0;
         learnedWords.clear();
         updateProgress();
-        
+
         // Hiển thị flashcard section
         if (topicGrid) {
             topicGrid.style.display = 'none';
@@ -142,14 +142,14 @@ async function startCollection(collection) {
         if (flashcardSection) {
             flashcardSection.style.display = 'block';
         }
-        
+
         // Lấy danh sách từ trong bộ sưu tập
         currentWords = await window.collectionsAPI.getWordsInCollection(collection.collectionId);
         if (!currentWords || currentWords.length === 0) {
             alert('Bộ sưu tập này chưa có từ nào');
             return;
         }
-        
+
         // Hiển thị từ đầu tiên
         showCurrentWord(currentWords[0]);
     } catch (error) {
@@ -167,11 +167,13 @@ async function showCurrentWord(word) {
         console.log('Flashcard data:', flashcardData); // Debug log
 
         // Hiển thị ảnh nếu có
-        const imageUrl = flashcardData.sourceWord.image || '';
-        const imageHtml = imageUrl ? `<img src="${imageUrl}" alt="${flashcardData.sourceWord.word_name}" class="flashcard-image">` : '';
-        const imageViUrl = flashcardData.targetWord.image || '';
-        const imageViHtml = imageViUrl ? `<img src="${imageViUrl}" alt="${flashcardData.targetWord.word_name}" class="flashcard-image">` : '';
-        // Cập nhật số thứ tự
+        const imageUrl = flashcardData.sourceWord?.image || '';
+        const imageHtml = imageUrl ? `<img src="${imageUrl}" alt="${flashcardData.sourceWord?.word_name || ''}" class="flashcard-image">` : '';
+
+        const imageViUrl = flashcardData.targetWord?.image || '';
+        const imageViHtml = imageViUrl ? `<img src="${imageViUrl}" alt="${flashcardData.targetWord?.word_name || ''}" class="flashcard-image">` : '';
+
+// Cập nhật số thứ tự
         if (currentNumberElement) {
             currentNumberElement.textContent = currentWordIndex + 1;
         }
@@ -179,17 +181,17 @@ async function showCurrentWord(word) {
             totalNumberElement.textContent = currentWords.length;
         }
 
-        // Cập nhật mặt trước của thẻ
+// Cập nhật mặt trước của thẻ
         if (wordElement) {
-            wordElement.textContent = flashcardData.sourceWord.word_name;
+            wordElement.textContent = flashcardData.sourceWord?.word_name || '';
         }
-        // Hiển thị ảnh mặt trước
+// Hiển thị ảnh mặt trước
         const imageElement = document.querySelector('.image');
         if (imageElement) {
             imageElement.innerHTML = imageHtml;
         }
         if (phoneticElement) {
-            phoneticElement.textContent = flashcardData.sourceWord.pronunciation;
+            phoneticElement.textContent = flashcardData.sourceWord?.pronunciation || '';
         }
         if (wordTypeElement) {
             wordTypeElement.textContent = flashcardData.sourceDefinition?.definition || '';
@@ -204,11 +206,11 @@ async function showCurrentWord(word) {
             exampleElement.textContent = flashcardData.sourceDefinition?.example || '';
         }
 
-        // Cập nhật mặt sau của thẻ
+// Cập nhật mặt sau của thẻ
         if (meaningElement) {
-            meaningElement.textContent = flashcardData.targetWord.word_name;
+            meaningElement.textContent = flashcardData.targetWord?.word_name || '';
         }
-        // Hiển thị ảnh mặt sau
+// Hiển thị ảnh mặt sau
         const imageViElement = document.querySelector('.image-vi');
         if (imageViElement) {
             imageViElement.innerHTML = imageViHtml;
@@ -223,12 +225,12 @@ async function showCurrentWord(word) {
             exampleViElement.textContent = flashcardData.targetDefinition?.example || '';
         }
 
-        // Reset thẻ về mặt trước
+// Reset thẻ về mặt trước
         if (flashcard) {
             flashcard.classList.remove('flipped');
         }
 
-        // Cập nhật nút điều hướng
+// Cập nhật nút điều hướng
         if (prevBtn) {
             prevBtn.disabled = currentWordIndex === 0;
         }
@@ -311,7 +313,7 @@ function updateProgress() {
         const totalWords = currentWords.length;
         const learnedCount = learnedWords.size;
         const progress = (learnedCount / totalWords) * 100;
-        
+
         progressFill.style.width = `${progress}%`;
         progressText.textContent = `${learnedCount}/${totalWords} từ đã học`;
     }
@@ -347,15 +349,15 @@ async function showCollectionModal() {
         // Lấy danh sách bộ sưu tập cá nhân
         const collections = await window.collectionsAPI.getUserCollections();
         console.log('Danh sách bộ sưu tập:', collections);
-        
+
         // Xóa danh sách cũ
         collectionList.innerHTML = '';
-        
+
         if (!collections || collections.length === 0) {
             collectionList.innerHTML = '<div class="collection-item">Bạn chưa có bộ sưu tập nào</div>';
             return;
         }
-        
+
         // Thêm các bộ sưu tập vào danh sách
         collections.forEach(collection => {
             const item = document.createElement('div');
@@ -371,7 +373,7 @@ async function showCollectionModal() {
             `;
             collectionList.appendChild(item);
         });
-        
+
         // Hiển thị modal
         collectionModal.classList.add('active');
     } catch (error) {

@@ -1,46 +1,48 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Quản lý ngữ pháp</title>
-    <link rel="stylesheet" href="../../Assets/Css/main.css">
-    <link rel="stylesheet" href="../../Assets/Css/Staff/vocaGramReaManagerment.css">
-    <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
-    <div id="sidebar"></div>
-    <div class="voca-gram-rea-container">
-        <h1>Quản lý ngữ pháp</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Quản lý ngữ pháp</title>
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/Staff/vocaGramReaManagerment.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
+
+    </head>
+    <body>
+        <div id="sidebar"></div>
+        <div class="voca-gram-rea-container">
+            <h1>Quản lý ngữ pháp</h1>
 
 
 
 
-        <!-- Data table -->
-        <table class="data-table" id="dataTable">
-            <thead>
-                <!-- Headers sẽ được thay đổi tùy theo tab -->
-            </thead>
-            <tbody>
-                <!-- Data sẽ được render bằng JS -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Modal thêm/sửa -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('editModal')">&times;</span>
-            <div id="editContent"></div>
+            <!-- Data table -->
+            <table class="data-table" id="dataTable">
+                <thead>
+                    <!-- Headers sẽ được thay đổi tùy theo tab -->
+                </thead>
+                <tbody>
+                    <!-- Data sẽ được render bằng JS -->
+                </tbody>
+            </table>
         </div>
-    </div>
-    <script src="../../Javascript/config.js"></script>
-    <script>
-        window.APP_CONFIG.BASE_PATH = '../../';
-    </script>
-    <script src="../../Javascript/components/sideBar.js"></script>
-    <script src="../../Javascript/Staff/vocaGramReaManagerment.js"></script>
-    <script src="../../Javascript/GetAPI/getInfor.js"></script>
-    <script src="../../Javascript/GetAPI/vocabularyAPI.js"></script>
-</body>
+
+        <!-- Modal thêm/sửa -->
+        <div class="modal" id="editModal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('editModal')">&times;</span>
+                <div id="editContent"></div>
+            </div>
+        </div>
+        <script src="../../Javascript/config.js"></script>
+        <script>
+                    window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/components/sideBar.js"></script>
+        <script src="../../Javascript/Staff/vocaGramReaManagerment.js"></script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/vocabularyAPI.js"></script>
+    </body>
 </html>

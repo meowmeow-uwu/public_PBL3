@@ -1,92 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Learning</title>
-    <link rel="stylesheet" href="../../Assets/Css/main.css">
-    <link rel="stylesheet" href="../../Assets/Css/User/grammar.css">
-    <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
-    <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <div id="header"></div>
-    <div class="container">
-        <div class="main-topics-section" id="mainTopicsSection">
-            <h2>Chọn chủ đề ngữ pháp</h2>
-            <div class="main-topics-grid">
-                </div>
-        </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Grammar Learning</title>
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/User/grammar.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
 
-        <div class="sub-topics-section hidden" id="subTopicsSection">
-            <div class="section-header">
-                <button class="back-button" id="backToMainTopics">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </button>
-                <h2 id="subTopicsTitle">Chọn bài học</h2>
-            </div>
-            <div class="sub-topics-grid" id="subTopicsGrid">
-                </div>
-        </div>
-
-        <div class="lessons-section hidden" id="lessonsSection">
-            <div class="section-header">
-                <button class="back-button" id="backToSubTopics">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </button>
-                <h2 id="lessonsTitle">Danh sách</h2>
-            </div>
-            <div class="lessons-tabs">
-                <button class="tab-btn active" data-tab="lessons">Bài học</button>
-                <button class="tab-btn" data-tab="quizzes">Bài kiểm tra</button>
-            </div>
-            <div class="lessons-content" id="lessonsContent">
-                </div>
-        </div>
-
-        <div class="lesson-detail-section hidden" id="lessonDetailSection">
-            <div class="lesson-header">
-                <button class="back-button" id="backToLessons">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </button>
-                </div>
-            <div class="lesson-content" id="lessonDetailContentArea"> </div>
-        </div>
-
-        <div class="quiz-section hidden" id="quizSection">
-            <div class="quiz-header">
-                <button class="back-button" id="backToQuizList">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </button>
-                <div class="quiz-info">
-                    <span class="quiz-timer">
-                        <i class="far fa-clock"></i> <span id="quizTime">00:00</span>
-                    </span>
-                    <span class="quiz-progress">
-                        Câu <span id="currentQuestion">1</span>/<span id="totalQuestions">0</span>
-                    </span>
+    </head>
+    <body>
+        <div id="header"></div>
+        <div class="container">
+            <div class="main-topics-section" id="mainTopicsSection">
+                <h2>Chọn chủ đề ngữ pháp</h2>
+                <div class="main-topics-grid">
                 </div>
             </div>
-            <div class="quiz-content" id="quizContent">
+
+            <div class="sub-topics-section hidden" id="subTopicsSection">
+                <div class="section-header">
+                    <button class="back-button" id="backToMainTopics">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                    <h2 id="subTopicsTitle">Chọn bài học</h2>
                 </div>
-            <div class="quiz-actions">
-                <button class="btn-primary" id="submitQuizBtn">Nộp bài</button>
-                <button class="btn-secondary" id="saveQuizBtn" style="display: none;">Lưu bài làm</button>
+                <div class="sub-topics-grid" id="subTopicsGrid">
+                </div>
+            </div>
+
+            <div class="lessons-section hidden" id="lessonsSection">
+                <div class="section-header">
+                    <button class="back-button" id="backToSubTopics">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                    <h2 id="lessonsTitle">Danh sách</h2>
+                </div>
+                <div class="lessons-tabs">
+                    <button class="tab-btn active" data-tab="lessons">Bài học</button>
+                    <button class="tab-btn" data-tab="quizzes">Bài kiểm tra</button>
+                </div>
+                <div class="lessons-content" id="lessonsContent">
+                </div>
+            </div>
+
+            <div class="lesson-detail-section hidden" id="lessonDetailSection">
+                <div class="lesson-header">
+                    <button class="back-button" id="backToLessons">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                </div>
+                <div class="lesson-content" id="lessonDetailContentArea"> </div>
+            </div>
+
+            <div class="quiz-section hidden" id="quizSection">
+                <div class="quiz-header">
+                    <button class="back-button" id="backToQuizList">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                    <div class="quiz-info">
+                        <span class="quiz-timer">
+                            <i class="far fa-clock"></i> <span id="quizTime">00:00</span>
+                        </span>
+                        <span class="quiz-progress">
+                            Câu <span id="currentQuestion">1</span>/<span id="totalQuestions">0</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="quiz-content" id="quizContent">
+                </div>
+                <div class="quiz-actions">
+                    <button class="btn-primary" id="submitQuizBtn">Nộp bài</button>
+                    <button class="btn-secondary" id="saveQuizBtn" style="display: none;">Lưu bài làm</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="footer"></div>
+        <div id="footer"></div>
 
-    <script src="../../Javascript/config.js"></script>
-    <script>
-        if (typeof window.APP_CONFIG === 'undefined') {
-            window.APP_CONFIG = {};
-        }
-        window.APP_CONFIG.BASE_PATH = '../../';
-    </script>
-    <script src="../../Javascript/components/header_footer.js"></script>
-    <script src="../../Javascript/GetAPI/getInfor.js"></script>
-    <script src="../../Javascript/User/grammar.js"></script>
-</body>
+        <script src="../../Javascript/config.js"></script>
+        <script>
+            if (typeof window.APP_CONFIG === 'undefined') {
+                window.APP_CONFIG = {};
+            }
+            window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/components/header_footer.js"></script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/User/grammar.js"></script>
+    </body>
 </html>

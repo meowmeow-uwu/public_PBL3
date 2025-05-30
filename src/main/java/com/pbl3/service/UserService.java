@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import com.pbl3.dao.UserDAO;
 import com.pbl3.dto.User;
 import com.pbl3.util.JwtUtil;
+import com.pbl3.util.MailUtil;
 import com.pbl3.util.PasswordUtil;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
  * @author Danh
  */
-
 public class UserService implements ServiceInterface<User> {
 
     private final UserDAO userDAO = UserDAO.getInstance();
@@ -78,7 +79,7 @@ public class UserService implements ServiceInterface<User> {
     @Override
     public User selectByID(int id) {
         User u = userDAO.selectByID(id);
-        
+
         return u;
     }
 
@@ -114,5 +115,48 @@ public class UserService implements ServiceInterface<User> {
         }
 
         return JwtUtil.generateToken(user.getUser_id());
+    }
+
+    public User getUserByEmail(String email) {
+        return userDAO.selectByEmail(email);
+    }
+
+    public String generateResetPasswordToken(User user) {
+        // Tạo token JWT với thời hạn 15 phút
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getUser_id());
+        claims.put("email", user.getEmail());
+        return JwtUtil.generateToken(claims); // 15 phút
+    }
+
+    public void sendResetPasswordEmail(String email, String resetLink) {
+       
+        String content = "Link đặt lại mật khẩu của bạn là : " + resetLink;
+        MailUtil.getInstance().sendMail(email, "Đặt lại mật khẩu", content);
+           
+    }
+    public boolean verifyResetToken(String token){
+        Map<String,Object> claim =  JwtUtil.getClaimFromToken(token) ;
+        return userDAO.selectByID((int)claim.get("userId")) != null ;
+    }
+    public boolean resetPassword(String token, String newPassword) {
+        try {
+            // Xác thực token
+            Map<String, Object> claims = JwtUtil.getClaimFromToken(token);
+            if (claims == null) {
+                return false;
+            } // Lấy thông tin user từ token
+            int userId = (int) claims.get("userId");
+            User user = userDAO.selectByID(userId);
+            if (user == null) {
+                return false;
+            }
+
+            // Cập nhật mật khẩu mới
+            user.setPassword(PasswordUtil.hashPassword(newPassword));
+            return userDAO.update(user) > 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

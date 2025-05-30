@@ -10,6 +10,7 @@ import com.pbl3.service.QuestionService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -74,9 +75,9 @@ public class QuestionController {
     }
 
     @POST
-    @Path("/")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createQuestion(@HeaderParam("Authorization") String authHeader, Question question) {
+    public Response createQuestion(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, Question question) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
@@ -90,7 +91,7 @@ public class QuestionController {
         if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
-        int result = questionService.insert(question);
+        int result = questionService.insert(question, id);
         if (result > 0) {
             return Response.status(Response.Status.CREATED).build();
         } else {
@@ -142,11 +143,12 @@ public class QuestionController {
             return Response.status(403).entity("Forbidden").build();
         }
         int result = questionService.delete(id);
-        if (result > 0) {
-            return Response.status(Response.Status.OK).build();
-        } else {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        if(result == -1) 
+            return Response.status(400).entity("Can't delete default").build();
+        if (result == 0) {
+            return Response.status(409).entity("Failed to delete question").build();
         }
+        return Response.status(200).entity("Question deleted successfully").build();
     }
 
     @GET

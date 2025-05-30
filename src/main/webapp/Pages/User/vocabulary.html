@@ -1,135 +1,136 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học Từ Vựng - ORCA English</title>
-    <link rel="stylesheet" href="../../Assets/Css/main.css">
-    <link rel="stylesheet" href="../../Assets/Css/User/vocabulary.css">
-    <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
-    <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <div id="header"></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Học Từ Vựng - ORCA English</title>
+        <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/User/vocabulary.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
+    </head>
+    <body>
+        <div id="header"></div>
 
-    <div class="vocabulary-container">
-        <!-- Topic Selection Section -->
-        <div class="topic-section" id="topicSection">
-            <h1 class="page-title">📚 Chọn chủ đề từ vựng</h1>
-            
-            <div class="topic-grid">
-                <!-- Danh sách bộ sưu tập sẽ được thêm vào đây bằng JavaScript -->
-            </div>
-        </div>
+        <div class="vocabulary-container">
+            <!-- Topic Selection Section -->
+            <div class="topic-section" id="topicSection">
+                <h1 class="page-title">📚 Chọn chủ đề từ vựng</h1>
 
-        <!-- Flashcard Section -->
-        <div class="flashcard-section" id="flashcardSection" style="display: none;">
-            <div class="flashcard-header">
-                <button class="back-btn" onclick="backToCollections()">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </button>
+                <div class="topic-grid">
+                    <!-- Danh sách bộ sưu tập sẽ được thêm vào đây bằng JavaScript -->
+                </div>
             </div>
 
-            <div class="flashcard-container">
-                <div class="flashcard">
-                    <div class="flashcard-inner">
-                        <!-- Front of card -->
-                        <div class="flashcard-front">
-                            <h2 class="word"></h2>
-                            <div class="image"></div>
-                            <div class="phonetic"></div>
-                            <div class="word-type"></div>
-                            <div class="meaning-en"></div>
-                            <div class="definition"></div>
-                            <div class="example"></div>
-                        </div>
-                        <!-- Back of card -->
-                        <div class="flashcard-back">
-                            <h2 class="meaning"></h2>
-                            <div class="image-vi"></div>
-                            <div class="meaning-vi"></div>
-                            <div class="definition-vi"></div>
-                            <div class="example-vi"></div>
-                            <div class="card-actions">
-                                <button class="action-btn save-to-collection-btn" onclick="showCollectionModal()">
-                                    <i class="fas fa-bookmark"></i> Lưu vào bộ sưu tập
-                                </button>
+            <!-- Flashcard Section -->
+            <div class="flashcard-section" id="flashcardSection" style="display: none;">
+                <div class="flashcard-header">
+                    <button class="back-btn" onclick="backToCollections()">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard">
+                        <div class="flashcard-inner">
+                            <!-- Front of card -->
+                            <div class="flashcard-front">
+                                <h2 class="word"></h2>
+                                <div class="image"></div>
+                                <div class="phonetic"></div>
+                                <div class="word-type"></div>
+                                <div class="meaning-en"></div>
+                                <div class="definition"></div>
+                                <div class="example"></div>
+                            </div>
+                            <!-- Back of card -->
+                            <div class="flashcard-back">
+                                <h2 class="meaning"></h2>
+                                <div class="image-vi"></div>
+                                <div class="meaning-vi"></div>
+                                <div class="definition-vi"></div>
+                                <div class="example-vi"></div>
+                                <div class="card-actions">
+                                    <button class="action-btn save-to-collection-btn" onclick="showCollectionModal()">
+                                        <i class="fas fa-bookmark"></i> Lưu vào bộ sưu tập
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Navigation -->
-            <div class="flashcard-nav">
-                <button class="nav-btn prev-btn">
-                    <i class="fas fa-chevron-left"></i> Thẻ trước
-                </button>
-                <div class="progress-info">
-                    <span class="current-number">1</span>/<span class="total-number">0</span>
+                <!-- Navigation -->
+                <div class="flashcard-nav">
+                    <button class="nav-btn prev-btn">
+                        <i class="fas fa-chevron-left"></i> Thẻ trước
+                    </button>
+                    <div class="progress-info">
+                        <span class="current-number">1</span>/<span class="total-number">0</span>
+                    </div>
+                    <button class="nav-btn next-btn">
+                        Thẻ tiếp theo <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                <button class="nav-btn next-btn">
-                    Thẻ tiếp theo <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
 
-            <!-- Bottom Actions -->
-            <div class="bottom-actions">
-                <button class="action-btn audio-btn">
-                    <i class="fas fa-volume-up"></i> Nghe phát âm
-                </button>
-            </div>
-
-           
-        </div>
-    </div>
-
-    <!-- Modal chọn bộ sưu tập -->
-    <div id="collectionModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Chọn bộ sưu tập</h2>
-                <button class="close-btn" onclick="closeCollectionModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="collection-list">
-                    <!-- Danh sách bộ sưu tập sẽ được thêm vào đây bằng JavaScript -->
+                <!-- Bottom Actions -->
+                <div class="bottom-actions">
+                    <button class="action-btn audio-btn">
+                        <i class="fas fa-volume-up"></i> Nghe phát âm
+                    </button>
                 </div>
+
+
             </div>
         </div>
-    </div>
 
-    <div id="footer"></div>
+        <!-- Modal chọn bộ sưu tập -->
+        <div id="collectionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Chọn bộ sưu tập</h2>
+                    <button class="close-btn" onclick="closeCollectionModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="collection-list">
+                        <!-- Danh sách bộ sưu tập sẽ được thêm vào đây bằng JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Load components -->
-    <script src="../../Javascript/config.js"></script>
-    <script>
-        window.APP_CONFIG.BASE_PATH = '../../';
-    </script>
-    <script src="../../Javascript/GetAPI/getInfor.js"></script>
-    <script src="../../Javascript/components/header_footer.js"></script>
-    <script src="../../Javascript/GetAPI/collectionManagementAPI.js"></script>
-    <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
-    <script src="../../Javascript/GetAPI/wordAPI.js"></script>
-    <script src="../../Javascript/User/vocabulary.js"></script>
+        <div id="footer"></div>
 
-    <!-- Add navigation handling -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle header navigation
-            const header = document.getElementById('header');
-            header.addEventListener('click', function(e) {
-                const link = e.target.closest('a');
-                if (link) {
-                    e.preventDefault();
-                    const href = link.getAttribute('href');
-                    if (href) {
-                        window.location.href = href;
-                    }
-                }
-            });
-        });
-    </script>
-</body>
+        <!-- Load components -->
+        <script src="../../Javascript/config.js"></script>
+        <script>
+                        window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/components/header_footer.js"></script>
+        <script src="../../Javascript/GetAPI/collectionManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/collectionsAPI.js"></script>
+        <script src="../../Javascript/GetAPI/wordAPI.js"></script>
+        <script src="../../Javascript/User/vocabulary.js"></script>
+
+        <!-- Add navigation handling -->
+        <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            // Handle header navigation
+                            const header = document.getElementById('header');
+                            header.addEventListener('click', function (e) {
+                                const link = e.target.closest('a');
+                                if (link) {
+                                    e.preventDefault();
+                                    const href = link.getAttribute('href');
+                                    if (href) {
+                                        window.location.href = href;
+                                    }
+                                }
+                            });
+                        });
+        </script>
+    </body>
 </html>

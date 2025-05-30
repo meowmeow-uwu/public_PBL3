@@ -79,25 +79,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         document.querySelector('.home-container').prepend(errorMessage);
     }
-    loadDashboardData();
+//    loadDashboardData();
 });
-async function loadDashboardData() {
-    try {
-        // Lấy thông tin người dùng hiện tại
-        const userInfo = await window.fetchUserInfo();
-        if (!userInfo) {
-            throw new Error('Không thể lấy thông tin người dùng');
-        }
-        // Lấy tất cả thống kê
-        const stats = await homeAPI.getAllStatistics();
-        
-        // Cập nhật các số liệu
-        document.getElementById('total-courses').textContent = stats.totalPosts;
-        document.getElementById('total-vocabularyV').textContent = stats.totalWordsVi;
-        document.getElementById('total-vocabularyE').textContent = stats.totalWordsEn;
-        
-    } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        alert('Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
-    }
-}
+//async function loadDashboardData() {
+//    try {
+//        // Lấy thông tin người dùng hiện tại
+//        const userInfo = await window.fetchUserInfo();
+//        if (!userInfo) {
+//            throw new Error('Không thể lấy thông tin người dùng');
+//        }
+//        // Lấy tất cả thống kê
+//        const stats = await homeAPI.getAllStatistics();
+//        
+//        // Cập nhật các số liệu
+//        document.getElementById('total-courses').textContent = stats.totalPosts;
+//        document.getElementById('total-vocabularyV').textContent = stats.totalWordsVi;
+//        document.getElementById('total-vocabularyE').textContent = stats.totalWordsEn;
+//        
+//    } catch (error) {
+//        console.error('Error loading dashboard data:', error);
+//        alert('Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
+//    }
+//}

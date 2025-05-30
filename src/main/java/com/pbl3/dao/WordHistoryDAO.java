@@ -83,10 +83,10 @@ public class WordHistoryDAO implements HistoryDAOInterface{
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 History t = new History();
-                t.setHistory_id(rs.getInt("history_id"));
+                t.setHistory_id(rs.getInt("word_history_id"));
                 t.setUser_id(rs.getInt("user_id"));
-                t.setKey_id(rs.getInt("key_id"));
-                t.setHistory_date(rs.getDate("history_date"));
+                t.setKey_id(rs.getInt("word_id"));
+                t.setHistory_date(rs.getDate("word_history_date"));
                 histories.add(t);
             }
             return histories;

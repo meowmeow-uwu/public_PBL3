@@ -81,7 +81,7 @@ public class ExamHistoryDAO{
         ArrayList<ExamHistory> examHistories = new ArrayList<>();
         try {
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM exam_history WHERE user_id = ?";
+            String sql = "SELECT * FROM exam_history WHERE user_id = ? ORDER BY exam_history_id DESC";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();

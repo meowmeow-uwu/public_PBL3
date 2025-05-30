@@ -77,7 +77,7 @@ public class PostHistoryDAO implements HistoryDAOInterface{
         ArrayList<History> histories = new ArrayList<>();
         try {
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM post_history WHERE user_id = ?";
+            String sql = "SELECT * FROM post_history WHERE user_id = ? ORDER BY post_history_date DESC";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();

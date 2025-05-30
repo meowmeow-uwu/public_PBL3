@@ -39,7 +39,10 @@
                     <label for="password">Mật khẩu</label>
                     <input class="login-input" type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
                     <div class="input-label-desc">Tối thiểu 6 ký tự</div>
-                    <div class="input-label-desc"><a href="#" id="eye" onclick="ShowPW()">Hiển thị mật khẩu</a></div>
+                    <!-- <div class="input-label-desc"><a href="#" id="eye" onclick="ShowPW()">Hiển thị mật khẩu</a></div> -->
+                    <div style="position: relative;">
+                        <span id="togglePasswordText" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: blue; text-decoration: underline;">Hiện mật khẩu</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="confirmPassword">Xác nhận mật khẩu</label>
@@ -61,20 +64,32 @@
     <script src="../../../Javascript/config.js"></script>
     <script>
         window.APP_CONFIG.BASE_PATH = '../../../';
-        function ShowPW(){
-            const pwInput = document.getElementById("password");
-            const confpwInput = document.getElementById("confirmPassword");
-            const eyeText = document.getElementById("eye");
-            if(pwInput.type == "password"){
-                pwInput.type = "Text";
-                confpwInput.type ="Text";
-                eyeText.innerHTML ="Ẩn mật khẩu";
-            }else{
-                pwInput.type ="password";
-                confpwInput.type = "Text";
-                eyeText.innerHTML = "Hiển thị mật khẩu";
-            }
+    const togglePasswordText = document.getElementById('togglePasswordText');
+    // Lấy đúng ID của INPUT mật khẩu từ HTML
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+
+    if (togglePasswordText && password && confirmPassword ) {
+        togglePasswordText.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            const type1 = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            confirmPassword.setAttribute('type', type1);
+            this.textContent = type === 'password' ? 'Hiện mật khẩu' : 'Ẩn mật khẩu';
+        });
+    } else {
+        // Nếu một trong hai phần tử không tìm thấy, thông báo lỗi trong console
+        if (!togglePasswordText) {
+            console.error("Lỗi: Không tìm thấy phần tử với ID 'togglePasswordText'. Hãy kiểm tra lại HTML.");
         }
+        if (!password) {
+            console.error("Lỗi: Không tìm thấy phần tử với ID 'password'. Hãy kiểm tra lại HTML.");
+        }
+        if (!confirmPassword) {
+            console.error("Lỗi: Không tìm thấy phần tử với ID 'confirmpassword'. Hãy kiểm tra lại HTML.");
+        }
+    }
+
     </script>
     <!-- Scripts -->
     <script src="../../../Javascript/components/header_footer.js"></script>

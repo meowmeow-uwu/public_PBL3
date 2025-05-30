@@ -75,11 +75,12 @@
   justify-content: center;
 }
 .modal-content {
+  margin: 100px auto 0;
   background: #fff;
   border-radius: 12px;
   padding: 32px 24px;
-  min-width: 320px;
-  max-width: 90vw;
+  min-width: 200px;
+  max-width: 60vw;
   box-shadow: 0 2px 16px rgba(0,0,0,0.12);
   position: relative;
 }

@@ -181,7 +181,33 @@ public class UserDAO implements DAOInterface<User> {
         }
         return null;
     }
+    public int getNumberUser(int groupUserId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM _user "
+                    + "WHERE (group_user_id = ? Or ? = 0) ";
 
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, groupUserId);
+            countStmt.setInt(2, groupUserId);
+            ResultSet countRs = countStmt.executeQuery();
+            int total = 0;
+            if (countRs.next()) {
+                total = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
     public ArrayList<User> selectAllByGroupUserId(int groupUserId) {
         Connection c = null;
         try {

@@ -34,6 +34,22 @@ public class UserManagementController {
     private final UserService userService = new UserService();
     private final AuthService authService = new AuthService();
 
+    @GET
+    @Path("/getNumber/{groupUserId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getNumberWord(@HeaderParam("authorization") String authHeader,
+            @PathParam("groupUserId") int groupUserId) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (!authService.isContentManagerOrAdmin(authHeader)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        return Response.ok().entity("{\"number\":\"" + userService.getNumberUser(groupUserId) + "\"}").build();
+    }
+
     // Tạo người dùng mới
     @POST
     @Path("/create")
@@ -71,7 +87,7 @@ public class UserManagementController {
             user.setUsername(username);
             user.setPassword(password);
             int result = userService.insert(user);
-           
+
             if (result >= 0) {
                 return Response.ok()
                         .entity("{\"message\":\"User created successfully\"}").build();
@@ -148,7 +164,6 @@ public class UserManagementController {
                     .entity("{\"error\":\"Access denied\"}").build();
         }
 
-        
         User user = userService.selectByID(userId);
         try {
             user.setPassword(password);
@@ -169,8 +184,6 @@ public class UserManagementController {
         }
     }
 
-   
-
     @GET
     @Path("/list/{page_number}/{pagesize}/{group_user_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -190,11 +203,10 @@ public class UserManagementController {
         if (keyword == null || keyword.equalsIgnoreCase("null")) {
             keyword = "";
         }
-        
+
         // Tạo Map kết quả
         Map<String, Object> result = userService.getUserByPage(pageNumber, pageSize, groupUserId, keyword);
-        if(result == null)
-        {
+        if (result == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"error\":\"user not found\"}")
                     .build();
@@ -219,8 +231,6 @@ public class UserManagementController {
                     .entity("{\"error\":\"Access denied\"}").build();
         }
 
-        
-        
         int userResult = userService.delete(userId);
 
         if (userResult > 0) {

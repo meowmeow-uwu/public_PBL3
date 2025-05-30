@@ -8,6 +8,6 @@
 window.APP_CONFIG = {
     BASE_PATH: './',
     API_BASE_URL: window.location.hostname.includes('localhost')
-        ? 'http://localhost:6969/api'
+        ? 'http://localhost:6969/PBL3/api'
         : 'https://english.up.railway.app/api'
 };

@@ -29,7 +29,7 @@ async function loadUserInfo() {
 loadUserInfo();
 
 // Đổi chiều dịch
-swapLang.addEventListener('click', function() {
+swapLang.addEventListener('click', function () {
     // Hoán đổi text
     const fromText = fromLang.textContent;
     fromLang.textContent = toLang.textContent;
@@ -41,7 +41,7 @@ swapLang.addEventListener('click', function() {
 });
 
 let debounceTimer;
-searchInput.addEventListener('input', function() {
+searchInput.addEventListener('input', function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
         const keyword = this.value.trim();
@@ -78,7 +78,7 @@ function displaySuggestions(suggestions) {
 
     // Thêm sự kiện click cho các gợi ý
     document.querySelectorAll('.suggestion-item').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             const wordId = this.dataset.id;
             showWordDetail(wordId);
             suggestionsBox.classList.remove('active');
@@ -87,14 +87,14 @@ function displaySuggestions(suggestions) {
 }
 
 // Ẩn gợi ý khi click ngoài
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
         suggestionsBox.classList.remove('active');
     }
 });
 
 // Dịch khi bấm nút
-searchBtn.addEventListener('click', function() {
+searchBtn.addEventListener('click', function () {
     const word = searchInput.value.trim();
     if (word) {
         const from = fromLang.dataset.value;
@@ -104,7 +104,7 @@ searchBtn.addEventListener('click', function() {
 });
 
 // Dịch khi enter
-searchInput.addEventListener('keydown', function(e) {
+searchInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
         e.preventDefault();
         const word = this.value.trim();
@@ -152,7 +152,7 @@ async function fetchWordDetail(wordId) {
 // Hiển thị kết quả tìm kiếm
 async function showResult(word, from, to) {
     resultBox.innerHTML = `<div style="text-align:center;padding:32px 0;">Đang tra cứu...</div>`;
-    
+
     try {
         const suggestions = await fetchSuggestions(word);
         if (!suggestions || suggestions.length === 0) {
@@ -240,14 +240,16 @@ async function showWordDetail(wordId) {
         `).join('');
 
         // Gán sự kiện phát âm
-        soundEl.onclick = function() {
+        soundEl.onclick = function () {
             playSound(wordDetail.word);
         };
 
         // Gán sự kiện lưu từ (nếu có quyền)
         if (groupUserId === 2) {
+            await window.addWordHistory(wordId);
+
             saveEl.style.display = '';
-            saveEl.onclick = function() {
+            saveEl.onclick = function () {
                 openSaveModal(wordDetail.word, wordDetail.definitions[0]?.meaning || '', wordId);
             };
         } else {
@@ -261,7 +263,8 @@ async function showWordDetail(wordId) {
 
 // Phát âm
 function playSound(word) {
-    if (!word) return;
+    if (!word)
+        return;
     const utterance = new SpeechSynthesisUtterance(word);
     utterance.lang = 'en-US'; // hoặc 'vi-VN' nếu là tiếng Việt
     window.speechSynthesis.speak(utterance);
@@ -307,15 +310,15 @@ async function openSaveModal(word, meaning, wordId) {
         wordInput.value = word;
         meaningInput.value = meaning;
         currentWordId = wordId;
-        
+
         // Hiển thị modal
         const modalBackdrop = document.getElementById('modalBackdrop');
         modalBackdrop.style.display = 'flex';
         modalBackdrop.classList.add('active');
-        
+
         // Load danh sách bộ sưu tập
         await loadCollections();
-        
+
     } catch (error) {
         console.error('Lỗi khi mở modal:', error);
         alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
@@ -327,7 +330,7 @@ function closeSaveModal() {
     modalBackdrop.style.display = 'none';
     modalBackdrop.classList.remove('active');
     currentWordId = null;
-    
+
     // Reset select box
     const folderInput = document.getElementById('folderInput');
     if (folderInput) {
@@ -338,7 +341,8 @@ function closeSaveModal() {
 // Hàm lấy token từ localStorage
 function getToken() {
     const token = localStorage.getItem('token');
-    if (!token) return null;
+    if (!token)
+        return null;
     return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 }
 
@@ -357,7 +361,7 @@ async function loadCollections() {
 
         // Xóa các option cũ
         folderInput.innerHTML = '<option value="">Chọn bộ sưu tập...</option>';
-        
+
         // Kiểm tra có dữ liệu không
         if (!collections || !Array.isArray(collections) || collections.length === 0) {
             const option = document.createElement('option');
@@ -366,12 +370,12 @@ async function loadCollections() {
             folderInput.appendChild(option);
             return;
         }
-        
+
         // Thêm các bộ sưu tập vào select box
         collections.forEach(collection => {
             if (collection && typeof collection === 'object') {
-                const { collectionId, name } = collection;
-                
+                const {collectionId, name} = collection;
+
                 if (collectionId && name) {
                     const option = document.createElement('option');
                     option.value = collectionId;
@@ -392,10 +396,10 @@ async function loadCollections() {
 }
 
 // Xử lý lưu từ
-saveForm.addEventListener('submit', async function(e) {
+saveForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     const folderInput = document.getElementById('folderInput');
-    
+
     if (!folderInput) {
         alert('Không tìm thấy phần tử chọn bộ sưu tập');
         return;
@@ -403,7 +407,7 @@ saveForm.addEventListener('submit', async function(e) {
 
     const collectionId = folderInput.value;
     console.log('Collection ID được chọn:', collectionId); // Debug log
-    
+
     if (!collectionId || collectionId === '') {
         alert('Vui lòng chọn bộ sưu tập');
         return;
@@ -415,7 +419,7 @@ saveForm.addEventListener('submit', async function(e) {
     }
 
     try {
-        console.log('Đang thêm từ vào bộ sưu tập:', { collectionId, currentWordId }); // Debug log
+        console.log('Đang thêm từ vào bộ sưu tập:', {collectionId, currentWordId}); // Debug log
         await window.collectionsAPI.addWordToCollection(collectionId, currentWordId);
         alert('Đã lưu từ vào bộ sưu tập thành công!');
         closeSaveModal();

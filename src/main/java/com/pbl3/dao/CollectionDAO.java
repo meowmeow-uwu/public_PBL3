@@ -31,35 +31,37 @@ public class CollectionDAO implements DAOInterface<Collection> {
     }
 
     //return collection_id
-    @Override
-    public int insert(Collection collection) {
-        Connection c = null;
-        try {
-            c = DBUtil.makeConnection();
-            String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?);SELECT LAST_INSERT_ID();";
-            PreparedStatement s = c.prepareStatement(query);
-            s.setString(1, collection.getCollection_name());
-            s.setBoolean(2, collection.isPublic());
-            
-            // Thực thi câu lệnh INSERT
-            s.executeUpdate();
-            
-            // Lấy ID vừa được tạo
-            ResultSet rs = s.getGeneratedKeys();
-            if (rs.next()) {
-                int id = rs.getInt(1);
-                s.close();
-                return id;
-            }
+@Override
+public int insert(Collection collection) {
+    Connection c = null;
+    try {
+        c = DBUtil.makeConnection();
+        String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?)";
+        PreparedStatement s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        s.setString(1, collection.getCollection_name());
+        s.setBoolean(2, collection.isPublic());
+
+        // Thực thi câu lệnh INSERT
+        s.executeUpdate();
+
+        // Lấy ID vừa được tạo
+        ResultSet rs = s.getGeneratedKeys();
+        if (rs.next()) {
+            int id = rs.getInt(1);
             rs.close();
             s.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.closeConnection(c);
+            return id;
         }
-        return 0;
+        rs.close();
+        s.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        DBUtil.closeConnection(c);
     }
+    return 0;
+}
+
 
     @Override
     public int update(Collection collection) {

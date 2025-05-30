@@ -36,7 +36,7 @@ public class CollectionDAO implements DAOInterface<Collection> {
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?); SELECT SCOPE_IDENTITY();";
+            String query = "INSERT INTO collection (collection_name, is_public) VALUES (?, ?);SELECT LAST_INSERT_ID();";
             PreparedStatement s = c.prepareStatement(query);
             s.setString(1, collection.getCollection_name());
             s.setBoolean(2, collection.isPublic());

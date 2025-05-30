@@ -159,4 +159,9 @@ public class UserService implements ServiceInterface<User> {
             return false;
         }
     }
+    
+    public int getNumberUser(int groupUserId)
+    {
+        return userDAO.getNumberUser(groupUserId);
+    }
 }

@@ -141,4 +141,9 @@ public class WordService implements ServiceInterface<Word> {
 
         return result;
     }
+    public int getNumberWord(int languageId)
+    {
+        // 0 lấy tất cả
+        return wordDAO.getNumberWord(languageId);
+    }
 }

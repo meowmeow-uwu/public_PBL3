@@ -181,7 +181,33 @@ public class UserDAO implements DAOInterface<User> {
         }
         return null;
     }
+    public int getNumberUser(int groupUserId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM _user "
+                    + "WHERE (group_user_id = ? Or ? = 0) ";
 
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, groupUserId);
+            countStmt.setInt(2, groupUserId);
+            ResultSet countRs = countStmt.executeQuery();
+            int total = 0;
+            if (countRs.next()) {
+                total = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
     public ArrayList<User> selectAllByGroupUserId(int groupUserId) {
         Connection c = null;
         try {
@@ -286,66 +312,52 @@ public class UserDAO implements DAOInterface<User> {
 
     public Map<String, Object> getUserByPage(int pageNumber, int pageSize, int groupUserId, String keyword) {
         Connection c = null;
-        int offset = (pageNumber - 1) * pageSize;
-
+        Map<String, Object> result = new HashMap<>();
         try {
-            List<Map<String, Object>> userDetails = new ArrayList<>();
             c = DBUtil.makeConnection();
-
-            // Truy vấn lấy dữ liệu phân trang
-            String sql = "SELECT u.*  "
-                    + "FROM _user u "
-                    + "WHERE u.group_user_id = ? "
-                    + "  AND ( "
-                    + "        ? IS NULL OR  "
-                    + "        ? = '' OR  "
-                    + "        u.name LIKE ? "
-                    + "      ) "
-                    + "ORDER BY u.user_id "
-                    + "LIMIT ?, ?";
-
-            PreparedStatement s = c.prepareStatement(sql);
+            
+            // Tính toán offset
+            int offset = (pageNumber - 1) * pageSize;
+            
+            // Truy vấn lấy danh sách user
+            String query = "SELECT * FROM _user WHERE (group_user_id = ? OR ? = 0) " +
+                          "AND (name LIKE ? OR username LIKE ? OR email LIKE ?) " +
+                          "ORDER BY user_id " +
+                          "LIMIT ? OFFSET ?";
+            
+            PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, groupUserId);
-            s.setString(2, keyword);
-            s.setString(3, keyword);
-            s.setString(4, keyword + "%");
-            s.setInt(5, offset);
+            s.setInt(2, groupUserId);
+            s.setString(3, "%" + keyword + "%");
+            s.setString(4, "%" + keyword + "%");
+            s.setString(5, "%" + keyword + "%");
             s.setInt(6, pageSize);
-
+            s.setInt(7, offset);
+            
             ResultSet rs = s.executeQuery();
+            ArrayList<User> users = new ArrayList<>();
             while (rs.next()) {
-                Map<String, Object> userMap = new HashMap<>();
-
-                // Tạo đối tượng User
-                User user = new User(rs.getInt("user_id"),
-                        rs.getString("name"),
-                        rs.getString("avatar"),
-                        rs.getInt("group_user_id"),
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("password"));
-
-                userMap.put("user", user);
-                userDetails.add(userMap);
+                users.add(new User(
+                    rs.getInt("user_id"),
+                    rs.getString("name"),
+                    rs.getString("avatar"),
+                    rs.getInt("group_user_id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("password")
+                ));
             }
-
-            rs.close();
-            s.close();
-
-            // Tạo Map kết quả
-            Map<String, Object> result = new HashMap<>();
-            result.put("_user", userDetails);
-            result.put("totalPages", getNumberPage(pageSize, groupUserId, keyword));
-
+            
+            result.put("users", users);
+            result.put("total", getNumberUser(groupUserId));
+            
             return result;
         } catch (Exception e) {
             e.printStackTrace();
-
         } finally {
             DBUtil.closeConnection(c);
         }
-
-        return new HashMap<>();
+        return null;
     }
 
     public User selectByUsername(String username) {

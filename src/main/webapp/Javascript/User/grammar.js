@@ -1,35 +1,8 @@
 // grammar.js
 
 // Giả định API_BASE_URL đã được thiết lập trong window.APP_CONFIG
-const API_BASE_URL = window.APP_CONFIG.API_BASE_URL;
 
-// Hàm tiện ích để thực hiện fetch với Authorization header (giữ nguyên)
-async function fetchWithAuth(url, options = {}) {
-    const token = localStorage.getItem("token");
-    const headers = {
-        ...options.headers,
-        'Content-Type': 'application/json',
-    };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-    try {
-        const response = await fetch(url, { ...options, headers });
-        if (!response.ok) {
-            let errorMessage = `HTTP error! status: ${response.status}`;
-            try {
-                const errorData = await response.json();
-                errorMessage += ` - ${errorData.error || errorData.message || JSON.stringify(errorData)}`;
-            } catch (e) { /* Ignore */ }
-            throw new Error(errorMessage);
-        }
-        if (response.status === 204) return null;
-        return response.json();
-    } catch (networkError) {
-        console.error("Network error or server unreachable:", networkError);
-        throw new Error(`Network error: ${networkError.message}`);
-    }
-}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     // DOM Elements (giữ nguyên)
@@ -60,10 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let userAnswers = [];
 
     // --- API CALL FUNCTIONS ---
-    // ... (getMainTopics, getSubTopicsForTopic, getPostsForSubTopic, getExamsForSubTopic, getPostDetails, getExamDetails giữ nguyên) ...
     async function getMainTopics() {
         try {
-            allTopics = await fetchWithAuth(`${API_BASE_URL}/topic/`);
+            allTopics = await window.historyAPI.getMainTopics();
             return allTopics || [];
         } catch (error) {
             console.error("Error fetching main topics:", error);
@@ -74,8 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function getSubTopicsForTopic(topicId) {
         try {
-            const subTopics = await fetchWithAuth(`${API_BASE_URL}/topic/${topicId}/subtopics`);
-            return subTopics || [];
+            return await window.historyAPI.getSubTopicsForTopic(topicId);
         } catch (error) {
             console.error(`Error fetching subtopics for topic ${topicId}:`, error);
             return [];
@@ -84,8 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function getPostsForSubTopic(subTopicId) {
         try {
-            const posts = await fetchWithAuth(`${API_BASE_URL}/subtopic/${subTopicId}/posts`);
-            return (posts || []).filter(p => !p.is_deleted);
+            return await window.historyAPI.getPostsForSubTopic(subTopicId);
         } catch (error) {
             console.error(`Error fetching posts for subtopic ${subTopicId}:`, error);
             return [];
@@ -94,8 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function getExamsForSubTopic(subTopicId) {
         try {
-            const exams = await fetchWithAuth(`${API_BASE_URL}/exam/subtopic/${subTopicId}`);
-            return (exams || []).filter(ex => !ex.is_deleted);
+            return await window.historyAPI.getExamsForSubTopic(subTopicId);
         } catch (error) {
             console.error(`Error fetching exams for subtopic ${subTopicId}:`, error);
             return [];
@@ -104,50 +73,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function getPostDetails(postId) {
         try {
-            const postDetails = await fetchWithAuth(`${API_BASE_URL}/post/${postId}`);
-            return postDetails;
+            return await window.historyAPI.getPostDetails(postId);
         } catch (error) {
             console.error(`Error fetching details for post ${postId}:`, error);
             return null;
         }
     }
     
-    async function getExamDetails(examId) { // Vẫn giữ giả định quan trọng về backend cho hàm này
+    async function getExamDetails(examId) {
         try {
-            const examBasicInfo = await fetchWithAuth(`${API_BASE_URL}/exam/${examId}`);
-            if (!examBasicInfo) throw new Error("Thông tin bài kiểm tra không tìm thấy.");
-
-            const questionsFromApi = await fetchWithAuth(`${API_BASE_URL}/questions/exam/${examId}`);
-            
-            const processedQuestions = [];
-            if (questionsFromApi && questionsFromApi.length > 0) {
-                for (const qDto of questionsFromApi) {
-                    if (qDto.is_deleted) continue;
-                    const answersFromApi = await fetchWithAuth(`${API_BASE_URL}/questions/${qDto.question_id}/answers`);
-                    let correctOptId = null;
-                    const options = (answersFromApi || [])
-                        .filter(ans => !ans.is_deleted)
-                        .map(ansDto => {
-                            if (ansDto.correct === true) { 
-                                correctOptId = ansDto.answer_id;
-                            }
-                            return { optionId: ansDto.answer_id, optionText: ansDto.content };
-                        });
-                    processedQuestions.push({
-                        questionId: qDto.question_id,
-                        questionText: qDto.content,
-                        options: options,
-                        correctOptionId: correctOptId
-                    });
-                }
-            }
-            return {
-                id: examBasicInfo.exam_id,
-                title: examBasicInfo.name,
-                questions: processedQuestions,
-                timeLimit: examBasicInfo.timeLimitSeconds || 0, // Backend PHẢI cung cấp
-                type: 'quiz'
-            };
+            return await window.historyAPI.getExamDetails(examId);
         } catch (error) {
             console.error(`Error fetching full details for exam ${examId}:`, error);
             alert(`Không thể tải chi tiết bài kiểm tra: ${error.message}.`);
@@ -159,10 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function addPostHistory(postId) {
         try {
             const historyData = { key_id: postId };
-            await fetchWithAuth(`${API_BASE_URL}/history/?type=2`, { // Sử dụng HistoryController chung
-                method: 'POST',
-                body: JSON.stringify(historyData)
-            });
+            await window.historyAPI.createHistory(historyData, 2);
             console.log(`Post history added for post_id ${postId}.`);
         } catch (error) {
             if (error.message && (error.message.includes("400") || error.message.includes("409")) &&
@@ -514,7 +446,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (userAnswers[index] !== null && userAnswers[index] === question.correctOptionId) {
                     correctAnswersCount++;
                 }
-                // Không cần else if cho wrongAnswersCount ở đây, sẽ tính sau
             });
             wrongAnswersCount = totalQuestionsInQuiz - correctAnswersCount;
 
@@ -537,7 +468,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if(submitQuizButton) submitQuizButton.style.display = 'none';
 
             // Gọi hàm lưu Exam History với thông tin đầy đủ
-            await addExamResultHistory(currentQuizData.id, correctAnswersCount, wrongAnswersCount, totalQuestionsInQuiz);
+            await window.historyAPI.addExamResultHistory(
+                currentQuizData.id, 
+                correctAnswersCount, 
+                wrongAnswersCount, 
+                totalQuestionsInQuiz
+            );
 
         } else if (currentQuizData) { // Quiz tồn tại nhưng không có câu hỏi
             totalQuestionsInQuiz = 0;
@@ -556,7 +492,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
             if(submitQuizButton) submitQuizButton.style.display = 'none';
-            await addExamResultHistory(currentQuizData.id, 0, 0, 0); // Lưu history với kết quả 0
+            await window.historyAPI.addExamResultHistory(currentQuizData.id, 0, 0, 0);
         } else {
             alert("Không có dữ liệu bài kiểm tra để nộp.");
         }

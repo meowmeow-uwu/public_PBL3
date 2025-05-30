@@ -104,13 +104,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const itemsWithDetails = await Promise.all(items.map(async (item) => {
             const details = await getWordDetails(item.key_id);
-            const wordName = details ? (details.word_name || details.name || 'Không tải được tên') : 'Không tải được tên';
-            return { ...item, word_name: wordName };
+            const word = details ? (details.word  || 'Không tải được tên') : 'Không tải được tên';
+            return { ...item, word: word };
         }));
 
         const itemsHtml = itemsWithDetails.map(item => `
             <div class="history-item-card word-history-item">
-                <p><strong>Từ vựng:</strong> ${item.word_name}</p>
+                <p><strong>Từ vựng:</strong> ${item.word}</p>
                 <p class="history-item-meta"><strong>Ngày học:</strong> ${item.history_date ? new Date(item.history_date).toLocaleString('vi-VN') : 'N/A'}</p>
             </div>
         `).join('');

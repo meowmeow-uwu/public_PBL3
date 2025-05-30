@@ -298,6 +298,34 @@ public class WordDAO implements DAOInterface<Word> {
         return null;
     }
 
+    public int getNumberWord(int languageId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM word "
+                    + "WHERE (language_id = ? Or ? = 0) AND is_deleted = 0 ";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, languageId);
+            countStmt.setInt(2, languageId);
+            ResultSet countRs = countStmt.executeQuery();
+            int total = 0;
+            if (countRs.next()) {
+                total = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
+
     public int getNumberPage(int pageSize, int languageId, String keyword) {
         Connection c = null;
         try {

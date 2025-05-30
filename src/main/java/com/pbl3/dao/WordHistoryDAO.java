@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import com.pbl3.dto.History;
 import com.pbl3.util.DBUtil;
 
-public class WordHistoryDAO implements HistoryDAOInterface{
+public class WordHistoryDAO implements HistoryDAOInterface {
 
     @Override
     public int insert(History t) {
@@ -29,7 +29,7 @@ public class WordHistoryDAO implements HistoryDAOInterface{
             DBUtil.closeConnection(c);
         }
         return 0;
-}
+    }
 
     @Override
     public int update(History t) {
@@ -50,7 +50,7 @@ public class WordHistoryDAO implements HistoryDAOInterface{
             DBUtil.closeConnection(c);
         }
         return 0;
-}
+    }
 
     @Override
     public int delete(int id, int userId) {
@@ -69,7 +69,7 @@ public class WordHistoryDAO implements HistoryDAOInterface{
             DBUtil.closeConnection(c);
         }
         return 0;
-}
+    }
 
     @Override
     public ArrayList<History> selectAll(int userId) {
@@ -77,16 +77,16 @@ public class WordHistoryDAO implements HistoryDAOInterface{
         ArrayList<History> histories = new ArrayList<>();
         try {
             c = DBUtil.makeConnection();
-            String sql = "SELECT * FROM word_history WHERE user_id = ?";
+            String sql = "SELECT * FROM word_history WHERE user_id = ? ORDER BY word_history_date DESC";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 History t = new History();
-                t.setHistory_id(rs.getInt("history_id"));
+                t.setHistory_id(rs.getInt("word_history_id"));
                 t.setUser_id(rs.getInt("user_id"));
-                t.setKey_id(rs.getInt("key_id"));
-                t.setHistory_date(rs.getDate("history_date"));
+                t.setKey_id(rs.getInt("word_id"));
+                t.setHistory_date(rs.getDate("word_history_date"));
                 histories.add(t);
             }
             return histories;
@@ -96,7 +96,7 @@ public class WordHistoryDAO implements HistoryDAOInterface{
             DBUtil.closeConnection(c);
         }
         return null;
-}
+    }
 
     @Override
     public History selectByID(int id, int userId) {
@@ -123,11 +123,10 @@ public class WordHistoryDAO implements HistoryDAOInterface{
             DBUtil.closeConnection(c);
         }
         return null;
-}
+    }
 
     @Override
     public History selectByCondition(String condition) {
         return null;
+    }
 }
-}
-    

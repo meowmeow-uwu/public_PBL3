@@ -8,6 +8,7 @@ import com.pbl3.dto.Collection;
 import com.pbl3.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 

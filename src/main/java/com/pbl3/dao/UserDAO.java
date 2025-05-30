@@ -302,7 +302,7 @@ public class UserDAO implements DAOInterface<User> {
                     + "        u.name LIKE ? "
                     + "      ) "
                     + "ORDER BY u.user_id "
-                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+                    + "LIMIT ?, ?";
 
             PreparedStatement s = c.prepareStatement(sql);
             s.setInt(1, groupUserId);

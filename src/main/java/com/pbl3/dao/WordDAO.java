@@ -381,8 +381,8 @@ public class WordDAO implements DAOInterface<Word> {
             s.setString(2, keyword);
             s.setString(3, keyword);
             s.setString(4, keyword + "%");
-            s.setInt(5, offset);
-            s.setInt(6, pageSize);
+            s.setInt(5, pageSize);
+            s.setInt(6, offset);
 
             ResultSet rs = s.executeQuery();
             while (rs.next()) {
@@ -395,6 +395,7 @@ public class WordDAO implements DAOInterface<Word> {
                         rs.getBoolean("is_deleted"),
                         rs.getString("image")
                 );
+
                 Map<String, Word> wordMap = new HashMap<>();
                 wordMap.put("word", word);
                 words.add(wordMap);
@@ -421,10 +422,9 @@ public class WordDAO implements DAOInterface<Word> {
     public static void main(String s[]) {
         WordDAO d = new WordDAO();
         int j = 1;
-//        for (Map<String, Word> i : li) {
-//
-//            System.out.println(j + i.get("word").getWord_name());
-//            j++;
-//        }
+        Map<String, Object> i = getInstance().getWordsByPage(1, 20, 1, "");
+
+        System.out.println(j + i.get("words").toString());
+        j++;
     }
 }

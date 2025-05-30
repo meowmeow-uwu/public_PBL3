@@ -349,7 +349,7 @@ public class UserDAO implements DAOInterface<User> {
             }
             
             result.put("users", users);
-            result.put("total", getNumberUser(groupUserId));
+            result.put("total", getNumberPage(pageSize,groupUserId, keyword));
             
             return result;
         } catch (Exception e) {

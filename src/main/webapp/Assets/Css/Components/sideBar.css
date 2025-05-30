@@ -67,14 +67,52 @@
 /* Responsive design */
 @media (max-width: 768px) {
     .sidebar {
-        width: 100%;
+        width: 60px; /* Chiều rộng sidebar thu nhỏ */
         height: auto;
         position: relative;
         padding-top: 0;
+        overflow-x: hidden; /* Ẩn nội dung tràn */
+        transition: width 0.3s ease; /* Thêm transition cho hiệu ứng mượt mà */
     }
-    
+
+    .sidebar:hover {
+        width: 280px; /* Chiều rộng khi hover */
+    }
+
     .menu-link {
-        padding: 15px 20px;
+        padding: 12px 18px; /* Giảm padding ngang khi sidebar nhỏ */
+    }
+
+    .menu-link i {
+        margin-right: 0; /* Bỏ khoảng cách bên phải icon khi sidebar nhỏ */
+    }
+
+    .menu-link span {
+        display: none; /* Ẩn text mặc định */
+    }
+
+    .sidebar:hover .menu-link span {
+        display: inline; /* Hiển thị text khi hover sidebar */
+        margin-left: 12px; /* Thêm khoảng cách giữa icon và text khi hiển thị */
+    }
+
+    .user-profile {
+        padding: 12px;
+        justify-content: center; /* Căn giữa nội dung user profile */
+    }
+
+    .user-profile .profile-info {
+        display: none; /* Ẩn thông tin user khi sidebar nhỏ */
+    }
+
+    .sidebar:hover .user-profile .profile-info {
+        display: block; /* Hiển thị thông tin user khi hover */
+        margin-left: 10px; /* Khoảng cách sau avatar */
+    }
+
+    .profile-image {
+        width: 36px; /* Kích thước avatar nhỏ hơn */
+        height: 36px;
     }
 }
 

@@ -67,7 +67,6 @@ async function updateProfile({ name, avatar, email }) {
     if (!token) {
         throw new Error('Không tìm thấy token');
     }
-
     try {
         const formData = new URLSearchParams();
         if (name) formData.append('name', name);

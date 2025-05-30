@@ -250,7 +250,8 @@ body {
 
 .main-topic-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--primary-color);
 }
 
 .main-topic-icon {
@@ -279,9 +280,9 @@ body {
 }
 
 .sub-topic-card {
-    background: white;
+    background: rgb(186, 255, 239);
     border-radius: 50%;
-    width: 150px;
+    width: 180px;
     height: 150px;
     display: flex;
     align-items: center;
@@ -290,9 +291,11 @@ body {
     transition: var(--transition);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
+    text-align: center;
 }
 
 .sub-topic-card:hover {
+    background-color: #01ffff;
     transform: scale(1.05);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }

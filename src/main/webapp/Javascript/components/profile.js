@@ -36,6 +36,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Hiển thị thông tin user lên form
     updateProfileInfo(userInfo);
 
+    // Thêm event listener để cập nhật avatar preview khi URL thay đổi
+    document.getElementById('avatar').addEventListener('input', function(e) {
+        const avatarImg = document.getElementById('avatarImg');
+        if (e.target.value) {
+            avatarImg.src = e.target.value;
+        } else {
+            avatarImg.src = window.APP_CONFIG.BASE_PATH + 'Assets/Images/default-avatar.png';
+        }
+    });
+
     // Đổi mật khẩu
     document.getElementById('changePasswordForm').onsubmit = async function(e) {
         e.preventDefault();
@@ -62,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.preventDefault();
         const name = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
-        const avatar = document.getElementById('avatarImg').src;
+        const avatar = document.getElementById('avatar').value;
         try {
             await updateProfile({ name, avatar, email });
             alert('Cập nhật thông tin thành công!');
@@ -76,15 +86,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 function updateProfileInfo(userInfo) {
     // Cập nhật avatar
     const avatarImg = document.getElementById('avatarImg');
-    if (avatarImg) {
-        avatarImg.src = userInfo.avatar || window.APP_CONFIG.BASE_PATH + 'Assets/Images/default-avatar.png';
+    if (userInfo.avatar) {
+        avatarImg.src = userInfo.avatar;
+    } else {
+        avatarImg.src = window.APP_CONFIG.BASE_PATH + 'Assets/Images/default-avatar.png';
     }
+    
     // Cập nhật các thông tin khác
-    document.getElementById('username').value = userInfo.username||'';
+    document.getElementById('username').value = userInfo.username || '';
     document.getElementById('fullName').value = userInfo.name || '';
     document.getElementById('email').value = userInfo.email || '';
     document.getElementById('avatar').value = userInfo.avatar || '';
-    // Nếu có các trường khác như phone, dob, gender thì cập nhật tương tự
 }
 
 // Hàm mở/đóng modal đổi mật khẩu

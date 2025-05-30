@@ -85,7 +85,7 @@ public class AuthController {
             String resetToken = userService.generateResetPasswordToken(user);
             
             // Gửi email chứa link reset password
-            String resetLink = "http://localhost:6969/PBL3/Pages/Components/Login_Register_ForgotPW/resetPassword.html?token=" + resetToken;
+            String resetLink = "http://localhost:2005/PBL3/Pages/Components/Login_Register_ForgotPW/resetPassword.html?token=" + resetToken;
             userService.sendResetPasswordEmail(user.getEmail(), resetLink);
 
             return Response.ok()

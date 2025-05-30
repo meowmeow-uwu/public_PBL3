@@ -37,7 +37,7 @@ public class UserManagementController {
     @GET
     @Path("/getNumber/{groupUserId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getNumberWord(@HeaderParam("authorization") String authHeader,
+    public Response getNumberUser(@HeaderParam("authorization") String authHeader,
             @PathParam("groupUserId") int groupUserId) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)

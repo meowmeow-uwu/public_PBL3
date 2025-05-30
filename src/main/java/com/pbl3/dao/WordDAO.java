@@ -267,7 +267,7 @@ public class WordDAO implements DAOInterface<Word> {
                     + "JOIN translate t ON w.word_id = t.source_word_id "
                     + "WHERE w.word_name LIKE ? AND w.is_deleted = 0 AND w.language_id = ? "
                     + "ORDER BY w.word_name ASC "
-                    + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
+                    + "LIMIT 0, ?";
 
             PreparedStatement s = c.prepareStatement(sql);
             s.setString(1, prefix + "%");  // prefix + "%", cho LIKE
@@ -374,7 +374,7 @@ public class WordDAO implements DAOInterface<Word> {
                     + "WHERE language_id = ? AND is_deleted = 0 "
                     + "AND (? IS NULL OR ? = '' OR word_name LIKE ?) "
                     + "ORDER BY word_id "
-                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+                    + "LIMIT ? OFFSET ?;";
 
             PreparedStatement s = c.prepareStatement(sql);
             s.setInt(1, languageId);

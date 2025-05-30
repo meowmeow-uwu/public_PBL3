@@ -45,4 +45,8 @@ public class PostService implements ServiceInterface<Post>{
     public ArrayList<Post> getPostsBySubTopicId(int subTopicId) {
         return postDAO.selectBySubTopicId(subTopicId);
     }
+    public int getNumberPost()
+    {
+        return postDAO.getNumberPost();
+    }
 }

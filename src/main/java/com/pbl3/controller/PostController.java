@@ -19,10 +19,13 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/post")
 public class PostController {
-    private PostService postService;
+
+    private final PostService postService;
+    private final AuthService authService;
 
     public PostController() {
         postService = new PostService();
+        authService = new AuthService();
     }
 
     @GET
@@ -45,6 +48,21 @@ public class PostController {
             return Response.status(404).entity("No posts found").build();
         }
         return Response.status(200).entity(posts).build();
+    }
+
+    @GET
+    @Path("/getNumber")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getNumberPost(@HeaderParam("authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (!authService.isContentManagerOrAdmin(authHeader)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        return Response.ok().entity("{\"number\":\"" + postService.getNumberPost() + "\"}").build();
     }
 
     @GET
@@ -84,7 +102,7 @@ public class PostController {
             return Response.status(401).entity("Unauthorized").build();
         }
 
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
 
@@ -110,7 +128,7 @@ public class PostController {
             return Response.status(401).entity("Unauthorized").build();
         }
 
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
 
@@ -120,7 +138,7 @@ public class PostController {
         }
         return Response.status(200).entity("Post updated successfully").build();
     }
-    
+
     @PUT
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -136,7 +154,7 @@ public class PostController {
             return Response.status(401).entity("Unauthorized").build();
         }
 
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
         Post post = postService.selectByID(id);

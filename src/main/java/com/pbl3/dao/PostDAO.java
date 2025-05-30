@@ -157,4 +157,29 @@ public class PostDAO implements DAOInterface<Post>{
 
         return null;
     }
+        public int getNumberPost() {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM post "
+                    + "WHERE is_deleted = 0";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            ResultSet countRs = countStmt.executeQuery();
+            int total = 0;
+            if (countRs.next()) {
+                total = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
 }

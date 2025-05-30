@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Xử lý checkbox trong Today's Goals
-        document.querySelectorAll('.goal-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('click', function() {
-                this.classList.toggle('checked');
-                // TODO: Gọi API để cập nhật trạng thái mục tiêu
-            });
-        });
+        // document.querySelectorAll('.goal-checkbox').forEach(checkbox => {
+        //     checkbox.addEventListener('click', function() {
+        //         this.classList.toggle('checked');
+        //         // TODO: Gọi API để cập nhật trạng thái mục tiêu
+        //     });
+        // });
 
         // Xử lý các nút Continue
         document.querySelectorAll('.continue-btn').forEach(button => {
@@ -79,4 +79,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         document.querySelector('.home-container').prepend(errorMessage);
     }
+    loadDashboardData();
 });
+async function loadDashboardData() {
+    try {
+        // Lấy thông tin người dùng hiện tại
+        const userInfo = await window.fetchUserInfo();
+        if (!userInfo) {
+            throw new Error('Không thể lấy thông tin người dùng');
+        }
+        // Lấy tất cả thống kê
+        const stats = await homeAPI.getAllStatistics();
+        
+        // Cập nhật các số liệu
+        document.getElementById('total-courses').textContent = stats.totalPosts;
+        document.getElementById('total-vocabularyV').textContent = stats.totalWordsVi;
+        document.getElementById('total-vocabularyE').textContent = stats.totalWordsEn;
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        alert('Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
+    }
+}

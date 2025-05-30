@@ -1,25 +1,3 @@
-// document.addEventListener('DOMContentLoaded', function() {
-//     // Get user role and name from localStorage
-//     const role = localStorage.getItem('role');
-//     const userName = localStorage.getItem('name');
-    
-//     // Update welcome message and role badge
-//     document.getElementById('user-name').textContent = userName || 'User';
-//     document.getElementById('role-badge').textContent = role === '1' ? 'Admin' : 'Staff';
-    
-//     // Show/hide admin section
-//     if (role === '1') {
-//         document.getElementById('admin-section').style.display = 'block';
-//     }
-
-//     // Initialize charts
-//     initializeActivityChart();
-//     initializeCourseChart();
-
-//     // Load dashboard data
-//     loadDashboardData();
-// });
-
 function initializeActivityChart() {
     const ctx = document.getElementById('activityChart').getContext('2d');
     new Chart(ctx, {
@@ -45,15 +23,15 @@ function initializeActivityChart() {
     });
 }
 
-function initializeCourseChart() {
+function initializeCourseChart(stats) {
     const ctx = document.getElementById('courseChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Khóa A', 'Khóa B', 'Khóa C', 'Khóa D'],
+            labels: ['Tất cả','Quản trị viên', 'Nhân viên', 'Người dùng'],
             datasets: [{
                 label: 'Số học viên',
-                data: [12, 19, 3, 5],
+                data: [stats.totalAlls, stats.totalAdmins, stats.totalStaffs, stats.totalUsers],
                 backgroundColor: '#4a90e2'
             }]
         },
@@ -70,56 +48,47 @@ function initializeCourseChart() {
 
 async function loadDashboardData() {
     try {
-        // Dữ liệu test
-        const testData = {
-            students: '150',
-            courses: '8',
-            vocabulary: '1,200',
-            completionRate: '75%',
-            staff: '5',
-            topStudents: [
-                { name: 'Nguyễn Văn A', progress: '95%' },
-                { name: 'Trần Thị B', progress: '92%' },
-                { name: 'Lê Văn C', progress: '88%' }
-            ],
-            recentStaff: [
-                { name: 'Nguyễn Văn Nhân', lastActive: '5 phút trước' },
-                { name: 'Trần Thị Nhân', lastActive: '10 phút trước' },
-                { name: 'Lê Văn Nhân', lastActive: '15 phút trước' }
-            ]
-        };
-
-        // Cập nhật các số liệu
-        document.getElementById('total-students').textContent = testData.students;
-        document.getElementById('total-courses').textContent = testData.courses;
-        document.getElementById('total-vocabulary').textContent = testData.vocabulary;
-        document.getElementById('completion-rate').textContent = testData.completionRate;
-        
-        if (localStorage.getItem('Role') === '1') {
-            document.getElementById('total-staff').textContent = testData.staff;
-            // Hiển thị danh sách nhân viên gần đây
-            const staffList = document.getElementById('recent-staff-list');
-            staffList.innerHTML = testData.recentStaff.map(staff => `
-                <div class="staff-card">
-                    <h3>${staff.name}</h3>
-                    <p>Hoạt động: ${staff.lastActive}</p>
-                </div>
-            `).join('');
+        // Lấy thông tin người dùng hiện tại
+        const userInfo = await window.fetchUserInfo();
+        if (!userInfo) {
+            throw new Error('Không thể lấy thông tin người dùng');
         }
+
+        // Cập nhật tên người dùng và vai trò
+        document.getElementById('user-name').textContent = userInfo.name || 'User';
+        document.getElementById('role-badge').textContent = userInfo.group_user_id === 1 ? 'Admin' : 'Staff';
+
+        // Lấy tất cả thống kê
+        const stats = await homeAPI.getAllStatistics();
         
-        // Hiển thị danh sách học viên nổi bật
-        const studentsList = document.getElementById('top-students-list');
-        studentsList.innerHTML = testData.topStudents.map(student => `
-            <div class="student-card">
-                <h3>${student.name}</h3>
-                <p>Tiến độ: ${student.progress}</p>
-            </div>
-        `).join('');
+        // Cập nhật các số liệu
+        document.getElementById('total-students').textContent = stats.totalUsers;
+        document.getElementById('total-courses').textContent = stats.totalPosts;
+        document.getElementById('total-vocabularyV').textContent = stats.totalWordsVi;
+        document.getElementById('total-vocabularyE').textContent = stats.totalWordsEn;
+        
+        // Nếu là admin, hiển thị thêm thông tin
+        if (userInfo.group_user_id === 1) {
+            document.getElementById('admin-section').style.display = 'block';
+            document.getElementById('total-staff').textContent = stats.totalStaffs;
+        } else {
+            document.getElementById('admin-section').style.display = 'none';
+        }
+
+        // Khởi tạo biểu đồ
+        initializeActivityChart();
+        initializeCourseChart(stats);
 
     } catch (error) {
         console.error('Error loading dashboard data:', error);
+        alert('Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
     }
 }
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadDashboardData();
+});
 
 function switchRole(role) {
     localStorage.setItem('role', role);

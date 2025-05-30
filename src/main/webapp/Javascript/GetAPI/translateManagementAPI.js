@@ -140,3 +140,4 @@ async function getTranslateByWordId(wordId, typeId) {
 }
 
 
+

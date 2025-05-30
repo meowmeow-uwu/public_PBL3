@@ -47,8 +47,8 @@ const staffUserAPI = {
             console.log('Response data:', data); // Log để debug
             // Chuyển đổi cấu trúc dữ liệu từ backend sang frontend
             return {
-                users: data._user.map(item => item.user),
-                totalPages: data.totalPages
+                users: Array.isArray(data.users) ? data.users : [],
+                totalPages: data.total || 0
             };
         } catch (error) {
             console.error('Lỗi khi lấy danh sách người dùng:', error);
@@ -157,6 +157,9 @@ const staffUserAPI = {
         }
     }
 };
+
+
+
 
 // Export staffUserAPI để sử dụng ở các file khác
 window.staffUserAPI = staffUserAPI;

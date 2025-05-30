@@ -116,7 +116,7 @@ async function loadUsers() {
             totalPages = 0;
         } else {
             renderUserTable(data.users);
-            totalPages = data.totalPages;
+            totalPages = data.total;
         }
         renderPagination(totalPages);
 

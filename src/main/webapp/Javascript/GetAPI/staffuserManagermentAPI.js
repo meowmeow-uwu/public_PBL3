@@ -48,7 +48,7 @@ const staffUserAPI = {
             // Chuyển đổi cấu trúc dữ liệu từ backend sang frontend
             return {
                 users: Array.isArray(data.users) ? data.users : [],
-                totalPages: data.total || 0
+                totalPages: data.total
             };
         } catch (error) {
             console.error('Lỗi khi lấy danh sách người dùng:', error);

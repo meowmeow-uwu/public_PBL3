@@ -32,6 +32,22 @@ public class WordManagementController {
     private final AuthService authService = new AuthService();
 
     @GET
+    @Path("/getNumber/{languageId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getNumberWord(@HeaderParam("authorization") String authHeader,
+            @PathParam("languageId") int languageId)
+    {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (!authService.isContentManagerOrAdmin(authHeader)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        return Response.ok().entity("{\"number\":\""+wordService.getNumberWord(languageId)+"\"}").build();
+    }
+    @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWord(@HeaderParam("authorization") String authHeader,

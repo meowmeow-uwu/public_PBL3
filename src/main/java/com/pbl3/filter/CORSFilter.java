@@ -23,7 +23,7 @@ public class CORSFilter implements ContainerResponseFilter {
         if (origin != null && (origin.equals("https://pbl32025.web.app") || origin.equals("http://localhost:6969"))) {
             responseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
             responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
-            responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+            responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, type");
             responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
             responseContext.getHeaders().add("Access-Control-Max-Age", "1209600");
         }

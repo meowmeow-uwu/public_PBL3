@@ -6,6 +6,7 @@ import com.pbl3.dao.HistoryDAOInterface;
 import com.pbl3.dao.WordHistoryDAO;
 import com.pbl3.dao.PostHistoryDAO;
 import com.pbl3.dto.History;
+import java.util.Map;
 
 public class HistoryService {
 
@@ -40,6 +41,10 @@ public class HistoryService {
 
     public ArrayList<History> selectAll(int userId) {
         return historyDAO.selectAll(userId);
+    }
+
+    public Map<String, Object> getHistoryByPage(int userId, int pageNumber, int pageSize, String keyword) {
+        return historyDAO.getHistoryByPage(userId,pageNumber,pageSize,keyword);
     }
 
     public History selectByID(int id, int userId) {

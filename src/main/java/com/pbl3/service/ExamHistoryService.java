@@ -6,6 +6,7 @@ import com.pbl3.dao.ExamHistoryDAO;
 import com.pbl3.dto.ExamHistory;
 import com.pbl3.dto.History;
 import java.util.List;
+import java.util.Map;
 
 public class ExamHistoryService {
 
@@ -14,7 +15,9 @@ public class ExamHistoryService {
     public ExamHistoryService() {
         examHistoryDAO = new ExamHistoryDAO();
     }
-
+    public Map<String, Object> getExamHistoryByPage(int userId, int pageNumber, int pageSize, String keyword) {
+    return examHistoryDAO.getExamHistoryByPage(userId, pageNumber, pageSize, keyword);
+    }
     public int insert(ExamHistory t) {
         return examHistoryDAO.insert(t);
     }

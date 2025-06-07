@@ -3,6 +3,7 @@ package com.pbl3.controller;
 import java.util.ArrayList;
 
 import com.pbl3.dto.ExamHistory;
+import com.pbl3.dto.User;
 import com.pbl3.service.ExamHistoryService;
 import com.pbl3.service.UserService;
 import jakarta.ws.rs.Consumes;
@@ -14,17 +15,50 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 @Path("/exam-history")
 public class ExamHistoryController {
+
     private ExamHistoryService examHistoryService;
     private UserService userService;
 
     public ExamHistoryController() {
         userService = new UserService();
         examHistoryService = new ExamHistoryService();
+    }
+
+    @GET
+    @Path("/list/{page_number}/{pagesize}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getExamHistoryByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @QueryParam("keyword") String keyword) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        User user = userService.getUserByAuthHeader(authHeader);
+        if (user == null) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+        // Tạo Map kết quả
+        Map<String, Object> result = examHistoryService.getExamHistoryByPage(user.getUser_id(), pageNumber, pageSize, keyword);
+        if (result == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"exam history not found\"}")
+                    .build();
+        }
+
+        return Response.ok(result).build();
     }
 
     @GET
@@ -48,6 +82,7 @@ public class ExamHistoryController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+
     @GET
     @Path("/recently")
     @Produces(MediaType.APPLICATION_JSON)
@@ -104,6 +139,7 @@ public class ExamHistoryController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+
         // if(examHistoryService.selectByID(examHistory.getExam_id(), userId) != null) {
         //     return Response.status(Response.Status.BAD_REQUEST).entity("Exam history already exists").build();
         // }

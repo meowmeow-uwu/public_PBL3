@@ -9,6 +9,8 @@ import java.sql.Timestamp;
 
 import com.pbl3.dto.History;
 import com.pbl3.util.DBUtil;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WordHistoryDAO implements HistoryDAOInterface {
 
@@ -179,5 +181,93 @@ public class WordHistoryDAO implements HistoryDAOInterface {
             DBUtil.closeConnection(c);
         }
         return 0;
+    }
+    
+    @Override
+    public int getNumberPage(int userId, int pageSize, String keyword) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM word_history "
+                    + "WHERE user_id = ? AND "
+                    + "(? IS NULL OR ? = '' OR word_history_date LIKE ?)";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, userId);
+            countStmt.setString(2, keyword);
+            countStmt.setString(3, keyword);
+            countStmt.setString(4, "%"+keyword + "%");
+
+            ResultSet countRs = countStmt.executeQuery();
+            int totalRecords = 0;
+            if (countRs.next()) {
+                totalRecords = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return (int) Math.ceil((double) totalRecords / pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
+
+    @Override
+    public Map<String, Object> getHistoryByPage(int userId, int pageNumber, int pageSize, String keyword) {
+        Connection c = null;
+        int offset = (pageNumber - 1) * pageSize;
+
+        try {
+            ArrayList<History> histories = new ArrayList<>();
+            c = DBUtil.makeConnection();
+
+            // Tính tổng số trang
+            int totalPages = this.getNumberPage(userId, pageSize, keyword);
+
+            // Truy vấn lấy dữ liệu phân trang
+            String sql = "SELECT * FROM word_history "
+                    + "WHERE user_id = ? AND"
+                    + "(? IS NULL OR ? = '' OR word_history_date LIKE ?) "
+                    + "ORDER BY word_history_date DESC "
+                    + "LIMIT ? OFFSET ?;";
+
+            PreparedStatement s = c.prepareStatement(sql);
+            s.setInt(1, userId);
+            s.setString(2, keyword);
+            s.setString(3, keyword);
+            s.setString(4,"%"+ keyword + "%");
+            s.setInt(5, pageSize);
+            s.setInt(6, offset);
+
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                History t = new History();
+                t.setHistory_id(rs.getInt("word_history_id"));
+                t.setUser_id(rs.getInt("user_id"));
+                t.setKey_id(rs.getInt("word_id"));
+                t.setHistory_date(rs.getTimestamp("word_history_date"));
+                histories.add(t);
+            }
+
+            rs.close();
+            s.close();
+
+            // Tạo Map kết quả chứa cả danh sách từ và thông tin phân trang
+            Map<String, Object> result = new HashMap<>();
+            result.put("histories", histories);
+            result.put("totalPages", totalPages);
+
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return new HashMap<>();
     }
 }

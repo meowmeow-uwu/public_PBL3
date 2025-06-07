@@ -18,7 +18,7 @@ public int getNumberPage(int pageSize, int SubTopicId, String keyword) {
             c = DBUtil.makeConnection();
             // Truy vấn đếm tổng số bản ghi
             String countSql = "SELECT COUNT(*) as total FROM post "
-                    + "WHERE sub_topic_id = ? AND "
+                    + "WHERE is_deleted = 0 AND sub_topic_id = ? AND "
                     + "(? IS NULL OR ? = '' OR post_name LIKE ?)";
 
             PreparedStatement countStmt = c.prepareStatement(countSql);
@@ -57,7 +57,7 @@ public int getNumberPage(int pageSize, int SubTopicId, String keyword) {
 
             // Truy vấn lấy dữ liệu phân trang
             String sql = "SELECT * FROM post "
-                    + "WHERE post_id = ? AND"
+                    + "WHERE is_deleted = 0 AND sub_topic_id = ? AND"
                     + "(? IS NULL OR ? = '' OR post_name LIKE ?) "
                     + "ORDER BY post_id "
                     + "LIMIT ? OFFSET ?;";

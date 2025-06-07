@@ -94,6 +94,8 @@ let currentParentId = null;
 let currentDataCache = [];
 let currentExamIdForQuestionsManagement = null;
 
+
+let isEditSubTopic = true;// kiểm tra xem đang edit subtopic hay post,exam
 // DOM Elements
 let managementTitle, breadcrumbsContainer, searchInput, searchBtn, addNewBtn,
     dataTableThead, dataTableTbody, paginationContainer, contentTabs,
@@ -526,7 +528,7 @@ function loadTopic(page = 1) {
         pageSize: 10,
         keyword: keyword
     }).then(response => {
-        const topicList = document.getElementById('topicList');
+        const topicList = document.getElementById('list');
         topicList.innerHTML = '';
 
         if (!response.topics || response.topics.length === 0) {
@@ -594,14 +596,13 @@ function selectTopic(topicId, topicName) {
 }
 
 function displayTranslationPagination(totalPages, currentPage) {
-    const topicList = document.getElementById('topicList');
-    if (!topicList) {
-        console.error('Không tìm thấy phần tử topicList');
+    let List = document.getElementById('list');
+    if (!List) {
         return;
     }
 
     // Xóa phân trang cũ nếu có
-    const oldPagination = topicList.querySelector('.pagination');
+    const oldPagination = List.querySelector('.pagination');
     if (oldPagination) {
         oldPagination.remove();
     }
@@ -617,7 +618,7 @@ function displayTranslationPagination(totalPages, currentPage) {
         pagination.appendChild(button);
     }
 
-    topicList.appendChild(pagination);
+    List.appendChild(pagination);
 }
 
 window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = null) => {
@@ -706,7 +707,7 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                             <input type="text" id="searchTopic" placeholder="Nhập topic cần tìm...">
                             <button type="button" onclick="loadTopic()">Tìm kiếm</button>
                         </div>
-                        <div id="topicList" class="topic-list">
+                        <div id="list" class="topic-list">
                             <!-- Danh sách topic sẽ được hiển thị ở đây -->
                         </div>
                     </div>
@@ -748,7 +749,7 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                                 <input type="text" id="searchSubTopic" placeholder="Nhập chủ đề con cần tìm...">
                                 <button type="button" onclick="loadSubTopic()">Tìm kiếm</button>
                             </div>
-                            <div id="subTopicList" class="topic-list">
+                            <div id="list" class="topic-list">
                                 <!-- Danh sách chủ đề con sẽ được hiển thị ở đây -->
                             </div>
                         </div>
@@ -774,6 +775,7 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                     </div>
                     <input type="hidden" name="sub_topic_id" value="${currentParentId || entityData.sub_topic_id || currentSubTopicId}">`;
             } else {
+
                 // Form chỉnh sửa - cho phép chọn subtopic khác
                 fieldsHtml = `
                     <div class="form-group">
@@ -790,7 +792,7 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                             <input type="text" id="searchSubTopic" placeholder="Nhập chủ đề con cần tìm...">
                             <button type="button" onclick="loadSubTopic()">Tìm kiếm</button>
                         </div>
-                        <div id="subTopicList" class="topic-list">
+                        <div id="list" class="topic-list">
                             <!-- Danh sách chủ đề con sẽ được hiển thị ở đây -->
                         </div>
                     </div>
@@ -829,11 +831,14 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                     <label for="modalContentAns">Nội dung câu trả lời:</label>
                     <input type="text" id="modalContentAns" name="content" value="${answerContentValue}" required>
                 </div>
-                <div class="form-group">
-                    <label for="modalIsCorrect">Là đáp án đúng?</label>
+                <div class="checkbox-modern">
                     <input type="checkbox" id="modalIsCorrect" ${isCorrectValue ? 'checked' : ''}>
+                    <label for="modalIsCorrect">
+                        <span style="color:#34c759;font-size:1.2em;">&#10003;</span>
+                        Là đáp án đúng?
+                    </label>
                 </div>
-                <input type="hidden" name="question_id" value="${questionIdValue}">`; // SỬA: name="question_id"
+                <input type="hidden" name="question_id" value="${questionIdValue}">`;
             break;
 
         default:
@@ -1142,7 +1147,7 @@ async function loadSubTopic(page = 1) {
     }
 
     const keyword = searchInput.value;
-    const subTopicList = document.getElementById('subTopicList');
+    const subTopicList = document.getElementById('list');
     if (!subTopicList) {
         console.error('Không tìm thấy phần tử subTopicList');
         return;
@@ -1342,7 +1347,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- 2. Xác định API cần gọi ---
             let apiCallPromise;
             const entityId = currentEditingId;
-            let render  = 1;
+            let render = 1;
             try {
                 console.log(`Đang ${entityId ? 'cập nhật' : 'tạo mới'} ${currentEntityType}:`, data);
 
@@ -1405,9 +1410,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         console.log("render ...");
                         console.log(render);
-                       
-                        //   await window.manageAnswersForQuestion(currentQuestionId, currentQuestionContent, currentExamIdForQuestionsManagement);
-
                         renderTable(); // Hàm render chung
                     }
                 } else {

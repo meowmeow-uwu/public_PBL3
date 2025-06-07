@@ -20,14 +20,15 @@ public class SubTopicDAO implements DAOInterface<SubTopic>{
             c = DBUtil.makeConnection();
             // Truy vấn đếm tổng số bản ghi
             String countSql = "SELECT COUNT(*) as total FROM sub_topic "
-                    + "WHERE topic_id = ? AND "
+                    + "WHERE (topic_id = ? OR ? = 0) AND "
                     + "(? IS NULL OR ? = '' OR sub_topic_name LIKE ?)";
 
             PreparedStatement countStmt = c.prepareStatement(countSql);
             countStmt.setInt(1, topicId);
-            countStmt.setString(2, keyword);
+            countStmt.setInt(2, topicId);
             countStmt.setString(3, keyword);
-            countStmt.setString(4, keyword + "%");
+            countStmt.setString(4, keyword);
+            countStmt.setString(5, keyword + "%");
 
             ResultSet countRs = countStmt.executeQuery();
             int totalRecords = 0;
@@ -59,18 +60,19 @@ public class SubTopicDAO implements DAOInterface<SubTopic>{
 
             // Truy vấn lấy dữ liệu phân trang
             String sql = "SELECT * FROM sub_topic "
-                    + "WHERE topic_id = ? AND"
+                    + "WHERE (topic_id = ? OR ? = 0) AND"
                     + "(? IS NULL OR ? = '' OR sub_topic_name LIKE ?) "
                     + "ORDER BY sub_topic_id "
                     + "LIMIT ? OFFSET ?;";
 
             PreparedStatement s = c.prepareStatement(sql);
             s.setInt(1, topicId);
-            s.setString(2, keyword);
+            s.setInt(2, topicId);
             s.setString(3, keyword);
-            s.setString(4, keyword + "%");
-            s.setInt(5, pageSize);
-            s.setInt(6, offset);
+            s.setString(4, keyword);
+            s.setString(5, keyword + "%");
+            s.setInt(6, pageSize);
+            s.setInt(7, offset);
 
             ResultSet rs = s.executeQuery();
             while (rs.next()) {

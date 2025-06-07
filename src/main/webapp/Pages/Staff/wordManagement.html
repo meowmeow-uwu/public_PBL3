@@ -3,18 +3,18 @@
     <head>
         <meta charset="UTF-8">
         <title>Quản lý từ vựng</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link rel="stylesheet" href="../../Assets/Css/main.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
         <link rel="stylesheet" href="../../Assets/Css/Staff/wordManagement.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
-
+        
     </head>
     <body>
         <!-- Sidebar -->
         <div id="sidebar"></div>
-        <div class="container">
-
             <!-- Main Content -->
             <div class="main-content">
                 <h1>Quản lý từ vựng</h1>
@@ -42,7 +42,6 @@
                     <!-- Pagination will be added here -->
                 </div>
             </div>
-        </div>
 
         <!-- Add/Edit Word Modal -->
         <div id="wordModal" class="modal">
@@ -78,7 +77,7 @@
                 </form>
             </div>
         </div>
-
+        
         <!-- Definition Modal -->
         <div id="definitionModal" class="modal">
             <div class="modal-content">
@@ -90,7 +89,7 @@
                 <button onclick="openAddDefinitionModal()">Thêm định nghĩa mới</button>
             </div>
         </div>
-
+        
         <!-- Add/Edit Definition Modal -->
         <div id="addDefinitionModal" class="modal">
             <div class="modal-content">
@@ -166,16 +165,19 @@
                 </form>
             </div>
         </div>
+                <!-- Toast Container -->
+        <div class="toast-container"></div>
 
         <script src="../../Javascript/config.js"></script>
         <script>
                                 window.APP_CONFIG.BASE_PATH = '../../';
         </script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../Javascript/components/sideBar.js"></script>
         <script src="../../Javascript/GetAPI/wordManagermentAPI.js"></script>
         <script src="../../Javascript/GetAPI/definitionManagementAPI.js"></script>
         <script src="../../Javascript/GetAPI/translateManagementAPI.js"></script>
+        <script src="../../Javascript/components/alert.js"></script>
         <script src="../../Javascript/Staff/wordManagement.js"></script>
     </body>
 </html>

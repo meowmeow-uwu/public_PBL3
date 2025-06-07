@@ -2,13 +2,15 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <title>➕ Thêm người dùng mới</title>
         <link rel="stylesheet" href="../../Assets/Css/main.css">
         <link rel="stylesheet" href="../../Assets/Css/Admin/addStaffUser.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
-
+        
     </head>
     <body>
         <div id="sidebar"></div>
@@ -63,14 +65,20 @@
                 </form>
             </div>
         </div> 
+        <!-- Toast Container -->
+        <div class="toast-container"></div>
 
         <script src="../../Javascript/config.js"></script>
         <script>
                             window.APP_CONFIG.BASE_PATH = '../../';
         </script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
+        <script src="../../Javascript/GetAPI/Util/helperUtil.js"></script>
+        <script src="../../Javascript/GetAPI/Util/userUtil.js"></script>
         <script src="../../Javascript/components/sideBar.js"></script>
         <script src="../../Javascript//Admin/addStaffUser.js"></script>
-        <script src="../../Javascript/GetAPI/addStaffUserAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/userManagementAPI.js"></script>
+        <script src="../../Javascript/components/alert.js"></script>
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
     </body>
 </html> 

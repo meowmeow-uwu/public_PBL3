@@ -1,16 +1,11 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
-        return;
-    }
-
+    
     // Lấy thông tin user qua API đã chuẩn hóa
     let userInfo = null;
     try {
-        userInfo = await getAccountInfo();
+        userInfo = await window.USER_API.fetchUserInfo();
     } catch (error) {
-        alert(error.message || 'Không thể lấy thông tin người dùng');
+        showToast('error', 'Lỗi',error.message || 'Không thể lấy thông tin người dùng');
         return;
     }
 
@@ -42,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (e.target.value) {
             avatarImg.src = e.target.value;
         } else {
-            avatarImg.src = window.APP_CONFIG.BASE_PATH + 'Assets/Images/default-avatar.png';
+            avatarImg.src = window.APP_CONFIG.BASE_PATH + 'Assets/Imgs/avatarUser.jpg';
         }
     });
 
@@ -54,16 +49,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         const confirmPassword = document.getElementById('renewpassword').value;
         // alert(oldPassword+'-'+newPassword+'-'+confirmPassword);
         if (newPassword !== confirmPassword) {
-            alert('Mật khẩu mới không khớp!');
+            showToast('warning', 'Cảnh báo', 'Mật khẩu mới không khớp!');
             return;
         }
 
         try {
-            await updatePassword(oldPassword, newPassword);
-            alert('Đổi mật khẩu thành công!');
+            await window.USER_API.updatePassword(oldPassword, newPassword);
+            showToast('success', 'Thành công!',  'Đổi mật khẩu thành công!');
             closeChangePassword();
         } catch (error) {
-            alert(error.message || 'Có lỗi xảy ra khi đổi mật khẩu');
+            showToast('error', 'Lỗi',error.message || 'Có lỗi xảy ra khi đổi mật khẩu');
         }
     };
 
@@ -74,10 +69,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         const email = document.getElementById('email').value;
         const avatar = document.getElementById('avatar').value;
         try {
-            await updateProfile({ name, avatar, email });
-            alert('Cập nhật thông tin thành công!');
+            await window.USER_API.updateProfile({ name, avatar, email });
+            showToast('success', 'Thành công!',  'Cập nhật thông tin thành công!');
         } catch (error) {
-            alert(error.message || 'Có lỗi xảy ra khi cập nhật thông tin cá nhân');
+            showToast('error', 'Lỗi',error.message || 'Có lỗi xảy ra khi cập nhật thông tin cá nhân');
         }
     };
     setupPasswordVisibilityToggle();
@@ -89,7 +84,7 @@ function updateProfileInfo(userInfo) {
     if (userInfo.avatar) {
         avatarImg.src = userInfo.avatar;
     } else {
-        avatarImg.src = window.APP_CONFIG.BASE_PATH + 'Assets/Images/default-avatar.png';
+        avatarImg.src = window.APP_CONFIG.BASE_PATH + 'Assets/Imgs/avatarUser.jpg';
     }
     
     // Cập nhật các thông tin khác

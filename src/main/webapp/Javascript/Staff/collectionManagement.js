@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeBtn = document.querySelector('.close-btn');
     const cancelBtn = document.getElementById('cancelBtn');
     const collectionNameInput = document.getElementById('collectionName');
-    const isPublicCheckbox = document.getElementById('isPublic');
+//    const isPublicCheckbox = document.getElementById('isPublic');
     let editingId = null;
     let allCollections = [];
     let currentCollectionIdForAdd = null;
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCollections(collections) {
         if (!collections || collections.length === 0) {
-            collectionsList.innerHTML = `<tr><td colspan="4" class="text-center">Không có bộ sưu tập nào</td></tr>`;
+            collectionsList.innerHTML = `<tr><td colspan="4" class="text-center">Không có chủ đề nào</td></tr>`;
             return;
         }
         collectionsList.innerHTML = collections.map(col => `
@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
     addBtn.onclick = function() {
         editingId = null;
         collectionForm.reset();
-        isPublicCheckbox.checked = true;
-        modalTitle.textContent = 'Thêm bộ sưu tập mới';
+//        isPublicCheckbox.checked = true;
+        modalTitle.textContent = 'Thêm chủ đề mới';
         modal.classList.add('active');
     };
     closeBtn.onclick = cancelBtn.onclick = function() {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     collectionForm.onsubmit = async function(e) {
         e.preventDefault();
         const name = collectionNameInput.value.trim();
-        if (!name) return alert('Nhập tên bộ sưu tập!');
+        if (!name) return showToast('warning', 'Cảnh báo', 'Nhập tên chủ đề!');
         try {
             if (editingId) {
                 await window.collectionManagementAPI.updateCollection(editingId, name, true);
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.classList.remove('active');
             loadCollections();
         } catch (err) {
-            alert(err.message);
+            showToast('error', 'Lỗi',err.message);
         }
     };
 
@@ -91,8 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!col) return;
         editingId = id;
         collectionNameInput.value = col.name;
-        isPublicCheckbox.checked = true;
-        modalTitle.textContent = 'Sửa bộ sưu tập';
+//        isPublicCheckbox.checked = true;
+        modalTitle.textContent = 'Sửa chủ đề';
         modal.classList.add('active');
 
         // Lấy và hiển thị danh sách từ trong bộ sưu tập (dùng collectionsAPI)
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const words = await window.collectionsAPI.getWordsInCollection(id);
                 if (!words.length) {
-                    wordListDiv.innerHTML = '<div>Chưa có từ nào trong bộ sưu tập này.</div>';
+                    wordListDiv.innerHTML = '<div>Chưa có từ nào trong chủ đề này.</div>';
                 } else {
                     wordListDiv.innerHTML = `
                         <ul>
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
             await window.collectionManagementAPI.deleteCollection(id);
             loadCollections();
         } catch (err) {
-            alert(err.message);
+            showToast('error', 'Lỗi',err.message);
         }
     };
 
@@ -235,16 +235,16 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     document.getElementById('addWordsToCollectionBtn').onclick = async function() {
-        if (!selectedWordIds.length) return alert('Chọn ít nhất 1 từ!');
+        if (!selectedWordIds.length) return showToast('warning', 'Cảnh báo', 'Chọn ít nhất 1 từ!');
         try {
             for (const wordId of selectedWordIds) {
                 await window.collectionManagementAPI.addWordToCollection(currentCollectionIdForAdd, wordId);
             }
-            alert('Đã thêm từ vào bộ sưu tập!');
+            showToast('success', 'Thành công!',  'Đã thêm từ vào chủ đề!');
             loadCollections();
             document.getElementById('addWordModal').classList.remove('active');
         } catch (err) {
-            alert('Lỗi khi thêm từ: ' + err.message);
+            showToast('error', 'Lỗi','Lỗi khi thêm từ: ' + err.message);
         }
     };
 
@@ -258,11 +258,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!confirm('Bạn có chắc muốn xóa từ này khỏi hệ thống?')) return;
         try {
             await  window.collectionManagementAPI.deleteWordFromCollection(collectionId ,wordId);
-            alert('Đã xóa từ khỏi hệ thống!');
+            showToast('success', 'Thành công!',  'Đã xóa từ khỏi hệ thống!');
             // Sau khi xóa, reload lại danh sách từ trong bộ sưu tập
             window.editCollection(collectionId);
         } catch (err) {
-            alert('Lỗi khi xóa từ khỏi hệ thống: ' + err.message);
+            showToast('error', 'Lỗi','Lỗi khi xóa từ khỏi hệ thống: ' + err.message);
         }
     };
 

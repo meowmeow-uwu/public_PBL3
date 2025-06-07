@@ -159,7 +159,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .main-container {
-        margin-left: 0;
+        margin-left: 70px;
         padding: 1rem;
     }
 

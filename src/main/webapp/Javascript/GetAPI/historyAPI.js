@@ -189,7 +189,16 @@ async function getExamsForSubTopic(subTopicId) {
         throw error;
     }
 }
-
+async function getWordDetails(wordId) {
+    if (!wordId) return null;
+    try {
+        const details = await fetchWithAuth(`${API_BASE_URL}/word/${wordId}`);
+        return details;
+    } catch (error) {
+        console.error(`Error fetching details for word ${wordId}:`, error);
+        return null;
+    }
+}
 // Hàm lấy chi tiết bài học
 async function getPostDetails(postId) {
     try {
@@ -201,6 +210,14 @@ async function getPostDetails(postId) {
     }
 }
 
+async function getExamName(examId){
+    try{
+        const response = await fetchWithAuth(`${API_BASE_URL}/exam/${examId}`);
+        return response;
+    } catch (e){
+        throw e;
+    }
+}
 // Hàm lấy chi tiết bài kiểm tra
 async function getExamDetails(examId) {
     try {
@@ -254,7 +271,32 @@ async function getSubTopicName(subTopicId) {
         return "Danh sách";
     }
 }
-
+async function getTotalHistory(type){
+    try{
+        const response = await fetchWithAuth(`${API_BASE_URL}/history/count?type=${type}`);
+        return response?.total||0;
+    } catch (error){
+        console.error("could not fetch total history",error);
+            return 0;
+    }
+    
+}
+async function getHistoryRecently(type){
+    try{
+        const response = await fetchWithAuth(`${API_BASE_URL}/history/recently?type=${type}`);
+        return response;
+    } catch (e){
+        throw e;
+    }
+}
+async function getExamRecently(){
+    try{
+        const response = await fetchWithAuth(`${API_BASE_URL}/exam-history/recently`);
+        return response;
+    } catch (e){
+        throw e;
+    }
+}
 // Thêm vào window để có thể sử dụng từ bất kỳ đâu
 window.historyAPI = {
     getAllHistories,
@@ -272,5 +314,10 @@ window.historyAPI = {
     getExamsForSubTopic,
     getPostDetails,
     getExamDetails,
-    getSubTopicName
+    getSubTopicName,
+    getHistoryRecently,
+    getExamRecently,
+    getWordDetails,
+    getExamName,
+    getTotalHistory
 }; 

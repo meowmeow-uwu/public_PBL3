@@ -6,8 +6,8 @@ let currentCollectionId = null;
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         // Lấy thông tin user
-        if (typeof window.fetchUserInfo === 'function') {
-            const user = await window.fetchUserInfo();
+        if (typeof window.USER_API.fetchUserInfo === 'function') {
+            const user = await window.USER_API.fetchUserInfo();
             if (user && user.name) {
                 document.getElementById('collections-username').textContent = '👤 ' + user.name;
             }
@@ -170,14 +170,14 @@ async function createNewCollection() {
 
     const name = nameInput.value.trim();
     if (!name) {
-        alert('Vui lòng nhập tên bộ sưu tập');
+        showToast('warning', 'Cảnh báo', 'Vui lòng nhập tên bộ sưu tập') ;
         return;
     }
 
     try {
         const collectionId = await createCollection(name);
         if (collectionId) {
-            alert('Tạo bộ sưu tập thành công!');
+            showToast('success', 'Thành công!', 'Tạo bộ sưu tập thành công!') ;
             closePopup();
             // Tải lại danh sách bộ sưu tập
             collectionsData = await getUserCollections();
@@ -185,7 +185,7 @@ async function createNewCollection() {
         }
     } catch (error) {
         console.error('Lỗi khi tạo bộ sưu tập:', error);
-        alert('Có lỗi xảy ra khi tạo bộ sưu tập');
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tạo bộ sưu tập') ;
     }
 }
 
@@ -205,17 +205,17 @@ async function handleUpdateCollection(collectionId) {
     const name = nameInput.value.trim();
 
     if (!name) {
-        alert('Vui lòng nhập tên bộ sưu tập');
+        showToast('warning', 'Cảnh báo', 'Vui lòng nhập tên bộ sưu tập') ;
         return;
     }
 
     if (name.length < 3) {
-        alert('Tên bộ sưu tập phải có ít nhất 3 ký tự');
+        showToast('warning', 'Cảnh báo', 'Tên bộ sưu tập phải có ít nhất 3 ký tự') ;
         return;
     }
 
     if (name.length > 50) {
-        alert('Tên bộ sưu tập không được vượt quá 50 ký tự');
+        showToast('warning', 'Cảnh báo', 'Tên bộ sưu tập không được vượt quá 50 ký tự') ;
         return;
     }
 
@@ -223,7 +223,7 @@ async function handleUpdateCollection(collectionId) {
         // Gọi API từ collectionsAPI.js
         const success = await updateCollection(collectionId, name);
         if (success) {
-            alert('Cập nhật bộ sưu tập thành công!');
+            showToast('success', 'Thành công!', 'Cập nhật bộ sưu tập thành công!') ;
             closePopup();
             // Tải lại danh sách bộ sưu tập
             collectionsData = await getUserCollections();
@@ -231,7 +231,7 @@ async function handleUpdateCollection(collectionId) {
         }
     } catch (error) {
         console.error('Lỗi khi cập nhật bộ sưu tập:', error);
-        alert(error.message || 'Có lỗi xảy ra khi cập nhật bộ sưu tập');
+        showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật bộ sưu tập') ;
     }
 }
 
@@ -254,7 +254,7 @@ async function editCollection(collectionId) {
 
     // Kiểm tra nếu là bộ sưu tập công khai
     if (collection.isPublic) {
-        alert('Không thể chỉnh sửa bộ sưu tập công khai');
+        showToast('warning', 'Cảnh báo', 'Không thể chỉnh sửa bộ sưu tập công khai') ;
         return;
     }
 
@@ -330,7 +330,7 @@ async function confirmDeleteCollection(collectionId) {
         console.log('Đang xóa bộ sưu tập với ID:', collectionId); // Debug log
         const success = await deleteCollection(collectionId);
         if (success) {
-            alert('Xóa bộ sưu tập thành công!');
+            showToast('success', 'Thành công!', 'Xóa bộ sưu tập thành công!') ;
             closePopup();
             // Tải lại danh sách bộ sưu tập
             collectionsData = await getUserCollections();
@@ -338,7 +338,7 @@ async function confirmDeleteCollection(collectionId) {
         }
     } catch (error) {
         console.error('Lỗi khi xóa bộ sưu tập:', error);
-        alert(error.message || 'Có lỗi xảy ra khi xóa bộ sưu tập');
+        showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi xóa bộ sưu tập') ;
     }
 }
 
@@ -352,13 +352,13 @@ async function removeWordFromCollection(collectionId, wordId) {
     try {
         const success = await deleteWordFromCollection(collectionId, wordId);
         if (success) {
-            alert('Xóa từ khỏi bộ sưu tập thành công!');
+            showToast('success', 'Thành công!','Xóa từ khỏi bộ sưu tập thành công!');
             // Tải lại danh sách từ trong bộ sưu tập
             showCollectionWords(collectionId);
         }
     } catch (error) {
         console.error('Lỗi khi xóa từ:', error);
-        alert(error.message || 'Có lỗi xảy ra khi xóa từ khỏi bộ sưu tập');
+        showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi xóa từ khỏi bộ sưu tập');
     }
 }
 
@@ -434,7 +434,7 @@ async function startFlashcards(collectionId) {
         console.log('Danh sách từ trong bộ sưu tập:', words);
         
         if (!words || words.length === 0) {
-            alert('Bộ sưu tập này chưa có từ nào để ôn tập!');
+           showToast('warning', 'Cảnh báo', 'Bộ sưu tập này chưa có từ nào để ôn tập!');
             return;
         }
 
@@ -482,7 +482,7 @@ async function startFlashcards(collectionId) {
         console.log('Số flashcard đã tải thành công:', flashcards.length);
 
         if (flashcards.length === 0) {
-            alert('Không thể tải dữ liệu flashcard. Vui lòng thử lại sau!');
+           showToast('error', 'Lỗi', 'Không thể tải dữ liệu flashcard. Vui lòng thử lại sau!')  ;
             return;
         }
 
@@ -570,7 +570,7 @@ async function startFlashcards(collectionId) {
         renderFlashcard();
     } catch (error) {
         console.error('Lỗi khi bắt đầu ôn tập:', error);
-        alert('Có lỗi xảy ra khi tải dữ liệu ôn tập. Vui lòng thử lại sau!');
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tải dữ liệu ôn tập. Vui lòng thử lại sau!') ;
     }
 }
 
@@ -595,8 +595,8 @@ function formatDate(dateString) {
 
 // Gán tên user (demo, thực tế lấy từ API)
 document.addEventListener('DOMContentLoaded', async function () {
-  if (typeof window.fetchUserInfo === 'function') {
-    const user = await window.fetchUserInfo();
+  if (typeof window.USER_API.fetchUserInfo === 'function') {
+    const user = await window.USER_API.fetchUserInfo();
     if (user && user.name) {
       document.getElementById('collections-username').textContent = '👤 ' + user.name;
     }

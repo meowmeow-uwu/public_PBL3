@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Quản lý Ngữ pháp & Bài kiểm tra</title> <link rel="stylesheet" href="../../Assets/Css/main.css">
+        <link rel="stylesheet" href="../../Assets/Css/Admin/staffuserManagerment.css">
+        <link rel="stylesheet" href="../../Assets/Css/Staff/grammarManagement.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    </head>
+    <body>
+        <div id="sidebar"></div>
+        <div class="lesson-manager-container main-container">
+            <h1 id="managementTitle">Quản lý Chủ đề</h1>
+
+            <div id="breadcrumbs" class="breadcrumbs">
+                <span class="breadcrumb-item active" data-level="topics" onclick="window.navigateToLevel('topics')">Tất cả Chủ đề</span>
+            </div>
+
+            <div class="search-filter-section">
+                <div class="action-buttons">
+                    <button id="backBtn" class="btn btn-secondary" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Trở lại
+                    </button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm...">
+                    <button id="searchBtn" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+                <div class="action-buttons">
+
+                    <button id="addNewBtn" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Thêm mới
+                    </button>
+                </div>
+            </div>
+            <div id="contentTabs" class="tab-container" style="display: none;">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-content-type="posts" onclick="window.switchContentType('posts')">
+                        <i class="fas fa-file-alt"></i> Bài học (Posts)
+                    </button>
+                    <button class="tab-button" data-content-type="exams" onclick="window.switchContentType('exams')">
+                        <i class="fas fa-tasks"></i> Bài kiểm tra (Exams)
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table user-table" id="dataTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div class="pagination" id="pagination"></div>
+
+            
+        </div>
+
+        <div class="modal" id="formModal">
+            <div class="modal-content">
+                <span class="close-modal close" onclick="window.closeModal('formModal')">&times;</span>
+                <h2 id="modalTitle"></h2>
+                <form id="entityForm">
+                    <div id="formFields"></div>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal" id="detailModal" style="overflow-y: auto;"> <div class="modal-content" style="max-width: 800px;"> <span class="close-modal close" onclick="window.closeModal('detailModal')">&times;</span>
+                <h2 id="detailModalTitle">Chi tiết</h2>
+                <div id="detailModalContent">
+                </div>
+                <div id="examQuestionsSection" style="display:none; margin-top: 20px;">
+                    <h3>Câu hỏi của Bài kiểm tra</h3>
+                    <button id="addQuestionToExamBtn" class="btn btn-sm btn-success" style="margin-bottom: 10px;">
+                        <i class="fas fa-plus"></i> Thêm câu hỏi
+                    </button>
+                    <div id="examQuestionsList" class="questions-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Toast Container -->
+        <div class="toast-container"></div>
+
+        <script src="../../Javascript/config.js"></script>
+        <script>
+            window.APP_CONFIG.BASE_PATH = '../../';
+        </script>
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/topicManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/subTopicManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/postManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/examManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/questionManagementAPI.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/answerManagementAPI.js"></script>
+        <script src="../../Javascript/components/sideBar.js"></script>
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
+        <script src="../../Javascript/components/alert.js"></script>
+        <script src="../../Javascript/Staff/grammarManagement.js"></script>
+    </body>
+</html>

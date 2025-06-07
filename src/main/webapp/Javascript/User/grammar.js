@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return await window.historyAPI.getExamDetails(examId);
         } catch (error) {
             console.error(`Error fetching full details for exam ${examId}:`, error);
-            alert(`Không thể tải chi tiết bài kiểm tra: ${error.message}.`);
+            showToast('error', 'Lỗi', `Không thể tải chi tiết bài kiểm tra: ${error.message}.`);
             return null;
         }
     }
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function showLessonDetailView(lessonId) {
         if (!lessonDetailContentArea) {
             console.error("DOM Error: Element with ID 'lessonDetailContentArea' not found.");
-            alert("Lỗi hiển thị bài học: Không tìm thấy vùng chứa nội dung.");
+            showToast('error', 'Lỗi', 'Lỗi hiển thị bài học: Không tìm thấy vùng chứa nội dung.');
             return;
         }
         lessonDetailContentArea.innerHTML = '<p class="loading-message">Đang tải nội dung bài học...</p>';
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if(submitQuizButton) submitQuizButton.style.display = 'none';
             await window.historyAPI.addExamResultHistory(currentQuizData.id, 0, 0, 0);
         } else {
-            alert("Không có dữ liệu bài kiểm tra để nộp.");
+            showToast('error', 'Lỗi', 'Không có dữ liệu bài kiểm tra để nộp.');
         }
     }
 
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (currentQuizData) { 
                  processQuizSubmission(); 
             } else {
-                alert("Không có bài kiểm tra nào đang làm hoặc bài kiểm tra không có câu hỏi để nộp.");
+                showToast('error', 'Lỗi', 'Không có bài kiểm tra nào đang làm hoặc bài kiểm tra không có câu hỏi để nộp.');
             }
         });
     }

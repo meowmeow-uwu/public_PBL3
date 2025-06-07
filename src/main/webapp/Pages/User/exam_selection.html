@@ -8,16 +8,16 @@
         <link rel="stylesheet" href="../../Assets/Css/User/exam_selection.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
-
+        
     </head>
     <body>
         <div id="header"></div>
-
+        
         <div class="selection-container">
             <h1 class="page-title">📘 Chọn bài kiểm tra</h1>
-
+            
             <!-- Search and Filter Section -->
             <div class="search-filter-section">
                 <div class="search-box">
@@ -126,14 +126,18 @@
                 </button>
             </div>
         </div>
+        <!-- Toast Container -->
+        <div class="toast-container"></div>
 
         <div id="footer"></div>
         <script src="../../Javascript/config.js"></script>
         <script>
             window.APP_CONFIG.BASE_PATH = '../../';
         </script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../Javascript/components/header_footer.js"></script>
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
+        <script src="../../Javascript/components/alert.js"></script>
         <script src="../../Javascript/User/exam_selection.js"></script>
     </body>
 </html> 

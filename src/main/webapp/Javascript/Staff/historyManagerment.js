@@ -19,7 +19,7 @@ async function loadHistories() {
         renderHistoryTable();
         renderHistoryPagination();
     } catch (e) {
-        alert(e.message);
+        showToast('error', 'Lỗi',  e.message);
     }
 }
 
@@ -82,7 +82,7 @@ async function openEditModal(id) {
         document.getElementById('result').value = h.result || h.score || '';
         document.getElementById('historyModal').style.display = 'block';
     } catch (e) {
-        alert(e.message);
+        showToast('error', 'Lỗi',  e.message);
     }
 }
 
@@ -108,7 +108,7 @@ async function saveHistory(e) {
         closeModal();
         await loadHistories();
     } catch (e) {
-        alert(e.message);
+        showToast('error', 'Lỗi',  e.message);
     }
 }
 
@@ -118,7 +118,7 @@ async function deleteHistoryHandler(id) {
         await deleteHistory(id, currentType);
         await loadHistories();
     } catch (e) {
-        alert(e.message);
+        showToast('error', 'Lỗi',  e.message);
     }
 }
 

@@ -1,19 +1,14 @@
 // Sử dụng APP_CONFIG cho các đường dẫn
 const API_LgRgt_URL = window.APP_CONFIG.API_BASE_URL + '/auth/';
-const API_getIF_URL = window.APP_CONFIG.API_BASE_URL + '/user/me';
 
-// Constants for user roles
-const ROLES = {
-    ADMIN: 1,
-    USER: 2,
-    STAFF: 3
-};
-
+const ADMIN = window.APP_CONFIG.ROLES.ADMIN;
+const USER = window.APP_CONFIG.ROLES.USER;
+const STAFF = window.APP_CONFIG.ROLES.STAFF;
 // Constants for redirect paths - sử dụng BASE_PATH
 const REDIRECT_PATHS = {
-    [ROLES.ADMIN]: window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html',
-    [ROLES.USER]: window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html',
-    [ROLES.STAFF]: window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html'
+    [ADMIN]: window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html',
+    [USER]: window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html',
+    [STAFF]: window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html'
 };
 
 async function handleLogin(event) {
@@ -45,6 +40,8 @@ async function handleLogin(event) {
 
         if (!response.ok) {
             throw new Error(data.message || "Đăng nhập thất bại");
+            localStorage.removeItem("token");
+
         }
 
         // Lưu token và thời gian hết hạn
@@ -55,67 +52,33 @@ async function handleLogin(event) {
         }
 
         console.log("Đăng nhập thành công");
-        
+
         // Lấy thông tin user và chuyển hướng
-        await fetchUserInfo();
-    } catch (error) {
-        console.error("Lỗi đăng nhập:", error);
-        alert("Lỗi: " + error.message);
-    }
-}
+        const user = await window.USER_API.fetchUserInfo();
+        if (user) {
+            const role = user.group_user_id;
+            const redirectPath = REDIRECT_PATHS[role];
 
-async function fetchUserInfo() {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        console.error("Không tìm thấy token trong localStorage.");
-        alert("Bạn chưa đăng nhập hoặc token đã hết hạn.");
-        window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
-        return;
-    }
-
-    try {
-        const response = await fetch(API_getIF_URL, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
+            if (redirectPath) {
+                window.location.href = redirectPath;
+            } else {
+                console.error("Role không hợp lệ:", role);
+                localStorage.removeItem("token");
+                showToast('error', 'Lỗi',"Không thể xác định quyền truy cập. Vui lòng liên hệ admin.");
             }
-        });
-
-        const text = await response.text();
-        let data;
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            console.warn("Phản hồi không phải JSON hợp lệ:", text);
-            throw new Error("Server trả về dữ liệu không hợp lệ");
-        }
-
-        if (!response.ok) {
-            throw new Error(data?.error || `Lỗi HTTP ${response.status}`);
-        }
-
-        // Chuyển hướng dựa trên role
-        const role = data.group_user_id;
-        const redirectPath = REDIRECT_PATHS[role];
-        
-        if (redirectPath) {
-            window.location.href = redirectPath;
         } else {
-            console.error("Role không hợp lệ:", role);
-            alert("Không thể xác định quyền truy cập. Vui lòng liên hệ admin.");
-        }
-
-    } catch (error) {
-        console.error("Lỗi khi lấy thông tin người dùng:", error.message);
-        alert("Lỗi khi lấy thông tin người dùng: " + error.message);
-        // Nếu lỗi 401 (Unauthorized), chuyển về trang login
-        if (error.message.includes("401")) {
+            localStorage.removeItem("token");
+            showToast('error', 'Lỗi',"Không thể lấy thông tin người dùng");
             window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
         }
+        console.log(user);
+    } catch (error) {
+        console.error("Lỗi đăng nhập:", error);
+        localStorage.clear();
+        showToast('error', 'Lỗi',"Lỗi: " + error.message);
     }
 }
+
 
 async function handleRegister(event) {
     event.preventDefault();
@@ -128,13 +91,13 @@ async function handleRegister(event) {
 
     // Kiểm tra định dạng username - không cho phép dấu cách
     if (!/^[a-z0-9_]+$/.test(username) || username.includes(' ')) {
-        alert('Username chỉ được chứa chữ thường, số và dấu gạch dưới, không được chứa dấu cách!');
+        showToast('warning', 'Cảnh báo', 'Username chỉ được chứa chữ thường, số và dấu gạch dưới, không được chứa dấu cách!');
         return;
     }
 
     // Kiểm tra mật khẩu khớp
     if (password !== confirmPassword) {
-        alert('Mật khẩu không khớp!');
+        showToast('warning', 'Cảnh báo', 'Mật khẩu không khớp!');
         return;
     }
 
@@ -164,11 +127,11 @@ async function handleRegister(event) {
             throw new Error(data?.error || 'Đăng ký thất bại');
         }
 
-        alert('Đăng ký thành công! Vui lòng đăng nhập.');
+        showToast('success', 'Thành công!',  'Đăng ký thành công! Vui lòng đăng nhập.');
         window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
     } catch (error) {
         console.error('Lỗi đăng ký:', error);
-        alert('Lỗi: ' + error.message);
+        showToast('error', 'Lỗi','Lỗi: ' + error.message);
     }
 }
 
@@ -199,11 +162,11 @@ async function handleForgotPassword(event) {
             throw new Error(data?.error || 'Không thể gửi yêu cầu đặt lại mật khẩu');
         }
 
-        alert('Hướng dẫn đặt lại mật khẩu đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư.');
+        showToast('success', 'Thành công!',  'Hướng dẫn đặt lại mật khẩu đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư.');
         window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
     } catch (error) {
         console.error('Lỗi quên mật khẩu:', error);
-        alert('Lỗi: ' + error.message);
+        showToast('error', 'Lỗi','Lỗi: ' + error.message);
     }
 }
 
@@ -211,19 +174,19 @@ async function handleResetPassword(event) {
     event.preventDefault();
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    
+
     // Lấy token từ URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
     if (!token) {
-        alert('Token không hợp lệ');
+        showToast('warning', 'Cảnh báo', 'Token không hợp lệ');
         window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
         return;
     }
 
     if (newPassword !== confirmPassword) {
-        alert('Mật khẩu không khớp!');
+        showToast('warning', 'Cảnh báo', 'Mật khẩu không khớp!');
         return;
     }
 
@@ -251,11 +214,11 @@ async function handleResetPassword(event) {
             throw new Error(data?.error || 'Không thể đặt lại mật khẩu');
         }
 
-        alert('Mật khẩu đã được đặt lại thành công!');
+        showToast('success', 'Thành công!',  'Mật khẩu đã được đặt lại thành công!');
         window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
     } catch (error) {
         console.error('Lỗi đặt lại mật khẩu:', error);
-        alert('Lỗi: ' + error.message);
+        showToast('error', 'Lỗi','Lỗi: ' + error.message);
     }
 }
 
@@ -265,7 +228,8 @@ async function checkResetToken() {
     const token = urlParams.get('token');
 
     if (!token) {
-        alert('Token không hợp lệ hoặc đã hết hạn');
+        localStorage.removeItem("token");
+        showToast('warning', 'Cảnh báo', 'Token không hợp lệ hoặc đã hết hạn');
         window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
         return;
     }
@@ -282,17 +246,19 @@ async function checkResetToken() {
         });
 
         if (!response.ok) {
+            localStorage.removeItem("token");
             throw new Error('Token không hợp lệ hoặc đã hết hạn');
         }
     } catch (error) {
+        localStorage.removeItem("token");
         console.error('Lỗi xác thực token:', error);
-        alert(error.message);
+        showToast('error', 'Lỗi',error.message);
         window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
     }
 }
 
 // Add event listeners when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Add event listener for login form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
@@ -300,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Thêm xử lý username chữ thường và không cho phép dấu cách
         const usernameInput = document.getElementById('username');
         if (usernameInput) {
-            usernameInput.addEventListener('input', function() {
+            usernameInput.addEventListener('input', function () {
                 this.value = this.value.toLowerCase().replace(/\s+/g, '');
             });
         }
@@ -313,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Thêm xử lý username chữ thường và không cho phép dấu cách
         const usernameInput = document.getElementById('username');
         if (usernameInput) {
-            usernameInput.addEventListener('input', function() {
+            usernameInput.addEventListener('input', function () {
                 this.value = this.value.toLowerCase().replace(/\s+/g, '');
             });
         }

@@ -9,9 +9,9 @@
         <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
         <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
         <link rel="stylesheet" href="../../../Assets/Css/Components/profile.css">
+        <link rel="stylesheet" href="../../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
-
+        
     </head>
     <body>
         <div id="header"></div>
@@ -25,7 +25,7 @@
                     <!-- <input type="file" id="avatarInput" accept="image/*" style="display:none;">
                     <button class="btn" onclick="document.getElementById('avatarInput').click()">Đổi ảnh</button> -->
                 </div>
-                <form class="profile-info" id="profileForm" autocomplete="off">
+                <form class="profile-infor" id="profileForm" autocomplete="off">
                     <div class="form-group">
                         <label>Tên đăng nhập</label>
                         <input type="text" id="username" required readonly>
@@ -74,22 +74,27 @@
                         <div style="position: relative;">
                             <span id="togglePasswordText" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: blue; text-decoration: underline;">Hiện mật khẩu</span>
                         </div>
-                        <button type="submit" class="btn btn-success">Xác nhận</button>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-success">Xác nhận</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
+                <!-- Toast Container -->
+        <div class="toast-container"></div>
+
         <div id="footer"></div>
 
         <script src="../../../Javascript/config.js"></script>
         <script>
                 window.APP_CONFIG.BASE_PATH = '../../../';
         </script>
-        <script src="../../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../../Javascript/components/header_footer.js"></script>
         <script src="../../../Javascript/components/sideBar.js"></script>
         <script src="../../../Javascript/components/profile.js"></script>
-        <script src="../../../Javascript/GetAPI/profileAPI.js"></script>
-
+        <script src="../../../Javascript/components/auth-redirect.js" ></script>
+        <script src="../../../Javascript/components/alert.js"></script>
     </body>
 </html>

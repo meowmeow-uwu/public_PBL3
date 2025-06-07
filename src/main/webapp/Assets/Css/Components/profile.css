@@ -28,7 +28,7 @@
   margin-bottom: 12px;
   border: 2px solid #4a90e2;
 }
-.profile-info {
+.profile-infor {
   flex: 1;
 }
 .form-group {
@@ -92,9 +92,9 @@
   color: #888;
   cursor: pointer;
 }
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .profile-container, .profile-has-sidebar {
-    margin-left: 0 !important;
+    margin-left: 70px !important;
     padding: 1rem;
   }
   .profile-main { flex-direction: column; gap: 18px; }

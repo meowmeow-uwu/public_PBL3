@@ -1,100 +1,72 @@
-<div class="sidebar">
-    <!-- User Profile Section -->
-    <div class="user-profile">
+<div class="sidebar" id="sidebar">
+    <div class="user-profile-header" id="user-profile-header">
         <div class="profile-image">
             <img src="${window.APP_CONFIG.BASE_PATH}Assets/Images/default-avatar.png" alt="User Avatar" id="user-avatar">
         </div>
-        <div class="profile-info">
-            <h3 id="sidebar-user-name">User Name</h3>
+        <div class="profile-info" id="profile-info-container"> <h3 id="sidebar-user-name">User Name</h3>
         </div>
     </div>
 
-    <!-- Staff Menu Items -->
-    <div class="menu-section staff-only">
-        <ul class="menu-list">
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/home.html" class="menu-link">
-                    <i class="fas fa-home"></i>
-                    <span>Trang tổng quan</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/lessonManagerment.html" class="menu-link">
-                    <i class="fas fa-book"></i>
-                    <span>Quản lý ngữ pháp</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/collectionManagement.html" class="menu-link">
-                    <i class="fas fa-bookmark"></i>
-                    <span>Bộ sưu tập</span>
-                </a>
-            </li>            
-            <!-- <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/vocaGramReaManagerment.html" class="menu-link">
-                    <i class="fas fa-language"></i>
-                    <span>Quản lý ngữ pháp</span>
-                </a>
-            </li> -->
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/wordManagement.html" class="menu-link">
-                    <i class="fas fa-spell-check"></i>
-                    <span>Quản lý từ vựng</span>
-                </a>
-            </li>
-            <!-- <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/answerManagerment.html" class="menu-link">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Quản lý câu trả lời</span>
-                </a>
-            </li> -->
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html" class="menu-link">
-                    <i class="fas fa-user"></i>
-                    <span>Thông tin cá nhân</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="#" onclick="logOut()" class="menu-link">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Đăng xuất</span>
-                </a>
-            </li>
-            
-            <!-- <li class="menu-item staff">
-                <a href="#" class="menu-link">
-                    <i class="fas fa-cog"></i>
-                    <span>Cài đặt</span>
-                    <i class="fa fa-caret-down"></i>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="#" onclick="logOut()" >Đăng xuất</a>
-                </div>
-            </li> -->
-        </ul>
-    </div>
-
-    <!-- Admin Menu Items -->
-    <div class="menu-section admin-only">
-        <div class="menu-divider">
-            <span>Quản lý nhân sự</span>
+    <div class="sidebar-menu-content" id="sidebar-menu-content">
+        <div class="menu-section staff-only">
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/home.html" class="menu-link">
+                        <i class="fas fa-home"></i>
+                        <span>Trang tổng quan</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/grammarManagement.html" class="menu-link">
+                        <i class="fas fa-book"></i>
+                        <span>Quản lý ngữ pháp</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/collectionManagement.html" class="menu-link">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Quản lý chủ đề từ vựng</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Staff/wordManagement.html" class="menu-link">
+                        <i class="fas fa-spell-check"></i>
+                        <span>Quản lý từ vựng</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Components/Html/profile.html" class="menu-link">
+                        <i class="fas fa-user"></i>
+                        <span>Thông tin cá nhân</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a href="#" onclick="logOut()" class="menu-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <ul class="menu-list">
 
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Admin/staffuserManagerment.html" class="menu-link">
-                    <i class="fas fa-users"></i>
-                    <span>Quản lý học viên và nhân viên</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a href="${window.APP_CONFIG.BASE_PATH}Pages/Admin/addStaffUser.html" class="menu-link">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Thêm nhân viên/Người dùng</span>
-                </a>
-            </li>
-        </ul>
+        <div class="menu-section admin-only">
+            <div class="menu-divider">
+                <span>Quản lý nhân sự</span>
+            </div>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Admin/staffuserManagerment.html" class="menu-link">
+                        <i class="fas fa-users"></i>
+                        <span>Quản lý học viên và nhân viên</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="${window.APP_CONFIG.BASE_PATH}Pages/Admin/addStaffUser.html" class="menu-link">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Thêm nhân viên/Người dùng</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
-
-    

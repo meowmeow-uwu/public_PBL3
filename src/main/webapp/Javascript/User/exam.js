@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedAnswer = document.querySelector('input[name="answer"]:checked');
         
         if (!selectedAnswer) {
-            alert('Vui lòng chọn một đáp án!');
+            showToast('warning', 'Cảnh báo', 'Vui lòng chọn một đáp án!') ;
             return;
         }
 
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeLeft
         }));
         
-        alert('Đã lưu nháp bài làm!');
+        showToast('success', 'Thành công!', 'Đã lưu nháp bài làm!') ;
     });
 
     // Submit Quiz
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Results Actions
     reviewBtn.addEventListener('click', () => {
         // Implement review functionality
-        alert('Chức năng ôn tập đang được phát triển!');
+        showToast('info', 'Thông tin', 'Chức năng ôn tập đang được phát triển!') ;
     });
 
     homeBtn.addEventListener('click', () => {

@@ -9,9 +9,9 @@
         <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
         <link rel="stylesheet" href="../../Assets/Css/User/history.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+        
     </head>
     <body>
         <div id="header"></div>
@@ -52,6 +52,8 @@
                 </div>
             </div>
         </div>
+        <!-- Toast Container -->
+        <div class="toast-container"></div>
 
         <div id="footer"></div>
 
@@ -60,9 +62,11 @@
             window.APP_CONFIG = window.APP_CONFIG || {};
             window.APP_CONFIG.BASE_PATH = '../../';
         </script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
-
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
+        <script src="../../Javascript/GetAPI/historyAPI.js"></script>
         <script src="../../Javascript/components/header_footer.js"></script>
         <script src="../../Javascript/User/history.js"></script>
+        <script src="../../Javascript/components/alert.js"></script>
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
     </body>
 </html>

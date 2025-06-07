@@ -39,12 +39,9 @@ async function init() {
             console.error('Không tìm thấy element .topic-grid');
             return;
         }
-
-        // Lấy danh sách bộ sưu tập công khai
-        publicCollections = await window.collectionManagementAPI.getAllCollections();
+        publicCollections = await window.collectionManagementAPI.getAllCollections(); 
         console.log('Danh sách bộ sưu tập công khai:', publicCollections);
-
-        // Tạo topic cards từ danh sách bộ sưu tập
+        // Lấy danh sách bộ sưu tập công kha
         publicCollections.forEach(collection => {
             const card = createTopicCard(collection);
             topicGrid.appendChild(card);
@@ -146,7 +143,7 @@ async function startCollection(collection) {
         // Lấy danh sách từ trong bộ sưu tập
         currentWords = await window.collectionsAPI.getWordsInCollection(collection.collectionId);
         if (!currentWords || currentWords.length === 0) {
-            alert('Bộ sưu tập này chưa có từ nào');
+            showToast('warning', 'Cảnh báo', 'Bộ sưu tập này chưa có từ nào');
             return;
         }
 
@@ -154,7 +151,7 @@ async function startCollection(collection) {
         showCurrentWord(currentWords[0]);
     } catch (error) {
         console.error('Lỗi khi bắt đầu học:', error);
-        alert('Có lỗi xảy ra khi tải dữ liệu từ vựng');
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tải dữ liệu từ vựng');
     }
 }
 
@@ -242,7 +239,7 @@ async function showCurrentWord(word) {
         updateLearnedStatus();
     } catch (error) {
         console.error('Lỗi khi hiển thị từ:', error);
-        alert('Có lỗi xảy ra khi tải thông tin từ vựng');
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tải thông tin từ vựng');
         showPreviousWord();
     }
 }
@@ -274,7 +271,7 @@ function showNextWord() {
 function playAudio() {
     const currentWord = currentWords[currentWordIndex];
     if (currentWord && currentWord.sound) {
-        const audio = new Audio(`${window.APP_CONFIG.BASE_PATH}Assets/Sounds/${currentWord.sound}`);
+        const audio = new Audio(`${currentWord.sound}`);
         audio.play().catch(error => {
             console.error('Lỗi khi phát âm:', error);
         });
@@ -323,10 +320,10 @@ function updateProgress() {
 async function saveCollection(collectionId) {
     try {
         await window.collectionsAPI.addUserToCollection(collectionId);
-        alert('Đã lưu bộ sưu tập vào danh sách học của bạn');
+        showToast('success', 'Thành công!', 'Đã lưu bộ sưu tập vào danh sách học của bạn');
     } catch (error) {
         console.error('Lỗi khi lưu bộ sưu tập:', error);
-        alert(error.message || 'Có lỗi xảy ra khi lưu bộ sưu tập');
+        showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi lưu bộ sưu tập');
     }
 }
 
@@ -378,7 +375,7 @@ async function showCollectionModal() {
         collectionModal.classList.add('active');
     } catch (error) {
         console.error('Lỗi khi lấy danh sách bộ sưu tập:', error);
-        alert('Có lỗi xảy ra khi tải danh sách bộ sưu tập');
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tải danh sách bộ sưu tập');
     }
 }
 
@@ -396,11 +393,11 @@ async function saveWordToCollection(collectionId) {
 
         console.log('Lưu từ:', currentWord.wordId, 'vào bộ sưu tập:', collectionId);
         await window.collectionsAPI.addWordToCollection(collectionId, currentWord.wordId);
-        alert('Đã lưu từ vào bộ sưu tập');
+        showToast('success', 'Thành công!', 'Đã lưu từ vào bộ sưu tập');
         closeCollectionModal();
     } catch (error) {
         console.error('Lỗi khi lưu từ:', error);
-        alert(error.message || 'Có lỗi xảy ra khi lưu từ vào bộ sưu tập');
+        showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi lưu từ vào bộ sưu tập');
     }
 }
 

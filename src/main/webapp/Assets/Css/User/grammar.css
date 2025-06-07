@@ -102,7 +102,7 @@ body {
 }
 
 .back-button {
-    background: none;
+    background: #c0dfd8;
     border: none;
     color: var(--primary-color);
     cursor: pointer;
@@ -208,7 +208,11 @@ body {
     .topics-grid {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
-
+    #backToQuizList.back-button {
+        padding: 5px 8px;
+        font-size: 14px;
+        margin-right:3px;
+      }
     .topic-circle {
         width: 150px;
         height: 150px;
@@ -222,6 +226,12 @@ body {
     .lesson-actions {
         flex-wrap: wrap;
         justify-content: center;
+    }
+    .container{
+        padding: auto 3px;
+    }
+    .quiz-section {
+        padding: auto 0;
     }
 }
 

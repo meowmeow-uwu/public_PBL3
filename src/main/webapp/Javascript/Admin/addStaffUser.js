@@ -80,36 +80,36 @@ async function handleFormSubmit(e) {
 
     // Validate Username
     if (!/^[a-z0-9_]+$/.test(username)) {
-        alert('Username chỉ được chứa chữ thường, số và dấu gạch dưới (không chứa dấu chấm)!');
+        showToast('warning', 'Cảnh báo', 'Username chỉ được chứa chữ thường, số và dấu gạch dưới (không chứa dấu chấm)!');
         return;
     }
     if (username.includes('..')) {
-        alert('Username không được chứa hai dấu chấm liền kề (..)');
+        showToast('warning', 'Cảnh báo', 'Username không được chứa hai dấu chấm liền kề (..)');
         return;
     }
     if (username.length < 3 || username.length > 30) {
-        alert('Username phải có độ dài từ 3 đến 30 ký tự!');
+        showToast('warning', 'Cảnh báo', 'Username phải có độ dài từ 3 đến 30 ký tự!');
         return;
     }
 
     // Password validation (only if password is not empty)
     if (password) {
         if (password.length < 6) {
-            alert('Mật khẩu phải có ít nhất 6 ký tự!');
+            showToast('warning', 'Cảnh báo', 'Mật khẩu phải có ít nhất 6 ký tự!');
             return;
         }
         if (password !== repassword) {
-            alert('Mật khẩu nhập lại không khớp!');
+            showToast('warning', 'Cảnh báo', 'Mật khẩu nhập lại không khớp!');
             return;
         }
     } else if (repassword) {
-        alert('Vui lòng nhập mật khẩu.');
+        showToast('warning', 'Cảnh báo', 'Vui lòng nhập mật khẩu.');
         return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        alert('Email không hợp lệ!');
+        showToast('warning', 'Cảnh báo', 'Email không hợp lệ!');
         return;
     }
 
@@ -117,11 +117,11 @@ async function handleFormSubmit(e) {
     if (!avatar) {
         avatar = 'https://i.pinimg.com/736x/7b/c6/fd/7bc6fd1adc9df8f49353a40d716a0a7d.jpg';
     } else {
-        try { new URL(avatar); } catch { alert('URL avatar không hợp lệ!'); return; }
+        try { new URL(avatar); } catch { showToast('warning', 'Cảnh báo', 'URL avatar không hợp lệ!'); return; }
     }
 
     if (name.length < 2) {
-        alert('Họ tên phải có ít nhất 2 ký tự!');
+        showToast('warning', 'Cảnh báo', 'Họ tên phải có ít nhất 2 ký tự!');
         return;
     }
 
@@ -131,12 +131,12 @@ async function handleFormSubmit(e) {
     }
 
     try {
-         const res = await window.addStaffUserAPI.createUser(userData);
+         const res = await window.USER_MANAGEMENT_API.createUser(userData);
         console.log("Dữ liệu gửi đi:", userData); // Test
-        alert('Thêm người dùng thành công!');
+        showToast('success', 'Thành công!',  'Thêm người dùng thành công!');
         resetForm();
     } catch (error) {
-        alert(error.message || 'Có lỗi xảy ra khi thêm người dùng!');
+        showToast('error', 'Lỗi',error.message || 'Có lỗi xảy ra khi thêm người dùng!');
     }
 }
 

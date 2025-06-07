@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const token = localStorage.getItem('token');
         
         // Chỉ thử lấy thông tin user nếu có token và hàm fetchUserInfo tồn tại
-        if (token && typeof window.fetchUserInfo === 'function') {
+        if (token && typeof window.USER_API.fetchUserInfo === 'function') {
             try {
-                userInfo = await window.fetchUserInfo();
+                userInfo = await window.USER_API.fetchUserInfo();
             } catch (error) {
                 console.error('Error fetching user info:', error);
                 // Nếu có lỗi khi lấy thông tin user, xử lý như guest
@@ -136,7 +136,7 @@ function addHeaderEventListeners() {
             const confirmPassword = document.getElementById('confirmPassword').value;
             if (password !== confirmPassword) {
                 e.preventDefault();
-                alert('Mật khẩu không khớp!');
+                showToast('error', 'Lỗi', 'Mật khẩu không khớp.');
             }
         });
     }

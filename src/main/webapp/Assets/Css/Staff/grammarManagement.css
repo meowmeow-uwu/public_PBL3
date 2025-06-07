@@ -1,0 +1,488 @@
+.lesson-manager-container {
+    margin-left: 280px;
+    padding: 2rem;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.search-bar input,
+.search-bar select {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    min-width: 200px;
+}
+
+.lesson-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.lesson-table th,
+.lesson-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.lesson-table th {
+    background: #f5f7fa;
+    font-weight: 600;
+}
+
+.lesson-table tr:hover {
+    background: #f0f8ff;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 6px;
+    font-size: 1.1rem;
+    color: #4a90e2;
+    transition: color 0.2s;
+}
+
+.action-btn:hover {
+    color: #357abd;
+}
+
+.action-btn[disabled] {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.2);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    min-width: 350px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    float: right;
+    cursor: pointer;
+    color: #888;
+    font-size: 1.5rem;
+}
+
+.add-btn {
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-btn:hover {
+    background: #357abd;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-card {
+    background: #f5f7fa;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0;
+    color: #4a90e2;
+}
+
+.stat-card p {
+    margin: 0.5rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* lessonManagerment.css hoặc staffuserManagerment.css */
+.questions-list {
+    padding-left: 0;
+    list-style: none;
+}
+
+.questions-list .list-group-item {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    margin-bottom: -1px; /* Prevent double borders */
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.question-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.question-actions .btn-sm {
+    margin-left: 5px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+.text-success {
+    color: #28a745 !important;
+}
+.ml-2 {
+    margin-left: 0.5rem !important;
+}
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+.d-flex {
+    display: flex !important;
+}
+.justify-content-between {
+    justify-content: space-between !important;
+}
+.align-items-center {
+    align-items: center !important;
+}
+
+
+.answers-sub-list {
+    list-style: disc;
+    padding-left: 20px;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+.answers-sub-list li {
+    padding: 3px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.answers-sub-list .btn-xs {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.65rem;
+    margin-left: 5px;
+}
+.correct-answer {
+    color: green;
+    font-weight: bold;
+}
+
+/* Style cho nút "Thêm câu hỏi", "Quản lý đáp án" */
+.btn-sm {
+    padding: .25rem .5rem;
+    font-size: .75rem; /* Giảm kích thước chữ */
+    line-height: 1.5;
+    border-radius: .2rem;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.btn-info {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-primary {
+     color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+/* Thêm style cho list-group và list-group-item nếu bạn muốn giống Bootstrap hơn */
+.list-group {
+    padding-left: 0;
+    margin-bottom: 0;
+    border-radius: .25rem;
+}
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: .75rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+}
+.list-group-item:first-child {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+.list-group-item:last-child {
+    border-bottom-right-radius: inherit;
+    border-bottom-left-radius: inherit;
+    margin-bottom: 0; /* Override margin-bottom của .questions-list .list-group-item */
+}
+.list-group-item + .list-group-item {
+    border-top-width: 0;
+}
+
+/* Cải thiện hiển thị cho nút và icon trong danh sách */
+.question-actions .btn, .answers-sub-list .btn {
+    display: inline-flex; /* Giúp icon và text căn giữa tốt hơn */
+    align-items: center;
+    gap: 0.3rem; /* Khoảng cách giữa icon và text */
+}
+
+.modal.front{
+    z-index : 1001;
+}
+
+@media (max-width: 768px) {
+    .lesson-manager-container {
+        margin-left: 70px; /* Remove fixed margin for mobile */
+        padding: 1rem;
+    }
+}
+
+.search-filter-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.pagination .btnn {
+    min-width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1.5px solid #00bcd4;
+    background-color: #a7fffb;
+    color: #222;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0 10px;
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 4px;
+}
+
+.pagination .btnn.active {
+    background-color: #0080ff;
+    color: #fff;
+    border-color: #0080ff;
+}
+
+.pagination .btnn:disabled {
+    background-color: #e0f7fa;
+    color: #90a4ae;
+    border-color: #b2ebf2;
+    cursor: not-allowed;
+}
+
+.pagination .btnn i {
+    font-size: 20px;
+}
+
+.pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    color: #6c757d;
+}
+.topic-list {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.topic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    background-color: white;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.topic-item:hover {
+    background-color: #f5f5f5;
+}
+
+.topic-item.selected {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196F3;
+}
+
+.topic-item .topic-info {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.topic-item .topic-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.topic-item .topic-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.topic-list-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.topic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.topic-item:last-child {
+    border-bottom: none;
+}
+
+.topic-item:hover {
+    background-color: #f5f5f5;
+}
+
+.topic-item.selected {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196F3;
+}
+
+.topic-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topic-id {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.topic-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.select-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.select-btn:hover {
+    background-color: #45a049;
+}
+
+.select-btn i {
+    font-size: 0.9em;
+}
+
+.no-data {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}

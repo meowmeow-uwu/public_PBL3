@@ -305,16 +305,13 @@
 /* Responsive */
 @media (max-width: 768px) {
     .wrapper {
+        margin-left: 70px;
         flex-direction: column;
     }
-    #sidebar {
-        min-width: 100vw;
-        max-width: 100vw;
-        min-height: auto;
-        position: static;
-    }
     #content {
-        padding: 10px 0;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
     }
     .search-filter-section {
         flex-direction: column;

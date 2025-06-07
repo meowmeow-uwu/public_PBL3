@@ -1,31 +1,57 @@
+
 async function checkAuthAndRedirect() {
+    const ADMIN = window.APP_CONFIG.ROLES.ADMIN;
+    const USER = window.APP_CONFIG.ROLES.USER;
+    const STAFF = window.APP_CONFIG.ROLES.STAFF;
     try {
-        const user = await window.fetchUserInfo();
+        const user = await window.USER_API.fetchUserInfo();
         const path = window.location.pathname;
 
-console.log(path);
+        console.log(path);
+        console.log(USER);
         if (!user) {
-            alert("Không thể tải dữ liệu của tài khoản, vui lòng đăng nhập lại.");
+            showToast('error', 'Lỗi',"Không thể tải dữ liệu của tài khoản, vui lòng đăng nhập lại.");
             localStorage.clear();
             window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
             return;
         }
 
-        if (path.startsWith('/PBL3/Pages/Staff') && user.group_user_id === 2) {
+        const role = user.group_user_id;
+        if (path == '/PBL3/Pages/Components/Html/translate.html' && (role == ADMIN || role == STAFF)) {
+            window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html';
+            return;
+        }
+        if (path == '/PBL3/Pages/index.html' && (role == ADMIN || role == USER || role == STAFF)) {
+            if (role == ADMIN || role == STAFF) {
+                window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html';
+            } else if (role === USER) {
+                window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html';
+            }
+            return;
+        }
+        if (path.startsWith('/PBL3/Pages/Components/Login_Register_ForgotPW') && (role == ADMIN || role == USER || role == STAFF)) {
+            if (role == ADMIN || role == STAFF) {
+                window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html';
+            } else if (role === USER) {
+                window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html';
+            }
+            return;
+        }
+        if (path.startsWith('/PBL3/Pages/Staff') && role == USER) {
             window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html';
             return;
         }
 
-        if (path.startsWith('/PBL3/Pages/Admin') && user.group_user_id !== 1) {
-            if (user.group_user_id === 2) {
+        if (path.startsWith('/PBL3/Pages/Admin') && role !== ADMIN) {
+            if (role === USER) {
                 window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/User/home.html';
-            } else if (user.group_user_id === 3) {
+            } else if (role === STAFF) {
                 window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html';
             }
             return;
         }
 
-        if (path.startsWith('/PBL3/Pages/User') && (user.group_user_id === 1 || user.group_user_id === 3)) {
+        if (path.startsWith('/PBL3/Pages/User') && (role === ADMIN || role === STAFF)) {
             window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Staff/home.html';
             return;
         }

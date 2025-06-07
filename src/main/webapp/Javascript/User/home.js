@@ -23,14 +23,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 collectionLabel.textContent = ` đã lưu`;
             }
         }
-
-        // Xử lý checkbox trong Today's Goals
-        // document.querySelectorAll('.goal-checkbox').forEach(checkbox => {
-        //     checkbox.addEventListener('click', function() {
-        //         this.classList.toggle('checked');
-        //         // TODO: Gọi API để cập nhật trạng thái mục tiêu
-        //     });
-        // });
+        const totalPost = await window.historyAPI.getTotalHistory(2);
+        const totalWord = await window.historyAPI.getTotalHistory(1);
+        const wordCard = Array.from(document.querySelectorAll('.stat-card')).find(card => 
+                card.querySelector('h3').textContent === 'Từ vựng');
+        const postCard = Array.from(document.querySelectorAll('.stat-card')).find(c => c.querySelector('h3').textContent === 'Ngữ pháp');
+        if(wordCard) {
+            const wordStat = wordCard.querySelector('.stat-value');
+            if(wordStat) {
+                wordStat.textContent = totalWord; 
+            }
+        }
+        if(postCard) {
+            const postStat = postCard.querySelector('.stat-value');
+            if(postStat) {
+                postStat.textContent = totalPost; 
+            }
+        }
 
         // Xử lý các nút Continue
         document.querySelectorAll('.continue-btn').forEach(button => {
@@ -43,27 +52,132 @@ document.addEventListener('DOMContentLoaded', async () => {
                     case 'Ngữ pháp':
                         window.location.href = 'grammar.html';
                         break;
-                    
                 }
             });
         });
 
-        // Cập nhật thời gian hoạt động
-        function updateActivityTimes() {
-            document.querySelectorAll('.activity-time').forEach(timeElement => {
-                const timeText = timeElement.textContent;
-                if (timeText.includes('giờ trước')) {
-                    const hours = parseInt(timeText);
-                    if (hours >= 24) {
-                        timeElement.textContent = 'Hôm qua';
-                    }
-                }
-            });
+        // Lấy lịch sử gần đây
+        let historyWordRecently = [];
+        let historyPostRecently = [];
+        let examRecently = [];
+
+        try {
+            historyWordRecently = await window.historyAPI.getHistoryRecently(1);
+            console.log('Lịch sử từ vựng gần đây:', historyWordRecently);
+        } catch (error) {
+            console.log('Không có lịch sử từ vựng:', error);
         }
 
-        // Cập nhật thời gian mỗi phút
-        setInterval(updateActivityTimes, 60000);
-        updateActivityTimes();
+        try {
+            historyPostRecently = await window.historyAPI.getHistoryRecently(2);
+            console.log('Lịch sử bài học gần đây:', historyPostRecently);
+        } catch (error) {
+            console.log('Không có lịch sử bài học:', error);
+        }
+
+        try {
+            examRecently = await window.historyAPI.getExamRecently();
+            console.log('Lịch sử bài kiểm tra gần đây:', examRecently);
+        } catch (error) {
+            console.log('Không có lịch sử bài kiểm tra:', error);
+        }
+
+        // Hiển thị lịch sử gần đây
+        const activityList = document.querySelector('.activity-list');
+        if (activityList) {
+            activityList.innerHTML = '';
+            let hasAnyActivity = false;
+
+            // Hiển thị 1 từ đã tra gần đây
+            if (historyWordRecently) {
+                try {
+                    const wordHistory = historyWordRecently;
+                    const wordDetails = await window.historyAPI.getWordDetails(wordHistory.key_id);
+                    if (wordDetails) {
+                        hasAnyActivity = true;
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        activityItem.innerHTML = `
+                            <div class="activity-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Bạn đã tra từ "${wordDetails.word || 'N/A'}"</div>
+                                <div class="activity-time">${new Date(wordHistory.history_date).toLocaleString('vi-VN')}</div>
+                            </div>
+                        `;
+                        activityList.appendChild(activityItem);
+                    }
+                } catch (error) {
+                    console.log('Không thể lấy chi tiết từ vựng:', error);
+                }
+            }
+
+            // Hiển thị 1 bài học đã học gần đây
+            if (historyPostRecently) {
+                try {
+                    const postHistory = historyPostRecently;
+                    const postDetails = await window.historyAPI.getPostDetails(postHistory.key_id);
+                    if (postDetails) {
+                        hasAnyActivity = true;
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        activityItem.innerHTML = `
+                            <div class="activity-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Bạn đã học bài "${postDetails.post_name || postDetails.name || 'N/A'}"</div>
+                                <div class="activity-time">${new Date(postHistory.history_date).toLocaleString('vi-VN')}</div>
+                            </div>
+                        `;
+                        activityList.appendChild(activityItem);
+                    }
+                } catch (error) {
+                    console.log('Không thể lấy chi tiết bài học:', error);
+                }
+            }
+
+            // Hiển thị 1 bài kiểm tra gần đây
+            if (examRecently) {
+                try {
+                    const examHistory = examRecently;
+                    const examName = await window.historyAPI.getExamName(examHistory.exam_id);
+                    if (examName) {
+                        hasAnyActivity = true;
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        activityItem.innerHTML = `
+                            <div class="activity-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Bạn đã hoàn thành bài kiểm tra "${examName.name || 'N/A'}" với ${examHistory.correct_number}/${examHistory.total_question} câu đúng</div>
+                                <div class="activity-time">${new Date(examHistory.created_at).toLocaleString('vi-VN')}</div>
+                            </div>
+                        `;
+                        activityList.appendChild(activityItem);
+                    }
+                } catch (error) {
+                    console.log('Không thể lấy chi tiết bài kiểm tra:', error);
+                }
+            }
+
+            // Nếu không có hoạt động nào
+            if (!hasAnyActivity) {
+                const noActivityItem = document.createElement('div');
+                noActivityItem.className = 'activity-item';
+                noActivityItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">Chưa có hoạt động nào gần đây</div>
+                    </div>
+                `;
+                activityList.appendChild(noActivityItem);
+            }
+        }
 
     } catch (error) {
         console.error('Lỗi khi tải dữ liệu:', error);
@@ -79,25 +193,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         document.querySelector('.home-container').prepend(errorMessage);
     }
-//    loadDashboardData();
 });
-//async function loadDashboardData() {
-//    try {
-//        // Lấy thông tin người dùng hiện tại
-//        const userInfo = await window.fetchUserInfo();
-//        if (!userInfo) {
-//            throw new Error('Không thể lấy thông tin người dùng');
-//        }
-//        // Lấy tất cả thống kê
-//        const stats = await homeAPI.getAllStatistics();
-//        
-//        // Cập nhật các số liệu
-//        document.getElementById('total-courses').textContent = stats.totalPosts;
-//        document.getElementById('total-vocabularyV').textContent = stats.totalWordsVi;
-//        document.getElementById('total-vocabularyE').textContent = stats.totalWordsEn;
-//        
-//    } catch (error) {
-//        console.error('Error loading dashboard data:', error);
-//        alert('Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
-//    }
-//}

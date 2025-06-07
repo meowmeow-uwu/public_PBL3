@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
         <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
         <link rel="stylesheet" href="../../../Assets/Css/Components/translate.css">
+        <link rel="stylesheet" href="../../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
     <body>
@@ -20,10 +21,10 @@
                 <input type="text" id="searchInput" placeholder="Nhập từ..." />
                 <div class="lang-select-group">
                     <span id="fromLang" data-value="en" class="lang-label">Tiếng Anh</span>
-                    <button type="button" id="swapLang" title="Đổi chiều dịch" style="background:none;border:none;font-size:1.3rem;cursor:pointer;">&#8646;</button>
+                    <button type="button" id="swapLang" title="Đổi chiều dịch" style="background:none;border:none;font-size:1.3rem;cursor:pointer;" disabled>&#8646;</button>
                     <span id="toLang" data-value="vi" class="lang-label">Tiếng Việt</span>
+                    <button type="button" id="searchBtn" class="btn">Dịch</button>
                 </div>
-                <button type="button" id="searchBtn" class="btn">Dịch</button>
                 <div class="suggestions" id="suggestions"></div>
             </form>
             <div id="result">
@@ -54,21 +55,24 @@
                     </div>
                     <div class="modal-actions">
                         <button type="button" onclick="closeSaveModal()" class="btn btn-cancel">Hủy</button>
-                        <button type="submit" class="btn btn-save">Lưu</button>
+                        <button type="submit" style="display: none" class="btn btn-save">Lưu</button>
                     </div>
                 </form>
             </div>
         </div>
+                <!-- Toast Container -->
+        <div class="toast-container"></div>
+
         <div id="footer"> </div>
         <script src="../../../Javascript/config.js"></script>
         <script>
                             window.APP_CONFIG.BASE_PATH = '../../../';
         </script>
         <script src="../../../Javascript/GetAPI/historyAPI.js"></script>
-        <script src="../../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../../Javascript/GetAPI/collectionsAPI.js"></script>
         <script src="../../../Javascript/components/header_footer.js"></script>
-
+        <script src="./Javascript/components/alert.js"></script>
         <script src="../../../Javascript/components/translate.js"></script>
         <script>
                             // Kiểm tra đăng nhập khi trang load

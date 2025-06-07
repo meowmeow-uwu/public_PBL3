@@ -58,7 +58,7 @@ async function loadWords() {
         displayPagination(response.totalPages);
     } catch (error) {
         console.error('Lỗi khi tải danh sách từ:', error);
-        alert('Không thể tải danh sách từ. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi','Không thể tải danh sách từ. Vui lòng thử lại sau.');
     }
 }
 
@@ -168,9 +168,11 @@ async function openEditWordModal(wordId) {
         document.getElementById('pronunciation').value = word.pronunciation || '';
         document.getElementById('languageId').value = word.language_id;
         document.getElementById('wordModal').style.display = 'block';
+        document.getElementById('soundLink').value = word.sound;
+        document.getElementById('imageLink').value = word.image;
     } catch (error) {
         console.error('Lỗi khi tải thông tin từ:', error);
-        alert('Không thể tải thông tin từ. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể tải thông tin từ. Vui lòng thử lại sau.');
     }
 }
 
@@ -201,7 +203,7 @@ async function handleWordSubmit(e) {
         loadWords();
     } catch (error) {
         console.error('Lỗi khi lưu từ:', error);
-        alert('Không thể lưu từ. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể lưu từ. Vui lòng thử lại sau.');
     }
 }
 
@@ -213,7 +215,7 @@ async function deleteWord(wordId) {
         loadWords();
     } catch (error) {
         console.error('Lỗi khi xóa từ:', error);
-        alert('Không thể xóa từ. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi',  'Không thể xóa từ. Vui lòng thử lại sau.');
     }
 }
 
@@ -251,7 +253,7 @@ async function openDefinitionModal(wordId) {
         document.getElementById('definitionModal').style.display = 'block';
     } catch (error) {
         console.error('Lỗi khi tải định nghĩa:', error);
-        alert('Không thể tải định nghĩa. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi',  'Không thể tải định nghĩa. Vui lòng thử lại sau.');
     }
 }
 
@@ -279,7 +281,7 @@ async function openEditDefinitionModal(definitionId) {
         document.getElementById('addDefinitionModal').style.display = 'block';
     } catch (error) {
         console.error('Lỗi khi tải thông tin định nghĩa:', error);
-        alert('Không thể tải thông tin định nghĩa. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể tải thông tin định nghĩa. Vui lòng thử lại sau.');
     }
 }
 
@@ -308,7 +310,7 @@ async function handleDefinitionSubmit(e) {
         openDefinitionModal(wordId);
     } catch (error) {
         console.error('Lỗi khi lưu định nghĩa:', error);
-        alert('Không thể lưu định nghĩa. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể lưu định nghĩa. Vui lòng thử lại sau.');
     }
 }
 
@@ -322,7 +324,7 @@ async function deleteDefinition(definitionId) {
         openDefinitionModal(wordId);
     } catch (error) {
         console.error('Lỗi khi xóa định nghĩa:', error);
-        alert('Không thể xóa định nghĩa. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể xóa định nghĩa. Vui lòng thử lại sau.');
     }
 }
 
@@ -336,7 +338,7 @@ async function deleteTranslate(translateId) {
         openTranslationModal(wordId);
     } catch (error) {
         console.error('Lỗi khi xóa bản dịch:', error);
-        alert('Không thể xóa bản dịch. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi',  'Không thể xóa bản dịch. Vui lòng thử lại sau.');
     }
 }
 
@@ -421,7 +423,7 @@ async function openTranslationModal(wordId) {
         document.getElementById('translationModal').style.display = 'block';
     } catch (error) {
         console.error('Lỗi khi tải bản dịch:', error);
-        alert('Không thể tải bản dịch. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể tải bản dịch. Vui lòng thử lại sau.');
     }
 }
 
@@ -487,7 +489,7 @@ async function searchTargetWords() {
         displayTranslationPagination(response.totalPages, 1, typeId, keyword);
     } catch (error) {
         console.error('Lỗi khi tìm kiếm từ:', error);
-        alert('Không thể tìm kiếm từ. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi',  'Không thể tìm kiếm từ. Vui lòng thử lại sau.');
     }
 }
 
@@ -550,7 +552,7 @@ async function loadTargetWords(typeId, page = 1, keyword = '') {
         displayTranslationPagination(response.totalPages, page, typeId, keyword);
     } catch (error) {
         console.error('Lỗi khi tải danh sách từ:', error);
-        alert('Không thể tải danh sách từ. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi',  'Không thể tải danh sách từ. Vui lòng thử lại sau.');
     }
 }
 
@@ -581,7 +583,7 @@ document.getElementById('translationForm').addEventListener('submit', async func
     // Lấy từ được chọn
     const selectedWord = document.querySelector('.word-item.selected');
     if (!selectedWord) {
-        alert('Vui lòng chọn một từ để dịch');
+        showToast('warning', 'Cảnh báo',  'Vui lòng chọn một từ để dịch');
         return;
     }
     
@@ -595,7 +597,7 @@ document.getElementById('translationForm').addEventListener('submit', async func
         );
         
         if (isDuplicate) {
-            alert('Bản dịch này đã tồn tại!');
+            showToast('warning', 'Cảnh báo',  'Bản dịch này đã tồn tại!');
             return;
         }
         
@@ -611,7 +613,7 @@ document.getElementById('translationForm').addEventListener('submit', async func
         openTranslationModal(sourceWordId);
     } catch (error) {
         console.error('Lỗi khi thêm/sửa bản dịch:', error);
-        alert('Không thể thêm/sửa bản dịch. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể thêm/sửa bản dịch. Vui lòng thử lại sau.');
     }
 });
 
@@ -638,7 +640,7 @@ async function openEditTranslationModal(translateId, currentWordId, typeId) {
         document.getElementById('addTranslationModal').style.display = 'block';
     } catch (error) {
         console.error('Lỗi khi mở modal sửa:', error);
-        alert('Không thể mở modal sửa. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi', 'Không thể mở modal sửa. Vui lòng thử lại sau.');
     }
 }
 

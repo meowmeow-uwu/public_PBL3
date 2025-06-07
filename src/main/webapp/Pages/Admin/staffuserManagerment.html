@@ -2,14 +2,16 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <title>Quản lý người dùng</title>
         <link rel="stylesheet" href="../../Assets/Css/main.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/sideBar.css">
         <link rel="stylesheet" href="../../Assets/Css/Admin/staffuserManagerment.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
-
-
+        
+        
     </head>
     <body>
         <div id="sidebar"></div>
@@ -109,13 +111,20 @@
             </div>
 
         </div>
+                <!-- Toast Container -->
+        <div class="toast-container"></div>
+
         <script src="../../Javascript/config.js"></script>
         <script>
             window.APP_CONFIG.BASE_PATH = '../../';
         </script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../Javascript/components/sideBar.js"></script>
-        <script src="../../Javascript/GetAPI/staffuserManagermentAPI.js"></script>
-        <script src="../../Javascript/Admin/staffuserManagerment.js"></script>
+        <script src="../../Javascript/GetAPI/AdminAPI/userManagementAPI.js"></script>
+        <script src="../../Javascript/Admin/staffuserManagement.js"></script>
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
+        <script src="../../Javascript/components/alert.js"></script>
+
+
     </body>
 </html>

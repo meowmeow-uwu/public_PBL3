@@ -1,32 +1,4 @@
-// Assets/Javascript/User/history.js
-const API_BASE_URL = window.APP_CONFIG.API_BASE_URL; 
-// Hàm fetchWithAuth để thực hiện request kèm token
-async function fetchWithAuth(url, options = {}) {
-    const token = localStorage.getItem("token");
-    const headers = {
-        ...options.headers,
-        'Content-Type': 'application/json',
-    };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-    try {
-        const response = await fetch(url, { ...options, headers });
-        if (!response.ok) {
-            let errorMessage = `HTTP error! status: ${response.status}`;
-            try {
-                const errorData = await response.json();
-                errorMessage += ` - ${errorData.error || errorData.message || JSON.stringify(errorData)}`;
-            } catch (e) { /* Ignore */ }
-            throw new Error(errorMessage);
-        }
-        if (response.status === 204) return null; // No Content
-        return response.json();
-    } catch (networkError) {
-        console.error("Network error or server unreachable:", networkError);
-        throw new Error(`Network error: ${networkError.message}`);
-    }
-}
+
 
 // Cache cho thông tin user để tránh gọi API nhiều lần
 let userInfoCache = null;
@@ -42,53 +14,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     const examHistoryContainer = document.querySelector('#exam-history .history-list-container');
     const grammarHistoryContainer = document.querySelector('#post-history .history-list-container');
 
-    // --- HÀM GỌI API LỊCH SỬ CHUNG ---
-    async function getWordHistoryList() {
-        return fetchWithAuth(`${API_BASE_URL}/history/?type=1`);
-    }
-
-    async function getExamHistoryList() {
-        return fetchWithAuth(`${API_BASE_URL}/exam-history/`);
-    }
-
-    async function getGrammarHistoryList() {
-        return fetchWithAuth(`${API_BASE_URL}/history/?type=2`);
-    }
-
-    // --- HÀM GỌI API ĐỂ LẤY CHI TIẾT (TÊN) ---
-    async function getWordDetails(wordId) {
-        if (!wordId) return null;
-        try {
-            const details = await fetchWithAuth(`${API_BASE_URL}/word/${wordId}`);
-            return details;
-        } catch (error) {
-            console.error(`Error fetching details for word ${wordId}:`, error);
-            return null;
-        }
-    }
-
-    async function getExamDetails(examId) {
-        if (!examId) return null;
-        try {
-            const details = await fetchWithAuth(`${API_BASE_URL}/exam/${examId}`);
-            return details;
-        } catch (error) {
-            console.error(`Error fetching details for exam ${examId}:`, error);
-            return null;
-        }
-    }
-
-    async function getPostDetails(postId) {
-        if (!postId) return null;
-        try {
-            const details = await fetchWithAuth(`${API_BASE_URL}/post/${postId}`);
-            return details;
-        } catch (error) {
-            console.error(`Error fetching details for post ${postId}:`, error);
-            return null;
-        }
-    }
-
     // --- HÀM RENDER UI ---
     /**
      * Render danh sách lịch sử từ vào container.
@@ -103,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         const itemsWithDetails = await Promise.all(items.map(async (item) => {
-            const details = await getWordDetails(item.key_id);
+            const details = await window.historyAPI.getWordDetails(item.key_id);
             const word = details ? (details.word  || 'Không tải được tên') : 'Không tải được tên';
             return { ...item, word: word };
         }));
@@ -117,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         container.innerHTML = itemsHtml;
     }
 
+    
     /**
      * Render danh sách lịch sử bài kiểm tra vào container.
      * @param {Array<Object>} items - Mảng các đối tượng ExamHistory.
@@ -130,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         const itemsWithDetails = await Promise.all(items.map(async (item) => {
-            const details = await getExamDetails(item.exam_id);
+            const details = await window.historyAPI.getExamName(item.exam_id);
             const examName = details ? details.name : 'Không tải được tên bài thi';
             return { ...item, exam_name: examName };
         }));
@@ -157,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         const itemsWithDetails = await Promise.all(items.map(async (item) => {
-            const details = await getPostDetails(item.key_id);
+            const details = await window.historyAPI.getPostDetails(item.key_id);
             const postName = details ? details.post_name : 'Không tải được tên bài ngữ pháp';
             return { ...item, post_name: postName };
         }));
@@ -177,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!wordHistoryContainer) return;
             wordHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử từ vựng...</p>';
             try {
-                const data = await getWordHistoryList();
+                const data = await window.historyAPI.getAllHistories(1);
                 await renderWordHistory(data, wordHistoryContainer);
             } catch (error) {
                 console.error('Error loading/rendering word history:', error);
@@ -188,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!examHistoryContainer) return;
             examHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử kiểm tra...</p>';
             try {
-                const data = await getExamHistoryList();
+                const data = await window.historyAPI.getAllExamHistories();
                 await renderExamHistory(data, examHistoryContainer);
             } catch (error) {
                 console.error('Error loading/rendering exam history:', error);
@@ -199,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!grammarHistoryContainer) return;
             grammarHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử ngữ pháp...</p>';
             try {
-                const data = await getGrammarHistoryList();
+                const data = await window.historyAPI.getAllHistories(2);
                 await renderGrammarHistory(data, grammarHistoryContainer);
             } catch (error) {
                 console.error('Error loading/rendering grammar history:', error);

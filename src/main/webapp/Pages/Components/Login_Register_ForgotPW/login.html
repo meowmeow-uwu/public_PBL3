@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../../Assets/Css/Components/login_register.css">
     <link rel="stylesheet" href="../../../Assets/Css/Components/header.css">
     <link rel="stylesheet" href="../../../Assets/Css/Components/footer.css">
+    <link rel="stylesheet" href="../../../Assets/Css/Components/alert.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -40,6 +41,8 @@
             </div>
         </div>
     </main>    
+        <!-- Toast Container -->
+        <div class="toast-container"></div>
 
     <!-- Footer -->
     <div id="footer"></div>
@@ -50,17 +53,18 @@
             const pwInput = document.getElementById('password');
             const eyeText = document.getElementById('eye');
             if(pwInput.type == "password"){
-                pwInput.type =Text;
-                eyeText.innerText = "Ẳn mật khẩu";
-
+                pwInput.type = "text";
+                eyeText.innerText = "Ẩn mật khẩu";
             }else{
-                pwInput.type ="password";
-                eyeText.innerHTML="Hiển thị mật khẩu";
+                pwInput.type = "password";
+                eyeText.innerHTML = "Hiển thị mật khẩu";
             }
         }
     </script>
     <script src="../../../Javascript/components/header_footer.js"></script>
-    
+    <script src="../../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
     <script src="../../../Javascript/components/SenIF.js"></script>
+    <script src="../../../Javascript/components/alert.js"></script>
+
 </body>
 </html> 

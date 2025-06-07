@@ -1,26 +1,26 @@
 function initializeActivityChart() {
-    const ctx = document.getElementById('activityChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
-            datasets: [{
-                label: 'Lượt học',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: '#4a90e2',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                }
-            }
-        }
-    });
+//    const ctx = document.getElementById('activityChart').getContext('2d');
+//    new Chart(ctx, {
+//        type: 'line',
+//        data: {
+//            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+//            datasets: [{
+//                label: 'Lượt học',
+//                data: [65, 59, 80, 81, 56, 55, 40],
+//                fill: false,
+//                borderColor: '#4a90e2',
+//                tension: 0.1
+//            }]
+//        },
+//        options: {
+//            responsive: true,
+//            plugins: {
+//                legend: {
+//                    position: 'top',
+//                }
+//            }
+//        }
+//    });
 }
 
 function initializeCourseChart(stats) {
@@ -49,7 +49,7 @@ function initializeCourseChart(stats) {
 async function loadDashboardData() {
     try {
         // Lấy thông tin người dùng hiện tại
-        const userInfo = await window.fetchUserInfo();
+        const userInfo = await window.USER_API.fetchUserInfo();
         if (!userInfo) {
             throw new Error('Không thể lấy thông tin người dùng');
         }
@@ -81,7 +81,7 @@ async function loadDashboardData() {
 
     } catch (error) {
         console.error('Error loading dashboard data:', error);
-        alert('Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
+        showToast('error', 'Lỗi',  'Có lỗi xảy ra khi tải dữ liệu: ' + error.message);
     }
 }
 

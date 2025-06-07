@@ -10,15 +10,15 @@ const fromLang = document.getElementById('fromLang');
 const toLang = document.getElementById('toLang');
 const swapLang = document.getElementById('swapLang');
 
-// Biến lưu group_user_id của user
-let groupUserId = null;
+
+let user = null;
 
 // Lấy thông tin user khi trang được load
 async function loadUserInfo() {
     try {
         const userInfo = await fetchUserInfo();
         if (userInfo) {
-            groupUserId = userInfo.group_user_id;
+            user = userInfo;
         }
     } catch (error) {
         console.error('Lỗi khi lấy thông tin user:', error);
@@ -27,7 +27,6 @@ async function loadUserInfo() {
 
 // Gọi hàm load user info khi trang được load
 loadUserInfo();
-
 // Đổi chiều dịch
 swapLang.addEventListener('click', function () {
     // Hoán đổi text
@@ -245,10 +244,14 @@ async function showWordDetail(wordId) {
         };
 
         // Gán sự kiện lưu từ (nếu có quyền)
-        if (groupUserId === 2) {
+
+        
+
+       console.log(user);
+        if (user) {
             await window.addWordHistory(wordId);
 
-            saveEl.style.display = '';
+            saveEl.style.display = 'block';
             saveEl.onclick = function () {
                 openSaveModal(wordDetail.word, wordDetail.definitions[0]?.meaning || '', wordId);
             };
@@ -279,27 +282,12 @@ const saveForm = document.getElementById('saveForm');
 // Biến lưu wordId hiện tại
 let currentWordId = null;
 
-// Hàm kiểm tra đăng nhập
-async function checkLogin() {
-    try {
-        const userInfo = await window.fetchUserInfo();
-        if (!userInfo) {
-            throw new Error('Chưa đăng nhập');
-        }
-        groupUserId = userInfo.group_user_id;
-        return true;
-    } catch (error) {
-        console.error('Lỗi khi kiểm tra đăng nhập:', error);
-        return false;
-    }
-}
 
 async function openSaveModal(word, meaning, wordId) {
     try {
         // Kiểm tra đăng nhập
-        const isLoggedIn = await checkLogin();
-        if (!isLoggedIn) {
-            alert('Vui lòng đăng nhập để sử dụng chức năng này');
+        if (!user) {
+            showToast('warning', 'Cảnh báo', 'Vui lòng đăng nhập để sử dụng chức năng này');
             window.location.href = '../../../Pages/Components/Html/login.html';
             return;
         }
@@ -321,7 +309,7 @@ async function openSaveModal(word, meaning, wordId) {
 
     } catch (error) {
         console.error('Lỗi khi mở modal:', error);
-        alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi','Có lỗi xảy ra. Vui lòng thử lại sau.');
     }
 }
 
@@ -391,7 +379,7 @@ async function loadCollections() {
         if (folderInput) {
             folderInput.innerHTML = '<option value="" disabled>Không thể tải danh sách bộ sưu tập</option>';
         }
-        alert('Có lỗi xảy ra khi lấy danh sách bộ sưu tập. Vui lòng thử lại sau.');
+        showToast('error', 'Lỗi','Có lỗi xảy ra khi lấy danh sách bộ sưu tập. Vui lòng thử lại sau.');
     }
 }
 
@@ -401,7 +389,7 @@ saveForm.addEventListener('submit', async function (e) {
     const folderInput = document.getElementById('folderInput');
 
     if (!folderInput) {
-        alert('Không tìm thấy phần tử chọn bộ sưu tập');
+        showToast('error', 'Lỗi','Không tìm thấy phần tử chọn bộ sưu tập');
         return;
     }
 
@@ -409,28 +397,28 @@ saveForm.addEventListener('submit', async function (e) {
     console.log('Collection ID được chọn:', collectionId); // Debug log
 
     if (!collectionId || collectionId === '') {
-        alert('Vui lòng chọn bộ sưu tập');
+        showToast('warning', 'Cảnh báo', 'Vui lòng chọn bộ sưu tập');
         return;
     }
 
     if (!currentWordId) {
-        alert('Không tìm thấy thông tin từ cần lưu');
+        showToast('warning', 'Cảnh báo', 'Không tìm thấy thông tin từ cần lưu');
         return;
     }
 
     try {
         console.log('Đang thêm từ vào bộ sưu tập:', {collectionId, currentWordId}); // Debug log
         await window.collectionsAPI.addWordToCollection(collectionId, currentWordId);
-        alert('Đã lưu từ vào bộ sưu tập thành công!');
+        showToast('success', 'Thành công!',  'Đã lưu từ vào bộ sưu tập thành công!');
         closeSaveModal();
     } catch (error) {
         console.error('Lỗi khi lưu từ:', error);
         if (error.message.includes('Unauthorized')) {
-            alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            showToast('error', 'Lỗi','Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         } else if (error.message.includes('Forbidden')) {
-            alert('Bạn không có quyền thêm từ vào bộ sưu tập này');
+            showToast('warning', 'Cảnh báo', 'Bạn không có quyền thêm từ vào bộ sưu tập này');
         } else {
-            alert('Có lỗi xảy ra khi lưu từ. Vui lòng thử lại sau.');
+            showToast('error', 'Lỗi','Có lỗi xảy ra khi lưu từ. Vui lòng thử lại sau.');
         }
     }
 });

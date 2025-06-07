@@ -137,8 +137,9 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .dashboard {
-        margin-left: 0;
+        margin-left: 70px;
         padding: 1rem;
+        box-sizing: border-box;
     }
 
     .charts-section {

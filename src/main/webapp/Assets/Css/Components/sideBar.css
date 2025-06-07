@@ -1,12 +1,99 @@
+/* Save this content as: Assets/CSS/sidebar.css */
+
+/* Base Sidebar Styles (Desktop by default) */
 .sidebar {
-    width: 280px;
+    width: 280px; /* Chiều rộng mặc định trên desktop */
     height: 100vh;
     background-color: #fff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     left: 0;
     top: 0;
-    padding-top: 0; /* Remove top padding since we have user profile */
+    overflow-y: auto; /* Cho phép cuộn dọc */
+    overflow-x: hidden; /* QUAN TRỌNG: Ẩn nội dung tràn ngang (cho cả desktop và mobile) */
+    transition: width 0.3s ease-in-out; /* Transition cho chiều rộng */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar Overlay (cho mobile khi sidebar mở hoàn toàn) */
+.sidebar-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999; /* Dưới sidebar */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* User Profile Header */
+.user-profile-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    width: auto;
+    box-shadow: none;
+    cursor: pointer; /* Cho phép click để mở rộng */
+}
+
+/* Profile image */
+.profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Profile info (username) */
+.profile-info {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1; /* Mặc định hiển thị trên desktop */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.profile-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+/* Mobile header logout button */
+.mobile-header-logout {
+    display: none; /* Mặc định ẩn trên desktop */
+    opacity: 1;
+    white-space: nowrap;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+/* Sidebar Menu Content */
+.sidebar-menu-content {
+    flex-grow: 1;
+    padding-bottom: 20px;
     overflow-y: auto;
 }
 
@@ -21,6 +108,11 @@
     font-weight: 500;
     text-transform: uppercase;
     border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1; /* Mặc định hiển thị trên desktop */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .menu-list {
@@ -49,143 +141,105 @@
 
 .menu-link i {
     width: 24px;
-    margin-right: 12px;
+    margin-right: 12px; /* Khoảng cách giữa icon và text */
     font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
 .menu-link span {
     font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1; /* Mặc định hiển thị trên desktop */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
-/* Active state */
 .menu-link.active {
     background-color: #e3f0fc;
     color: #4a90e2;
     border-left: 4px solid #4a90e2;
 }
 
-/* Responsive design */
+
+/* mobile-menu-btn (nút toggle) - style này không còn áp dụng nữa vì đã xóa thẻ HTML */
+/* Nếu bạn muốn dùng một icon "ba gạch" ở đây, bạn có thể tạo một div mới và style nó */
+
+
+/* Responsive Design - MOBILE */
 @media (max-width: 768px) {
+    /* Sidebar chính trên mobile */
     .sidebar {
-        width: 60px; /* Chiều rộng sidebar thu nhỏ */
-        height: auto;
-        position: relative;
-        padding-top: 0;
-        overflow-x: hidden; /* Ẩn nội dung tràn */
-        transition: width 0.3s ease; /* Thêm transition cho hiệu ứng mượt mà */
+        width: 70px; /* Chiều rộng thu gọn ban đầu */
+        /* height, position, top, left, box-shadow, z-index, display, flex-direction đã có ở base styles */
+        transition: width 0.3s ease-in-out; /* Transition cho chiều rộng */
+        /* overflow-x: hidden; */ /* Đã chuyển lên base .sidebar */
+        /* overflow-y: auto; */ /* Đã chuyển lên base .sidebar */
     }
 
-    .sidebar:hover {
-        width: 280px; /* Chiều rộng khi hover */
+    /* Khi sidebar active, nó mở rộng */
+    .sidebar.active {
+        width: 280px; /* Chiều rộng khi mở rộng */
     }
 
-    .menu-link {
-        padding: 12px 18px; /* Giảm padding ngang khi sidebar nhỏ */
+    /* user-profile-header (header của sidebar) */
+    .user-profile-header {
+        padding: 20px 0; /* Thu gọn padding ngang */
+        justify-content: center; /* Căn giữa nội dung khi thu gọn */
+        flex-wrap: nowrap; /* Ngăn xuống dòng */
+        overflow: hidden; /* Ẩn phần tử tràn ra ngoài user-profile-header khi sidebar thu gọn */
+        cursor: pointer; /* Đảm bảo cả header là vùng click */
     }
-
-    .menu-link i {
-        margin-right: 0; /* Bỏ khoảng cách bên phải icon khi sidebar nhỏ */
-    }
-
-    .menu-link span {
-        display: none; /* Ẩn text mặc định */
-    }
-
-    .sidebar:hover .menu-link span {
-        display: inline; /* Hiển thị text khi hover sidebar */
-        margin-left: 12px; /* Thêm khoảng cách giữa icon và text khi hiển thị */
-    }
-
-    .user-profile {
-        padding: 12px;
-        justify-content: center; /* Căn giữa nội dung user profile */
-    }
-
-    .user-profile .profile-info {
-        display: none; /* Ẩn thông tin user khi sidebar nhỏ */
-    }
-
-    .sidebar:hover .user-profile .profile-info {
-        display: block; /* Hiển thị thông tin user khi hover */
-        margin-left: 10px; /* Khoảng cách sau avatar */
-    }
-
+    
+    /* Profile image và icon (nếu có) sẽ luôn hiển thị khi sidebar thu gọn */
+    /* Nút "ba gạch" không còn nữa, nên avatar sẽ là phần tử chính hiển thị */
     .profile-image {
-        width: 36px; /* Kích thước avatar nhỏ hơn */
-        height: 36px;
+        width: 50px;
+        height: 50px;
+        margin: 0 auto; /* Căn giữa avatar */
+        flex-shrink: 0;
     }
-}
 
-/* Thêm styles cho user profile section */
-.user-profile {
-    padding: 20px;
-    display: flex;
-    cursor: pointer;
-    align-items: center;
-    gap: 15px;
-    border-bottom: 1px solid #eee;
-    background-color: #f8f9fa;
-    transition: background-color 0.3s ease;
-}
+    /* Ẩn các thành phần text khi sidebar thu gọn */
+    .profile-info,
+    .mobile-header-logout,
+    .menu-divider span,
+    .menu-link span {
+        opacity: 0;
+        visibility: hidden;
+        width: 0; /* Thu nhỏ chiều rộng để ẩn */
+        margin-left: 0; /* Bỏ margin trái để text trượt hẳn vào */
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, width 0.3s ease-in-out;
+    }
 
-.profile-image {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    overflow: hidden;
-}
+    /* HIỂN THỊ các thành phần text khi sidebar MỞ RỘNG */
+    .sidebar.active .profile-info,
+    .sidebar.active .mobile-header-logout,
+    .sidebar.active .menu-divider span,
+    .sidebar.active .menu-link span {
+        opacity: 1;
+        visibility: visible;
+        width: auto; /* Khôi phục chiều rộng */
+        margin-left: initial; /* Khôi phục margin */
+    }
 
-.profile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+    /* Điều chỉnh vị trí khi sidebar mở rộng */
+    .sidebar.active .user-profile-header {
+        justify-content: flex-start; /* Trở lại căn trái */
+        padding: 20px; /* Khôi phục padding */
+    }
+    .sidebar.active .menu-link i {
+        margin-right: 12px; /* Khôi phục margin */
+    }
 
-.profile-info {
-    flex: 1;
-}
-
-.profile-info h3 {
-    margin: 0;
-    font-size: 1rem;
-    color: #2c3e50;
-}
-
-.profile-info p {
-    margin: 5px 0 0;
-    font-size: 0.9rem;
-    color: #666;
-}
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: var(--white);
-    border-radius: 5px;
-    box-shadow: var(--shadow);
-    padding: 0.5rem 0;
-    min-width: 200px;
-    display: none;
-}
-
-.staff{
-    position: relative;
-}
-.staff:hover .dropdown-menu {
-    display: block;
-}
-
-.dropdown-menu a {
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    color: var(--text-color);
-    transition: background-color 0.3s ease;
-}
-
-.dropdown-menu a:hover {
-    background-color: rgba(74, 144, 226, 0.1);
-    color: var(--primary-color);
+    /* Sidebar menu content */
+    .sidebar-menu-content {
+        height: auto;
+        opacity: 1;
+        visibility: visible;
+        overflow-y: auto;
+        padding-bottom: 20px;
+    }
+    /* body padding-top: cần nếu có header cố định khác */
+    /* body { padding-top: 70px; } */ 
 }

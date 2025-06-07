@@ -497,7 +497,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .flashcard {
-        height: 300px;
+        height: 400px;
     }
 
     .word {
@@ -514,6 +514,10 @@
 
     .action-btn {
         padding: 0.6rem 1rem;
+    }
+    .flashcard-container {
+        margin-top: 100px;
+        height: 500px;
     }
 }
 

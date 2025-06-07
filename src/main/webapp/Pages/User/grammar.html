@@ -8,9 +8,9 @@
         <link rel="stylesheet" href="../../Assets/Css/User/grammar.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/footer.css">
         <link rel="stylesheet" href="../../Assets/Css/Components/header.css">
+        <link rel="stylesheet" href="../../Assets/Css/Components/alert.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <script src="../../Javascript/components/auth-redirect.js" ></script>
-
+        
     </head>
     <body>
         <div id="header"></div>
@@ -20,7 +20,7 @@
                 <div class="main-topics-grid">
                 </div>
             </div>
-
+            
             <div class="sub-topics-section hidden" id="subTopicsSection">
                 <div class="section-header">
                     <button class="back-button" id="backToMainTopics">
@@ -78,6 +78,9 @@
                 </div>
             </div>
         </div>
+                <!-- Toast Container -->
+        <div class="toast-container"></div>
+
         <div id="footer"></div>
 
         <script src="../../Javascript/config.js"></script>
@@ -88,8 +91,10 @@
             window.APP_CONFIG.BASE_PATH = '../../';
         </script>
         <script src="../../Javascript/GetAPI/historyAPI.js"></script>
-        <script src="../../Javascript/GetAPI/getInfor.js"></script>
+        <script src="../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../Javascript/components/header_footer.js"></script>
         <script src="../../Javascript/User/grammar.js"></script>
+        <script src="../../Javascript/components/alert.js"></script>
+        <script src="../../Javascript/components/auth-redirect.js" ></script>
     </body>
 </html>

@@ -130,10 +130,14 @@ public class HistoryController {
         historyService.chooseHistoryDAO(type);
         history.setUser_id(userId);
         history.setHistory_date(new java.util.Date());
-        if (historyService.selectByID(history.getKey_id(), userId) != null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("History already exists").build();
-        }
-        int result = historyService.insert(history);
+        int result = 0;
+        History h = historyService.selectByID(history.getKey_id(), userId);
+        if (h != null) {
+            h.setHistory_date(history.getHistory_date());
+            result = historyService.update(h);
+            // return Response.status(Response.Status.BAD_REQUEST).entity("History already exists").build();
+        } else
+        result = historyService.insert(history);
         if (result == 0) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Failed to create history").build();
         }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dao.ExamDAO;
 import com.pbl3.dto.Exam;
+import java.util.Map;
 
 public class ExamService implements ServiceInterface<Exam> {
     private ExamDAO examDAO;
@@ -11,7 +12,9 @@ public class ExamService implements ServiceInterface<Exam> {
     public ExamService() {
         examDAO = new ExamDAO();
     }
-
+    public Map<String, Object> getExamByPage(int pageNumber, int pageSize, int subTopicId, String keyword) {
+        return examDAO.getExamByPage(pageNumber, pageSize, subTopicId, keyword);
+    }
     @Override
     public int insert(Exam t) {
         return examDAO.insert(t);

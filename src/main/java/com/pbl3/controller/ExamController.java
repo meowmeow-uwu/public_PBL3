@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.pbl3.dto.Exam;
 import com.pbl3.service.ExamService;
 import com.pbl3.service.AuthService;
+import com.pbl3.service.UserService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.Consumes;
@@ -15,15 +16,52 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 @Path("/exam")
 public class ExamController {
+
     private ExamService examService;
+    private final UserService userService;
 
     public ExamController() {
         examService = new ExamService();
+        userService = new UserService();
+
+    }
+
+    @GET
+    @Path("/list/{page_number}/{pagesize}/{subTopicId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWordsByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @PathParam("subTopicId") int subTopicId,
+            @QueryParam("keyword") String keyword) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (userService.getUserByAuthHeader(authHeader) == null) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+
+        // Tạo Map kết quả
+        Map<String, Object> result = examService.getExamByPage(pageNumber, pageSize, subTopicId, keyword);
+        if (result == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}")
+                    .build();
+        }
+
+        return Response.ok(result).build();
     }
 
     @GET
@@ -84,14 +122,13 @@ public class ExamController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid or expired token\"}").build();
         }
- 
+
         ArrayList<Exam> exams = examService.getExamsBySubTopicId(id);
         if (exams == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Exams not found").build();
         }
         return Response.status(Response.Status.OK).entity(exams).build();
     }
-
 
     @POST
     @Path("/")
@@ -108,7 +145,7 @@ public class ExamController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
         exam.set_deleted(false);
@@ -134,7 +171,7 @@ public class ExamController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
         int result = examService.update(exam);
@@ -158,7 +195,7 @@ public class ExamController {
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
         Exam exam = examService.selectByID(id);

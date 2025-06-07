@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.Timestamp;
 
 import com.pbl3.dto.ExamHistory;
 import com.pbl3.util.DBUtil;
@@ -22,7 +23,7 @@ public class ExamHistoryDAO{
             pstmt.setInt(3, t.getCorrect_number());
             pstmt.setInt(4, t.getWrong_number());
             pstmt.setInt(5, t.getTotal_question());
-            pstmt.setDate(6, new java.sql.Date(t.getExam_history_date().getTime()));
+            pstmt.setTimestamp(6, new Timestamp(t.getExam_history_date().getTime()));
             int result = pstmt.executeUpdate();
             pstmt.close();
             return result;
@@ -45,7 +46,7 @@ public class ExamHistoryDAO{
             pstmt.setInt(3, t.getCorrect_number());
             pstmt.setInt(4, t.getWrong_number());
             pstmt.setInt(5, t.getTotal_question());
-            pstmt.setDate(6, new java.sql.Date(t.getExam_history_date().getTime()));
+            pstmt.setTimestamp(6, new Timestamp(t.getExam_history_date().getTime()));
             pstmt.setInt(7, t.getExam_history_id());
             int result = pstmt.executeUpdate();
             pstmt.close();
@@ -95,7 +96,7 @@ public class ExamHistoryDAO{
                 t.setCorrect_number(rs.getInt("correct_number"));
                 t.setWrong_number(rs.getInt("wrong_number"));
                 t.setTotal_question(rs.getInt("total_question"));
-                t.setExam_history_date(rs.getDate("exam_history_date"));
+                t.setExam_history_date(rs.getTimestamp("exam_history_date"));
                 examHistories.add(t);
             }
             return examHistories;
@@ -125,7 +126,7 @@ public class ExamHistoryDAO{
                 t.setCorrect_number(rs.getInt("correct_number"));
                 t.setWrong_number(rs.getInt("wrong_number"));
                 t.setTotal_question(rs.getInt("total_question"));
-                t.setExam_history_date(rs.getDate("exam_history_date"));
+                t.setExam_history_date(rs.getTimestamp("exam_history_date"));
 
             }
             return t;
@@ -152,7 +153,7 @@ public class ExamHistoryDAO{
                 t.setCorrect_number(rs.getInt("correct_number"));
                 t.setWrong_number(rs.getInt("wrong_number"));
                 t.setTotal_question(rs.getInt("total_question"));
-                t.setExam_history_date(rs.getDate("exam_history_date"));
+                t.setExam_history_date(rs.getTimestamp("exam_history_date"));
 
             }
             rs.close();

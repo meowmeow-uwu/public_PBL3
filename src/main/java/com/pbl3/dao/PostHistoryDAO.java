@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.Timestamp;
 
 import com.pbl3.dto.History;
 import com.pbl3.util.DBUtil;
@@ -20,7 +21,7 @@ public class PostHistoryDAO implements HistoryDAOInterface{
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, t.getUser_id());
             pstmt.setInt(2, t.getKey_id());
-            pstmt.setDate(3, new java.sql.Date(t.getHistory_date().getTime()));
+            pstmt.setTimestamp(3, new java.sql.Timestamp(t.getHistory_date().getTime()));
             int result = pstmt.executeUpdate();
             return result;
         } catch (SQLException e) {
@@ -40,7 +41,7 @@ public class PostHistoryDAO implements HistoryDAOInterface{
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, t.getUser_id());
             pstmt.setInt(2, t.getKey_id());
-            pstmt.setDate(3, new java.sql.Date(t.getHistory_date().getTime()));
+            pstmt.setTimestamp(3, new java.sql.Timestamp(t.getHistory_date().getTime()));
             pstmt.setInt(4, t.getHistory_id());
             int result = pstmt.executeUpdate();
             return result;
@@ -86,7 +87,7 @@ public class PostHistoryDAO implements HistoryDAOInterface{
                 t.setHistory_id(rs.getInt("post_history_id"));
                 t.setUser_id(rs.getInt("user_id"));
                 t.setKey_id(rs.getInt("post_id"));
-                t.setHistory_date(rs.getDate("post_history_date"));
+                t.setHistory_date(rs.getTimestamp("post_history_date"));
                 histories.add(t);
             }
             return histories;
@@ -114,7 +115,7 @@ public class PostHistoryDAO implements HistoryDAOInterface{
                 t.setHistory_id(rs.getInt("post_history_id"));
                 t.setUser_id(rs.getInt("user_id"));
                 t.setKey_id(rs.getInt("post_id"));
-                t.setHistory_date(rs.getDate("post_history_date"));
+                t.setHistory_date(rs.getTimestamp("post_history_date"));
             }
             return t;
         } catch (SQLException e) {
@@ -137,7 +138,7 @@ public class PostHistoryDAO implements HistoryDAOInterface{
                 t.setHistory_id(rs.getInt("post_history_id"));
                 t.setUser_id(rs.getInt("user_id"));
                 t.setKey_id(rs.getInt("post_id"));
-                t.setHistory_date(rs.getDate("post_history_date"));
+                t.setHistory_date(rs.getTimestamp("post_history_date"));
             }
             rs.close();
             pstmt.close();

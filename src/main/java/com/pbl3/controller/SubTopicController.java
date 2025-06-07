@@ -8,6 +8,7 @@ import com.pbl3.service.SubTopicService;
 import com.pbl3.service.PostService;
 import com.pbl3.service.ExamService;
 import com.pbl3.service.AuthService;
+import com.pbl3.service.UserService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.DELETE;
@@ -18,21 +19,57 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 @Path("/subtopic")
 public class SubTopicController {
     private final SubTopicService subTopicService;
     private final PostService postService;
     private final ExamService examService;
+    private final AuthService authService;
+    private final UserService userService;
 
     public SubTopicController() {
         subTopicService = new SubTopicService();
         postService = new PostService();
         examService = new ExamService();
+        authService = new AuthService();
+        userService = new UserService();
     }
 
+    @GET
+    @Path("/list/{page_number}/{pagesize}/{topicId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWordsByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @PathParam("topicId") int topicId,
+            @QueryParam("keyword") String keyword) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (userService.getUserByAuthHeader(authHeader) == null) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+
+        // Tạo Map kết quả
+        Map<String, Object> result = subTopicService.getSubTopicByPage(pageNumber, pageSize, topicId, keyword);
+        if (result == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}")
+                    .build();
+        }
+
+        return Response.ok(result).build();
+    }
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)

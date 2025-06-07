@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.pbl3.dto.Post;
 import com.pbl3.service.PostService;
 import com.pbl3.service.AuthService;
+import com.pbl3.service.UserService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.GET;
@@ -14,18 +15,53 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 @Path("/post")
 public class PostController {
 
     private final PostService postService;
     private final AuthService authService;
-
+    private final UserService userService;
+ 
     public PostController() {
         postService = new PostService();
         authService = new AuthService();
+        userService = new UserService();
+    }
+
+    @GET
+    @Path("/list/{page_number}/{pagesize}/{subTopicId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWordsByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @PathParam("subTopicId") int subTopicId,
+            @QueryParam("keyword") String keyword) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (userService.getUserByAuthHeader(authHeader) == null) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+
+        // Tạo Map kết quả
+        Map<String, Object> result = postService.getPostByPage(pageNumber, pageSize, subTopicId, keyword);
+        if (result == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}")
+                    .build();
+        }
+
+        return Response.ok(result).build();
     }
 
     @GET

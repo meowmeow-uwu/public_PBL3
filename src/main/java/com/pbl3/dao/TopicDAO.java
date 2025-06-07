@@ -8,9 +8,94 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.Topic;
 import com.pbl3.util.DBUtil;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TopicDAO implements DAOInterface<Topic>{
 
+        public int getNumberPage(int pageSize, String keyword) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM topic "
+                    + "WHERE "
+                    + "(? IS NULL OR ? = '' OR topic_name LIKE ?)";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setString(1, keyword);
+            countStmt.setString(2, keyword);
+            countStmt.setString(3, keyword + "%");
+
+            ResultSet countRs = countStmt.executeQuery();
+            int totalRecords = 0;
+            if (countRs.next()) {
+                totalRecords = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return (int) Math.ceil((double) totalRecords / pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
+
+    public Map<String, Object> getTopicByPage(int pageNumber, int pageSize, String keyword) {
+        Connection c = null;
+        int offset = (pageNumber - 1) * pageSize;
+
+        try {
+            ArrayList<Topic> topics = new ArrayList<>();
+            c = DBUtil.makeConnection();
+
+            // Tính tổng số trang
+            int totalPages = this.getNumberPage(pageSize, keyword);
+
+            // Truy vấn lấy dữ liệu phân trang
+            String sql = "SELECT * FROM topic "
+                    + "WHERE "
+                    + "(? IS NULL OR ? = '' OR topic_name LIKE ?) "
+                    + "ORDER BY topic_id "
+                    + "LIMIT ? OFFSET ?;";
+
+            PreparedStatement s = c.prepareStatement(sql);
+            s.setString(1, keyword);
+            s.setString(2, keyword);
+            s.setString(3, keyword + "%");
+            s.setInt(4, pageSize);
+            s.setInt(5, offset);
+
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                Topic topic = new Topic();
+                topic.setTopic_id(rs.getInt("topic_id"));
+                topic.setName(rs.getString("topic_name"));
+
+                topics.add(topic);
+            }
+
+            rs.close();
+            s.close();
+
+            // Tạo Map kết quả chứa cả danh sách từ và thông tin phân trang
+            Map<String, Object> result = new HashMap<>();
+            result.put("topics", topics);
+            result.put("totalPages", totalPages);
+
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return new HashMap<>();
+    }
     @Override
     public int insert(Topic t) {
         Connection c = null;

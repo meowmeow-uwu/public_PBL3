@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.ExamHistory;
 import com.pbl3.service.ExamHistoryService;
-import com.pbl3.util.JwtUtil;
-
+import com.pbl3.service.UserService;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -21,8 +20,10 @@ import jakarta.ws.rs.core.Response;
 @Path("/exam-history")
 public class ExamHistoryController {
     private ExamHistoryService examHistoryService;
+    private UserService userService;
 
     public ExamHistoryController() {
+        userService = new UserService();
         examHistoryService = new ExamHistoryService();
     }
 
@@ -35,13 +36,33 @@ public class ExamHistoryController {
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
 
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int userId = JwtUtil.getUserIdFromToken(token);
+        int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid or expired token\"}").build();
         }
         ArrayList<ExamHistory> examHistories = examHistoryService.selectAll(userId);
+        if (examHistories != null) {
+            return Response.status(Response.Status.OK).entity(examHistories).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+    @GET
+    @Path("/recently")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRecently(@HeaderParam("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
+        }
+        ExamHistory examHistories = examHistoryService.selectRecently(userId);
         if (examHistories != null) {
             return Response.status(Response.Status.OK).entity(examHistories).build();
         } else {
@@ -57,9 +78,7 @@ public class ExamHistoryController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
-
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int userId = JwtUtil.getUserIdFromToken(token);
+        int userId = userService.getUserIdByAuthHeader(authHeader);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid or expired token\"}").build();
@@ -80,9 +99,8 @@ public class ExamHistoryController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
 
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }

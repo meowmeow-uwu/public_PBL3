@@ -133,7 +133,30 @@ public class ExamHistoryDAO{
 }
 
     public ExamHistory selectByCondition(String condition) {
+        Connection c = null;
+        ExamHistory t = null;
+        try {
+            c = DBUtil.makeConnection();
+            PreparedStatement pstmt = c.prepareStatement(condition);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                t = new ExamHistory();
+                t.setExam_history_id(rs.getInt("exam_history_id"));
+                t.setUser_id(rs.getInt("user_id"));
+                t.setExam_id(rs.getInt("exam_id"));
+                t.setCorrect_number(rs.getInt("correct_number"));
+                t.setWrong_number(rs.getInt("wrong_number"));
+                t.setTotal_question(rs.getInt("total_question"));
+            }
+            rs.close();
+            pstmt.close();
+            return t;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
         return null;
-}
+    }
     
 }

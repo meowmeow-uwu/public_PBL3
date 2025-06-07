@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.History;
 import com.pbl3.service.HistoryService;
-import com.pbl3.util.JwtUtil;
+import com.pbl3.service.UserService;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -19,23 +19,25 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/history")
 public class HistoryController {
+
     private HistoryService historyService;
+    private UserService userService;
 
     public HistoryController() {
         historyService = new HistoryService();
+        userService = new UserService();
     }
 
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllExams(@HeaderParam("Authorization") String authHeader, @QueryParam("type") int type) {
+    public Response getAll(@HeaderParam("Authorization") String authHeader, @QueryParam("type") int type) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
 
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Invalid or expired token\"}").build();
@@ -48,18 +50,58 @@ public class HistoryController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+    @GET
+    @Path("/count")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCount(@HeaderParam("Authorization") String authHeader, @QueryParam("type") int type) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
+        }
+        historyService.chooseHistoryDAO(type);
+        int total = historyService.SelectCount(userId);
+        return Response.ok("{\"total\":\""+total+"\"}").build();
+    }
 
     @GET
-    @Path("/{id}")
+    @Path("/recently")
     @Produces(MediaType.APPLICATION_JSON)
-        public Response getHistoryByID(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, @QueryParam("type") int type) {
+    public Response getAllRecently(@HeaderParam("Authorization") String authHeader, @QueryParam("type") int type) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
 
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int userId = JwtUtil.getUserIdFromToken(token);
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Invalid or expired token\"}").build();
+        }
+        historyService.chooseHistoryDAO(type);
+        History histories = historyService.selectRecently(userId);
+        if (histories != null) {
+            return Response.status(Response.Status.OK).entity(histories).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getHistoryByID(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, @QueryParam("type") int type) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
+
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
@@ -80,16 +122,15 @@ public class HistoryController {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
         }
+        int userId = userService.getUserIdByAuthHeader(authHeader);
 
-        String token = authHeader.substring("Bearer ".length()).trim();
-        int userId = JwtUtil.getUserIdFromToken(token);
         if (userId == -1) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         historyService.chooseHistoryDAO(type);
         history.setUser_id(userId);
         history.setHistory_date(new java.util.Date());
-        if(historyService.selectByID(history.getKey_id(), userId) != null) {
+        if (historyService.selectByID(history.getKey_id(), userId) != null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("History already exists").build();
         }
         int result = historyService.insert(history);

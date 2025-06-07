@@ -4,12 +4,18 @@ import java.util.ArrayList;
 
 import com.pbl3.dao.PostDAO;
 import com.pbl3.dto.Post;
+import java.util.Map;
 
-public class PostService implements ServiceInterface<Post>{
+public class PostService implements ServiceInterface<Post> {
+
     private PostDAO postDAO;
 
     public PostService() {
         postDAO = new PostDAO();
+    }
+
+    public Map<String, Object> getPostByPage(int pageNumber, int pageSize, int subTopicId, String keyword) {
+        return postDAO.getPostByPage(pageNumber, pageSize, subTopicId, keyword);
     }
 
     @Override
@@ -45,8 +51,8 @@ public class PostService implements ServiceInterface<Post>{
     public ArrayList<Post> getPostsBySubTopicId(int subTopicId) {
         return postDAO.selectBySubTopicId(subTopicId);
     }
-    public int getNumberPost()
-    {
+
+    public int getNumberPost() {
         return postDAO.getNumberPost();
     }
 }

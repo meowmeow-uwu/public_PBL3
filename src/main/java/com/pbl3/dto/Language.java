@@ -22,6 +22,6 @@ import lombok.ToString;
 @ToString
 
 public class Language implements Serializable{
-    private int word_id;
+    private int language_id;
     private String language_name;
 }

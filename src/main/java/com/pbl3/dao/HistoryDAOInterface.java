@@ -11,4 +11,5 @@ public interface HistoryDAOInterface {
     public ArrayList<History> selectAll(int userId);
     public History selectByID(int id, int userId);
     public History selectByCondition(String condition);
+    public int selectCount(int userId);
 }

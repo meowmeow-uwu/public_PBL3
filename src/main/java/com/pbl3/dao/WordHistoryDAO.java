@@ -116,6 +116,35 @@ public class WordHistoryDAO implements HistoryDAOInterface {
                 t.setKey_id(rs.getInt("word_id"));
                 t.setHistory_date(rs.getDate("word_history_date"));
             }
+            rs.close();
+            pstmt.close();
+            return t;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        
+        return null;
+    }
+
+    @Override
+    public History selectByCondition(String condition) {
+        Connection c = null;
+        History t = null;
+        try {
+            c = DBUtil.makeConnection();
+            PreparedStatement pstmt = c.prepareStatement(condition);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                t = new History();
+                t.setHistory_id(rs.getInt("word_history_id"));
+                t.setUser_id(rs.getInt("user_id"));
+                t.setKey_id(rs.getInt("word_id"));
+                t.setHistory_date(rs.getDate("word_history_date"));
+            }
+            rs.close();
+            pstmt.close();
             return t;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -124,9 +153,30 @@ public class WordHistoryDAO implements HistoryDAOInterface {
         }
         return null;
     }
-
     @Override
-    public History selectByCondition(String condition) {
-        return null;
+    public int selectCount(int userId) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM word_history WHERE (user_id) = ? ";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, userId);
+            ResultSet countRs = countStmt.executeQuery();
+            int total = 0;
+            if (countRs.next()) {
+                total = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return total;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
     }
 }

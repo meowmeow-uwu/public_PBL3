@@ -9,6 +9,7 @@ import com.pbl3.dto.SubTopic;
 import com.pbl3.service.TopicService;
 import com.pbl3.service.AuthService;
 import com.pbl3.service.SubTopicService;
+import com.pbl3.service.UserService;
 import com.pbl3.util.JwtUtil;
 
 import jakarta.ws.rs.DELETE;
@@ -19,17 +20,53 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/topic")
 public class TopicController {
+
     private TopicService topicService;
     private SubTopicService subTopicService;
+    private final AuthService authService;
+    private final UserService userService;
 
     public TopicController() {
         topicService = new TopicService();
         subTopicService = new SubTopicService();
+        authService = new AuthService();
+        userService = new UserService();
+    }
+
+    @GET
+    @Path("/list/{page_number}/{pagesize}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWordsByPageLanguageKeyword(@HeaderParam("authorization") String authHeader,
+            @PathParam("page_number") int pageNumber,
+            @PathParam("pagesize") int pageSize,
+            @QueryParam("keyword") String keyword) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+        if (userService.getUserByAuthHeader(authHeader) == null) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("{\"error\":\"Access denied\"}").build();
+        }
+        if (keyword == null || keyword.equalsIgnoreCase("null")) {
+            keyword = "";
+        }
+
+        // Tạo Map kết quả
+        Map<String, Object> result = topicService.getTopicByPage(pageNumber, pageSize, keyword);
+        if (result == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"user not found\"}")
+                    .build();
+        }
+
+        return Response.ok(result).build();
     }
 
     @GET
@@ -93,7 +130,7 @@ public class TopicController {
             return Response.status(401).entity("Unauthorized").build();
         }
 
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
 
@@ -119,7 +156,7 @@ public class TopicController {
             return Response.status(401).entity("Unauthorized").build();
         }
 
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
 
@@ -129,7 +166,7 @@ public class TopicController {
         }
         return Response.status(200).entity("Topic updated successfully").build();
     }
-    
+
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -145,13 +182,14 @@ public class TopicController {
             return Response.status(401).entity("Unauthorized").build();
         }
 
-        if(!new AuthService().isContentManagerOrAdmin(authHeader)) {
+        if (!new AuthService().isContentManagerOrAdmin(authHeader)) {
             return Response.status(403).entity("Forbidden").build();
         }
 
         int result = topicService.delete(id);
-        if(result == -1) 
+        if (result == -1) {
             return Response.status(400).entity("Can't delete default topic").build();
+        }
         if (result == 0) {
             return Response.status(409).entity("Failed to delete topic").build();
         }
@@ -169,14 +207,13 @@ public class TopicController {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
             }
-    
+
             String token = authHeader.substring("Bearer ".length()).trim();
             int userId = JwtUtil.getUserIdFromToken(token);
             if (userId == -1) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity("{\"error\":\"Invalid or expired token\"}").build();
             }
-
 
             Topic topic = topicService.selectByID(topicId);
             if (topic == null) {

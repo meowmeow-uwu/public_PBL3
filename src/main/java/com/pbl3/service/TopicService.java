@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.pbl3.dao.TopicDAO;
 import com.pbl3.dto.Topic;
+import java.util.Map;
 
 public class TopicService implements ServiceInterface<Topic>{
     private TopicDAO topicDAO;
@@ -11,7 +12,9 @@ public class TopicService implements ServiceInterface<Topic>{
     public TopicService() {
         topicDAO = new TopicDAO();
     }
-
+    public Map<String, Object> getTopicByPage(int pageNumber, int pageSize, String keyword) {
+        return topicDAO.getTopicByPage(pageNumber, pageSize,  keyword);
+    }
     @Override
     public int insert(Topic t) {
         return topicDAO.insert(t);

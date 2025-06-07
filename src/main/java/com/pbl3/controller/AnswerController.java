@@ -6,9 +6,7 @@ import com.pbl3.dto.Answer;
 import com.pbl3.service.AnswerService;
 import com.pbl3.service.AnswerServiceInterface;
 import com.pbl3.service.AuthService;
-import com.pbl3.service.ReadingAnswerService;
 import com.pbl3.util.JwtUtil;
-
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -24,21 +22,15 @@ import jakarta.ws.rs.core.Response;
 @Path("/answers")
 public class AnswerController {
     private AnswerServiceInterface answerService;
-    private ReadingAnswerService readingAnswerService;
     private AnswerService answerServices;
 
     public AnswerController() {
         this.answerService = new AnswerService();
-        this.readingAnswerService = new ReadingAnswerService();
         this.answerServices = new AnswerService();
     }
 
     private void chooseAnswerService(int type) {
-        if (type == 1) {
-            answerService = readingAnswerService;
-        } else {
             answerService = answerServices;
-        }
     }
 
     @GET

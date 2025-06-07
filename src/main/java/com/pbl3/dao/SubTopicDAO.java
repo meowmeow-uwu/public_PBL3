@@ -8,9 +8,97 @@ import java.util.ArrayList;
 
 import com.pbl3.dto.SubTopic;
 import com.pbl3.util.DBUtil;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SubTopicDAO implements DAOInterface<SubTopic>{
 
+    public int getNumberPage(int pageSize, int topicId, String keyword) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            // Truy vấn đếm tổng số bản ghi
+            String countSql = "SELECT COUNT(*) as total FROM sub_topic "
+                    + "WHERE topic_id = ? AND "
+                    + "(? IS NULL OR ? = '' OR sub_topic_name LIKE ?)";
+
+            PreparedStatement countStmt = c.prepareStatement(countSql);
+            countStmt.setInt(1, topicId);
+            countStmt.setString(2, keyword);
+            countStmt.setString(3, keyword);
+            countStmt.setString(4, keyword + "%");
+
+            ResultSet countRs = countStmt.executeQuery();
+            int totalRecords = 0;
+            if (countRs.next()) {
+                totalRecords = countRs.getInt("total");
+            }
+            countRs.close();
+            countStmt.close();
+
+            return (int) Math.ceil((double) totalRecords / pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return 0;
+    }
+
+    public Map<String, Object> getSubTopicByPage(int pageNumber, int pageSize, int topicId, String keyword) {
+        Connection c = null;
+        int offset = (pageNumber - 1) * pageSize;
+
+        try {
+            ArrayList<SubTopic> subTopics = new ArrayList<>();
+            c = DBUtil.makeConnection();
+
+            // Tính tổng số trang
+            int totalPages = this.getNumberPage(pageSize,topicId, keyword);
+
+            // Truy vấn lấy dữ liệu phân trang
+            String sql = "SELECT * FROM sub_topic "
+                    + "WHERE topic_id = ? AND"
+                    + "(? IS NULL OR ? = '' OR sub_topic_name LIKE ?) "
+                    + "ORDER BY sub_topic_id "
+                    + "LIMIT ? OFFSET ?;";
+
+            PreparedStatement s = c.prepareStatement(sql);
+            s.setInt(1, topicId);
+            s.setString(2, keyword);
+            s.setString(3, keyword);
+            s.setString(4, keyword + "%");
+            s.setInt(5, pageSize);
+            s.setInt(6, offset);
+
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                SubTopic subTopic = new SubTopic();
+                subTopic.setSub_topic_id(rs.getInt("sub_topic_id"));
+                subTopic.setName(rs.getString("sub_topic_name"));
+                subTopic.setTopic_id(rs.getInt("topic_id"));
+
+                subTopics.add(subTopic);
+            }
+
+            rs.close();
+            s.close();
+
+            // Tạo Map kết quả chứa cả danh sách từ và thông tin phân trang
+            Map<String, Object> result = new HashMap<>();
+            result.put("subTopics", subTopics);
+            result.put("totalPages", totalPages);
+
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+
+        return new HashMap<>();
+    }
     @Override
     public int insert(SubTopic t) {
         Connection c = null;

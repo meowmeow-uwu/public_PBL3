@@ -32,7 +32,7 @@ public class AuthController {
         
         User user = new User();
         user.setName(name);
-        user.setAvatar("https://imgur.com/a/Ne5GWsq.png");
+        user.setAvatar("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkM2OJy9rNds8J8DrtvjImMk-krlUMtDd0hfjdEwQORF9HKPxxSNClCYBCRxMi4dZS-0c&usqp=CAU");
         user.setGroup_user_id(2);
         user.setEmail(email);
         user.setPassword(password);

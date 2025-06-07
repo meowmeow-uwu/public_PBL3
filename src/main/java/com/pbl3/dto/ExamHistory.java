@@ -4,6 +4,7 @@
  */
 package com.pbl3.dto;
 
+import java.util.Date;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,4 +29,5 @@ public class ExamHistory implements Serializable{
     private int total_question;
     private int user_id;
     private int exam_id;
+    private Date exam_history_date;
 }

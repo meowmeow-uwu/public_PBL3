@@ -8,7 +8,7 @@ window.APP_CONFIG = {
     
     ROLES,
     BASE_PATH: './', // Sẽ được ghi đè bởi mỗi trang
-    API_BASE_URL: 'https://pbl3-gnbb.onrender.com/api' // cái này mới deploy, mỗi lần commit mất 3p, dùng được
+    API_BASE_URL: 'http://localhost:6969/PBL3/api' // cái này mới deploy, mỗi lần commit mất 3p, dùng được
             // API_BASE_URL: 'https://english.up.railway.app/api'
 //
 

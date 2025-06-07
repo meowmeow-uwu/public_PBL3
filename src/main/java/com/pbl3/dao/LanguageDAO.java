@@ -22,9 +22,9 @@ public class LanguageDAO implements DAOInterface<Language>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "INSERT INTO language (word_id, language_name) VALUES (?, ?)";
+            String query = "INSERT INTO language (Language_id, language_name) VALUES (?, ?)";
             PreparedStatement s = c.prepareStatement(query);
-            s.setInt(1, language.getWord_id());
+            s.setInt(1, language.getLanguage_id());
             s.setString(2, language.getLanguage_name());
             
             int result = s.executeUpdate();
@@ -43,11 +43,11 @@ public class LanguageDAO implements DAOInterface<Language>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "UPDATE language SET word_id = ?, language_name = ? WHERE word_id = ?";
+            String query = "UPDATE language SET Language_id = ?, language_name = ? WHERE Language_id = ?";
             PreparedStatement s = c.prepareStatement(query);
-            s.setInt(1, language.getWord_id());
+            s.setInt(1, language.getLanguage_id());
             s.setString(2, language.getLanguage_name());
-            s.setInt(3, language.getWord_id());
+            s.setInt(3, language.getLanguage_id());
             
             int result = s.executeUpdate();
             s.close();
@@ -66,7 +66,7 @@ public class LanguageDAO implements DAOInterface<Language>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "DELETE FROM language WHERE word_id = ?";
+            String query = "DELETE FROM language WHERE Language_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             
@@ -93,7 +93,7 @@ public class LanguageDAO implements DAOInterface<Language>{
             
             while (rs.next()) {
                 list.add(new Language(
-                    rs.getInt("word_id"),
+                    rs.getInt("Language_id"),
                     rs.getString("language_name")
                 ));
             }
@@ -113,14 +113,14 @@ public class LanguageDAO implements DAOInterface<Language>{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String query = "SELECT * FROM language WHERE word_id = ?";
+            String query = "SELECT * FROM language WHERE Language_id = ?";
             PreparedStatement s = c.prepareStatement(query);
             s.setInt(1, id);
             ResultSet rs = s.executeQuery();
             
             if (rs.next()) {
                 return new Language(
-                    rs.getInt("word_id"),
+                    rs.getInt("Language_id"),
                     rs.getString("language_name")
                 );
             }

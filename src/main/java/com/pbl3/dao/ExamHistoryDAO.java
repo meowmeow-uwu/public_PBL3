@@ -15,13 +15,14 @@ public class ExamHistoryDAO{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "INSERT INTO exam_history (user_id, exam_id, correct_number, wrong_number, total_question) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO exam_history (user_id, exam_id, correct_number, wrong_number, total_question, exam_history_date) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, t.getUser_id());
             pstmt.setInt(2, t.getExam_id());
             pstmt.setInt(3, t.getCorrect_number());
             pstmt.setInt(4, t.getWrong_number());
             pstmt.setInt(5, t.getTotal_question());
+            pstmt.setDate(6, new java.sql.Date(t.getExam_history_date().getTime()));
             int result = pstmt.executeUpdate();
             pstmt.close();
             return result;
@@ -37,14 +38,15 @@ public class ExamHistoryDAO{
         Connection c = null;
         try {
             c = DBUtil.makeConnection();
-            String sql = "UPDATE exam_history SET user_id = ?, exam_id = ?, correct_number = ?, wrong_number = ?, total_question = ? WHERE exam_history_id = ?";
+            String sql = "UPDATE exam_history SET user_id = ?, exam_id = ?, correct_number = ?, wrong_number = ?, total_question = ?, exam_history_date = ? WHERE exam_history_id = ?";
             PreparedStatement pstmt = c.prepareStatement(sql);
             pstmt.setInt(1, t.getUser_id());
             pstmt.setInt(2, t.getExam_id());
             pstmt.setInt(3, t.getCorrect_number());
             pstmt.setInt(4, t.getWrong_number());
             pstmt.setInt(5, t.getTotal_question());
-            pstmt.setInt(6, t.getExam_history_id());
+            pstmt.setDate(6, new java.sql.Date(t.getExam_history_date().getTime()));
+            pstmt.setInt(7, t.getExam_history_id());
             int result = pstmt.executeUpdate();
             pstmt.close();
             return result;
@@ -93,6 +95,7 @@ public class ExamHistoryDAO{
                 t.setCorrect_number(rs.getInt("correct_number"));
                 t.setWrong_number(rs.getInt("wrong_number"));
                 t.setTotal_question(rs.getInt("total_question"));
+                t.setExam_history_date(rs.getDate("exam_history_date"));
                 examHistories.add(t);
             }
             return examHistories;
@@ -122,6 +125,8 @@ public class ExamHistoryDAO{
                 t.setCorrect_number(rs.getInt("correct_number"));
                 t.setWrong_number(rs.getInt("wrong_number"));
                 t.setTotal_question(rs.getInt("total_question"));
+                t.setExam_history_date(rs.getDate("exam_history_date"));
+
             }
             return t;
         } catch (SQLException e) {
@@ -147,6 +152,8 @@ public class ExamHistoryDAO{
                 t.setCorrect_number(rs.getInt("correct_number"));
                 t.setWrong_number(rs.getInt("wrong_number"));
                 t.setTotal_question(rs.getInt("total_question"));
+                t.setExam_history_date(rs.getDate("exam_history_date"));
+
             }
             rs.close();
             pstmt.close();

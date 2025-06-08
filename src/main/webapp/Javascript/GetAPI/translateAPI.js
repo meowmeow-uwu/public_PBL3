@@ -2,7 +2,7 @@ const API_TRANSLATE_URL = window.APP_CONFIG.API_BASE_URL + '/translate/';
 
 async function getAllWordByKeyword(keyword, sourceLanguageId, targetLanguageId) {
     try {
-        const response = await fetch(`${API_TRANSLATE_URL}get/${sourceLanguageId}/${targetLanguageId}?keyword=${keyword}`, {
+        const response = await fetch(`${API_TRANSLATE_URL}get/info/${sourceLanguageId}/${targetLanguageId}?keyword=${keyword}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"

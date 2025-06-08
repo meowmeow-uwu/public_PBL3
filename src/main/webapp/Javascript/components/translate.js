@@ -175,7 +175,13 @@ async function fetchWordDetail(wordId) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        return {
+            word: data.word,
+            phonetic: data.phonetic,
+            image: data.image,
+            sound: data.sound // Thêm trường sound từ API
+        };
     } catch (error) {
         console.error('Lỗi khi lấy chi tiết từ:', error);
         throw error;
@@ -242,7 +248,7 @@ async function showWordDetail(wordId) {
                                 <span class="phonetic">/${sourceWord.phonetic}/</span>
                             ` : ''}
                         </div>
-                        <button class="sound-btn" onclick="playSound('${sourceWord.word}')">
+                        <button class="sound-btn" onclick="playSound('${sourceWord.word}', '${sourceWord.sound}')">
                             <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
@@ -290,7 +296,7 @@ async function showWordDetail(wordId) {
                             ${translation.pronunciation ? `
                                 <span class="translation-phonetic">/${translation.pronunciation}/</span>
                             ` : ''}
-                            <button class="sound-btn" onclick="playSound('${translation.wordName}')">
+                            <button class="sound-btn" onclick="playSound('${translation.wordName}', '${translation.sound}')">
                                 <i class="fas fa-volume-up"></i>
                             </button>
                         </div>
@@ -336,11 +342,31 @@ async function showWordDetail(wordId) {
 }
 
 // Phát âm
-function playSound(word) {
-    if (!word)
-        return;
+function playSound(word, soundUrl) {
+    if (!word) return;
+    
+    try {
+        if (soundUrl) {
+            // Sử dụng âm thanh từ API nếu có
+            const audio = new Audio(soundUrl);
+            audio.play().catch(error => {
+                console.warn('Lỗi khi phát âm thanh từ API:', error);
+                fallbackToSpeechSynthesis(word);
+            });
+        } else {
+            // Fallback về SpeechSynthesis nếu không có âm thanh từ API
+            fallbackToSpeechSynthesis(word);
+        }
+    } catch (error) {
+        console.error('Lỗi khi phát âm:', error);
+        fallbackToSpeechSynthesis(word);
+    }
+}
+
+// Hàm fallback sử dụng SpeechSynthesis
+function fallbackToSpeechSynthesis(word) {
     const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = 'en-US'; // hoặc 'vi-VN' nếu là tiếng Việt
+    utterance.lang = 'en-GB';
     window.speechSynthesis.speak(utterance);
 }
 

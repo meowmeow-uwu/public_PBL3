@@ -128,7 +128,7 @@ public List<ReviewQuestionDTO> checkAnswers(List<SubmissionDTO> submissions) {
             if (submission.getAnswerIdList() != null && !submission.getAnswerIdList().isEmpty()) {
                 isCorrect = new HashSet<>(submission.getAnswerIdList()).equals(new HashSet<>(correctIds));
             } else if (submission.getAnswer_id() != null) {
-                isCorrect = correctIds.size() == 1 && correctIds.contains(submission.getAnswer_id());
+                isCorrect = correctIds.contains(submission.getAnswer_id());
             }
 
         } else if (question.getQuestion_type_id() == 2) { 

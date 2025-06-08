@@ -69,6 +69,12 @@ async function init() {
         if (markLearnedBtn) {
             markLearnedBtn.addEventListener('click', toggleLearned);
         }
+
+        // Thêm event listener cho nút tạo bộ sưu tập mới
+        const createCollectionBtn = document.getElementById('createCollectionBtn');
+        if (createCollectionBtn) {
+            createCollectionBtn.addEventListener('click', createNewCollection);
+        }
     } catch (error) {
         console.error('Lỗi khi khởi tạo:', error);
         if (topicGrid) {
@@ -398,6 +404,28 @@ async function saveWordToCollection(collectionId) {
     } catch (error) {
         console.error('Lỗi khi lưu từ:', error);
         showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi lưu từ vào bộ sưu tập');
+    }
+}
+
+// Tạo bộ sưu tập mới
+async function createNewCollection() {
+    try {
+        const collectionName = prompt('Nhập tên bộ sưu tập mới:');
+        if (!collectionName) return;
+
+        const collectionId = await window.collectionsAPI.createCollection(collectionName);
+        if (collectionId) {
+            // Tải lại danh sách bộ sưu tập
+            await showCollectionModal();
+            
+            // Tự động lưu từ vào bộ sưu tập mới
+            await saveWordToCollection(collectionId);
+            
+            showToast('success', 'Thành công!', 'Đã tạo bộ sưu tập mới và lưu từ thành công!');
+        }
+    } catch (error) {
+        console.error('Lỗi khi tạo bộ sưu tập:', error);
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tạo bộ sưu tập mới');
     }
 }
 

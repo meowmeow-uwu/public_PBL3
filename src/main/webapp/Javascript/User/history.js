@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function renderWordHistory(items, container) {
         if (!container) { console.error("Word history container not found!"); return; }
         if (!Array.isArray(items) || items.length === 0) {
-            container.innerHTML = '<p>Chưa có lịch sử học từ nào.</p>';
+            container.innerHTML = '<p>Chưa có lịch sử tra từ nào.</p>';
             return;
         }
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const itemsHtml = itemsWithDetails.map(item => `
             <div class="history-item-card word-history-item">
                 <p><strong>Từ vựng:</strong> ${item.word}</p>
-                <p class="history-item-meta"><strong>Ngày học:</strong> ${item.history_date ? new Date(item.history_date).toLocaleString('vi-VN') : 'N/A'}</p>
+                <p class="history-item-meta"><strong>Ngày tra:</strong> ${item.history_date ? new Date(item.history_date).toLocaleString('vi-VN') : 'N/A'}</p>
             </div>
         `).join('');
         container.innerHTML = itemsHtml;
@@ -51,13 +51,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function renderExamHistory(items, container) {
         if (!container) { console.error("Exam history container not found!"); return; }
         if (!Array.isArray(items) || items.length === 0) {
-            container.innerHTML = '<p>Chưa có lịch sử làm bài kiểm tra nào.</p>';
+            container.innerHTML = '<p>Chưa có lịch sử làm bài ôn tập nào.</p>';
             return;
         }
 
         const itemsWithDetails = await Promise.all(items.map(async (item) => {
             const details = await window.historyAPI.getExamName(item.exam_id);
-            const examName = details ? details.name : 'Không tải được tên bài thi';
+            const examName = details ? details.name : 'Không tải được tên bài ôn';
             return { ...item, exam_name: examName };
         }));
 
@@ -101,24 +101,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     const dataLoaders = {
         'word-history': async () => {
             if (!wordHistoryContainer) return;
-            wordHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử từ vựng...</p>';
+            wordHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử tra từ vựng...</p>';
             try {
                 const data = await window.historyAPI.getAllHistories(1);
                 await renderWordHistory(data, wordHistoryContainer);
             } catch (error) {
                 console.error('Error loading/rendering word history:', error);
-                wordHistoryContainer.innerHTML = `<p class="error-message">Lỗi tải lịch sử từ vựng: ${error.message}</p>`;
+                wordHistoryContainer.innerHTML = `<p class="error-message">Lỗi tải lịch sử tra từ : ${error.message}</p>`;
             }
         },
         'exam-history': async () => {
             if (!examHistoryContainer) return;
-            examHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử kiểm tra...</p>';
+            examHistoryContainer.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Đang tải lịch sử làm bài ôn.tập..</p>';
             try {
                 const data = await window.historyAPI.getAllExamHistories();
                 await renderExamHistory(data, examHistoryContainer);
             } catch (error) {
                 console.error('Error loading/rendering exam history:', error);
-                examHistoryContainer.innerHTML = `<p class="error-message">Lỗi tải lịch sử kiểm tra: ${error.message}</p>`;
+                examHistoryContainer.innerHTML = `<p class="error-message">Lỗi tải lịch sử làm bài ôn tập: ${error.message}</p>`;
             }
         },
         'post-history': async () => { // HTML dùng data-tab="post-history" cho Grammar

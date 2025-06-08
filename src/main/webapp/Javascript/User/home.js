@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <div class="activity-content">
                                 <div class="activity-text">Bạn đã hoàn thành bài kiểm tra "${examName.name || 'N/A'}" với ${examHistory.correct_number}/${examHistory.total_question} câu đúng</div>
-                                <div class="activity-time">${new Date(examHistory.created_at).toLocaleString('vi-VN')}</div>
+                                <div class="activity-time">${new Date(examHistory.exam_history_date).toLocaleString('vi-VN')}</div>
                             </div>
                         `;
                         activityList.appendChild(activityItem);

@@ -329,3 +329,17 @@ h1{
     background: #f6fafd;
     margin-right: 18px;
   }
+  .btn-secondary {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+  }

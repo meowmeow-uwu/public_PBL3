@@ -278,10 +278,33 @@ const modalBackdrop = document.getElementById('modalBackdrop');
 const wordInput = document.getElementById('wordInput');
 const meaningInput = document.getElementById('meaningInput');
 const saveForm = document.getElementById('saveForm');
+const createCollectionBtn = document.getElementById('createCollectionBtn');
 
 // Biến lưu wordId hiện tại
 let currentWordId = null;
 
+// Xử lý tạo bộ sưu tập mới
+createCollectionBtn.addEventListener('click', async function() {
+    try {
+        const collectionName = prompt('Nhập tên bộ sưu tập mới:');
+        if (!collectionName) return;
+
+        const collectionId = await window.collectionsAPI.createCollection(collectionName);
+        if (collectionId) {
+            // Tải lại danh sách bộ sưu tập
+            await loadCollections();
+            
+            // Chọn bộ sưu tập mới tạo
+            const folderInput = document.getElementById('folderInput');
+            folderInput.value = collectionId;
+            
+            showToast('success', 'Thành công!', 'Đã tạo bộ sưu tập mới thành công!');
+        }
+    } catch (error) {
+        console.error('Lỗi khi tạo bộ sưu tập:', error);
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tạo bộ sưu tập mới');
+    }
+});
 
 async function openSaveModal(word, meaning, wordId) {
     try {

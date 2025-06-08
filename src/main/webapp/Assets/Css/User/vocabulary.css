@@ -595,3 +595,29 @@
     display: flex;
     justify-content: center;
 }
+
+.create-collection-btn {
+    width: 100%;
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    transition: all 0.3s;
+}
+
+.create-collection-btn:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+}
+
+.create-collection-btn i {
+    font-size: 16px;
+}

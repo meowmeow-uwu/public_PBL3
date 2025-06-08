@@ -242,8 +242,9 @@ body {
 }
 
 .main-topics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 2rem;
     padding: 1rem;
 }
@@ -530,3 +531,223 @@ body {
 }
 
 /* ... (phần còn lại của grammar.css của bạn) ... */
+
+/* Main Container */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    padding: 0 1rem; /* Add padding to align with other content */
+}
+
+.search-input-container {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input-container input {
+    flex: 1;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input-container input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.search-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    background-color: #357abd;
+    transform: translateY(-1px);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.pagination button {
+    padding: 0.8rem 1.5rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    background: white;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.pagination button:disabled {
+    border-color: #e0e0e0;
+    color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Topics Container */
+.topics-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%; /* Ensure it takes full width within main-container */
+    padding: 0 1rem; /* Add padding to align with search bar */
+}
+
+/* Sub Topics Container */
+.sub-topics-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    padding: 0 1rem; /* Add padding to align with search bar */
+}
+
+/* Lessons and Quizzes Main Content Container */
+.lessons-main-content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 1rem; /* Add padding to align with search bar */
+}
+
+.lesson-item {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column; /* Stack text content */
+    gap: 0.5rem;
+    position: relative; /* For button positioning */
+    min-height: 120px; /* Ensure consistent height for items */
+}
+
+.lesson-item h3 {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    padding-right: 120px; /* Make space for the button */
+}
+
+.lesson-item p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+    flex-grow: 1; /* Allow description to take available space */
+    padding-right: 120px; /* Make space for the button */
+}
+
+.lesson-item .btn-primary {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    background-color: var(--success-color); /* Green color for the button */
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.lesson-item .btn-primary:hover {
+    background-color: #28a745; /* Darker green on hover */
+}
+
+/* No data message */
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
+    margin-top: 1rem;
+}
+
+.no-data i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ccc;
+}
+
+/* Responsive adjustments for lesson-item */
+@media (max-width: 768px) {
+    .lessons-main-content-container .search-bar {
+        padding: 0;
+    }
+    .lessons-main-content-container .items-grid {
+        padding: 0;
+    }
+    .lesson-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+        min-height: auto;
+    }
+    .lesson-item h3,
+    .lesson-item p {
+        padding-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    .lesson-item .btn-primary {
+        position: static;
+        transform: none;
+        width: auto;
+        margin-top: 1rem;
+        align-self: flex-end; /* Push button to bottom right */
+    }
+}
+
+/* Existing styles that might need tweaking after these additions */
+/* ... your existing styles ... */

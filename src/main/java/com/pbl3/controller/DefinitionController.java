@@ -174,7 +174,7 @@ public class DefinitionController {
     @GET
     @Path("/word/{wordId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDefinitionsByWordId(@HeaderParam("authorization") String authHeader,
+    public Response getAllDefinitionsByWordIdByAdmin(@HeaderParam("authorization") String authHeader,
             @PathParam("wordId") int wordId) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
@@ -185,8 +185,50 @@ public class DefinitionController {
                     .entity("{\"error\":\"Access denied\"}").build();
         }
         try {
-            List<Definition> definitions = definitionService.selectByWordId(wordId);
+            List<Definition> definitions = definitionService.selectAllByWordId(wordId);
             return Response.ok(definitions).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Lỗi khi lấy định nghĩa theo từ: " + e.getMessage())
+                    .build();
+        }
+    }
+    @GET
+    @Path("/word/{wordId}/definitions")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllDefinitionsByWordId(
+            @PathParam("wordId") int wordId) {
+
+        try {
+            List<Definition> definitions = definitionService.selectAllByWordId(wordId);
+            if (definitions != null) {
+                return Response.ok(definitions).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"error\":\"Definition not found\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Lỗi khi lấy định nghĩa theo từ: " + e.getMessage())
+                    .build();
+        }
+    }
+    @GET
+    @Path("/word/{wordId}/definition")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDefinitionsByWordId(
+            @PathParam("wordId") int wordId) {
+        
+        try {
+            Definition definition = definitionService.selectByWordId(wordId);
+            if (definition != null) {
+                return Response.ok(definition).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"error\":\"Definition not found\"}")
+                        .build();
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Lỗi khi lấy định nghĩa theo từ: " + e.getMessage())

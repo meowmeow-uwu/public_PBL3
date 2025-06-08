@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             <div class="history-item-card exam-history-item">
                 <p><strong>Bài kiểm tra:</strong> ${item.exam_name}</p>
                 <p><strong>Kết quả:</strong> ${typeof item.correct_number === 'number' ? item.correct_number : 'N/A'} / ${item.total_question || 'N/A'} câu đúng</p>
+                <p class="history-item-meta"><strong>Ngày làm:</strong>${item.exam_history_date ? new Date(item.exam_history_date).toLocaleString('vi-VN') : 'N/A'}</p>
                 </div>
         `).join('');
         container.innerHTML = itemsHtml;

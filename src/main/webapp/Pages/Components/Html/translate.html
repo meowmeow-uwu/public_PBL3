@@ -61,35 +61,37 @@
                 </form>
             </div>
         </div>
-                <!-- Toast Container -->
+        <!-- Toast Container -->
         <div class="toast-container"></div>
 
         <div id="footer"> </div>
         <script src="../../../Javascript/config.js"></script>
         <script>
-                            window.APP_CONFIG.BASE_PATH = '../../../';
+            window.APP_CONFIG.BASE_PATH = '../../../';
         </script>
         <script src="../../../Javascript/GetAPI/historyAPI.js"></script>
         <script src="../../../Javascript/GetAPI/UserAPI/userAPI.js"></script>
         <script src="../../../Javascript/GetAPI/collectionsAPI.js"></script>
+        <script src="../../../Javascript/GetAPI/translateAPI.js"></script>
+        <script src="../../../Javascript/GetAPI/definitionAPI.js"></script>
         <script src="../../../Javascript/components/header_footer.js"></script>
-        <script src="./Javascript/components/alert.js"></script>
+        <script src="../../../Javascript/components/alert.js"></script>
         <script src="../../../Javascript/components/translate.js"></script>
         <script>
-                            // Kiểm tra đăng nhập khi trang load
-                            (async function () {
-                                try {
-                                    const userInfo = await window.fetchUserInfo();
-                                    if (userInfo) {
-                                        console.log('Đã đăng nhập với user:', userInfo);
-                                        window.groupUserId = userInfo.group_user_id;
-                                    } else {
-                                        console.log('Chưa đăng nhập');
-                                    }
-                                } catch (error) {
-                                    console.error('Lỗi khi kiểm tra đăng nhập:', error);
-                                }
-                            })();
+            // Kiểm tra đăng nhập khi trang load
+            (async function () {
+                try {
+                    const userInfo = await window.fetchUserInfo();
+                    if (userInfo) {
+                        console.log('Đã đăng nhập với user:', userInfo);
+                        window.groupUserId = userInfo.group_user_id;
+                    } else {
+                        console.log('Chưa đăng nhập');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi kiểm tra đăng nhập:', error);
+                }
+            })();
         </script>
     </body>
 </html>

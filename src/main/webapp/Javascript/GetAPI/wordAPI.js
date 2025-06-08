@@ -5,11 +5,7 @@
 
 const WORD_BASE_URL = window.APP_CONFIG.API_BASE_URL + '/word';
 
-function getToken() {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-}
+
 
 /**
  * Lấy thông tin flashcard của một từ
@@ -20,7 +16,7 @@ async function getFlashcard(wordId) {
     try {
         console.log('Đang gọi API lấy flashcard cho wordId:', wordId);
         
-        const token = getToken();
+        const token =  window.USER_API.getBearerToken();
         if (!token) {
             throw new Error('Unauthorized: Vui lòng đăng nhập lại');
         }

@@ -140,9 +140,6 @@ public class ExamHistoryController {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        // if(examHistoryService.selectByID(examHistory.getExam_id(), userId) != null) {
-        //     return Response.status(Response.Status.BAD_REQUEST).entity("Exam history already exists").build();
-        // }
         examHistory.setUser_id(userId);
         examHistory.setExam_history_date(new java.util.Date());
         int result = examHistoryService.insert(examHistory);

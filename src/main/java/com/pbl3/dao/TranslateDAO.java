@@ -5,11 +5,15 @@
 package com.pbl3.dao;
 
 import com.pbl3.dto.Translate;
+import com.pbl3.dto.Word;
 import com.pbl3.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -19,10 +23,11 @@ public class TranslateDAO implements DAOInterface<Translate> {
 
     // Singleton instance
     private static TranslateDAO instance;
-    
+
     // Private constructor để ngăn việc tạo instance từ bên ngoài
-    private TranslateDAO() {}
-    
+    private TranslateDAO() {
+    }
+
     // Method để lấy instance
     public static synchronized TranslateDAO getInstance() {
         if (instance == null) {
@@ -30,6 +35,113 @@ public class TranslateDAO implements DAOInterface<Translate> {
         }
         return instance;
     }
+
+    public Map<String, Object> findByWordNameAndTypeTranslation(String keyword, int pageSize, int pageNumber, int type) {
+        Connection conn = null;
+        int offset = (pageNumber - 1) * pageSize;
+
+        try {
+            conn = DBUtil.makeConnection();
+            // Query chính để lấy danh sách từ và translation
+            String mainSql
+                    = "SELECT DISTINCT "
+                    + "    w.* "
+                    + "FROM word w "
+                    + "INNER JOIN translate t ON w.word_id = t.source_word_id "
+                    + "WHERE w.word_name LIKE ? AND w.is_deleted = 0 "
+                    + "AND t.type_translate_id = ? "
+                    + "ORDER BY w.word_name "
+                    + "LIMIT ? OFFSET ? ";
+
+            // Lấy danh sách từ và translation
+            PreparedStatement mainStmt = conn.prepareStatement(mainSql);
+            mainStmt.setString(1, keyword + "%");
+            mainStmt.setInt(2, type);
+            mainStmt.setInt(3, pageSize);
+            mainStmt.setInt(4, offset);
+
+            ResultSet rs = mainStmt.executeQuery();
+
+            // Map để lưu trữ kết quả, key là word_id
+            List<Word> words = new ArrayList<>();
+
+            while (rs.next()) {
+                Word word = new Word(
+                        rs.getInt("language_id"),
+                        rs.getInt("word_id"),
+                        rs.getString("word_name"),
+                        rs.getString("pronunciation"),
+                        rs.getString("sound"),
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image"));
+                words.add(word);
+            }
+
+            rs.close();
+            mainStmt.close();
+
+            // Tạo kết quả cuối cùng
+            Map<String, Object> result = new HashMap<>();
+            result.put("words", words);
+            return result;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Không thể lấy danh sách từ", e);
+        } finally {
+            DBUtil.closeConnection(conn);
+        }
+    }
+
+    public ArrayList<Word> getAllTransWordByWordIdAndType(int wordId, int type) {
+        Connection conn = null;
+
+        try {
+            conn = DBUtil.makeConnection();
+            // Query chính để lấy danh sách từ và translation
+            String mainSql = "SELECT "
+                    + "    w.* "
+                    + "FROM translate t "
+                    + "INNER JOIN word w ON t.trans_word_id = w.word_id "
+                    + "WHERE t.source_word_id = ? "
+                    + "  AND t.type_translate_id = ? "
+                    + "  AND w.is_deleted = 0 "
+                    + "ORDER BY w.word_name";
+
+            // Lấy danh sách từ và translation
+            PreparedStatement mainStmt = conn.prepareStatement(mainSql);
+            mainStmt.setInt(1, wordId);
+            mainStmt.setInt(2, type);
+
+            ResultSet rs = mainStmt.executeQuery();
+
+            // Map để lưu trữ kết quả, key là word_id
+            ArrayList<Word> words = new ArrayList<>();
+
+            while (rs.next()) {
+                Word word = new Word(
+                        rs.getInt("language_id"),
+                        rs.getInt("word_id"),
+                        rs.getString("word_name"),
+                        rs.getString("pronunciation"),
+                        rs.getString("sound"),
+                        rs.getBoolean("is_deleted"),
+                        rs.getString("image"));
+                words.add(word);
+            }
+
+            rs.close();
+            mainStmt.close();
+
+            
+            return words;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Không thể lấy danh sách từ", e);
+        } finally {
+            DBUtil.closeConnection(conn);
+        }
+    }
+
     @Override
     public int insert(Translate t) {
         Connection c = null;
@@ -97,19 +209,20 @@ public class TranslateDAO implements DAOInterface<Translate> {
         }
         return 0;
     }
-    public int deleteByWordId(int wordId){
-        try (Connection conn = DBUtil.makeConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                 "DELETE FROM translate WHERE word_id = ?")) {
-            
+
+    public int deleteByWordId(int wordId) {
+        try (Connection conn = DBUtil.makeConnection(); PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM translate WHERE word_id = ?")) {
+
             ps.setInt(1, wordId);
             return ps.executeUpdate();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
     }
+
     @Override
     public ArrayList<Translate> selectAll() {
         Connection c = null;
@@ -234,6 +347,7 @@ public class TranslateDAO implements DAOInterface<Translate> {
 
     /**
      * Lấy một bản dịch theo word ID và type translate
+     *
      * @param wordId ID của từ cần dịch
      * @param typeTranslateId ID của loại dịch
      * @return Translate object nếu tìm thấy, null nếu không tìm thấy

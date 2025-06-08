@@ -58,7 +58,7 @@ async function fetchExamList({ page, pageSize, subTopicId, keyword }) {
         const data = await apiClient(url);
         return {
             exams: Array.isArray(data.exams) ? data.exams : [],
-            totalPages: data.totalPages
+            totalPages: data.totalPages || 1
         };
 }
 // Lấy chi tiết bài kiểm tra theo ID
@@ -68,7 +68,7 @@ async function getExamById(id) {
 
 // Tạo bài kiểm tra mới
 async function createExam(data) {
-   return apiClient('/', {method: 'POST', body: data});
+   return apiClient('', {method: 'POST', body: data});
 }
 
 // Cập nhật bài kiểm tra

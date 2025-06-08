@@ -1,7 +1,9 @@
 package com.pbl3.service;
 
+import com.pbl3.dao.DefinitionDAO;
 import com.pbl3.dao.TranslateDAO;
 import com.pbl3.dao.WordDAO;
+import com.pbl3.dto.Definition;
 import com.pbl3.dto.Translate;
 import com.pbl3.dto.Word;
 import java.util.ArrayList;
@@ -11,11 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TranslationService implements ServiceInterface<Translate>{
+public class TranslationService implements ServiceInterface<Translate> {
 
     private WordDAO wordDAO = WordDAO.getInstance();
-    private TranslateDAO translateDAO =  TranslateDAO.getInstance();
-
+    private TranslateDAO translateDAO = TranslateDAO.getInstance();
+    private DefinitionDAO definitionDAO = DefinitionDAO.getInstance();
     // Định nghĩa constant cho language
     private static final int ENG_VIET_TYPE = 1;
     private static final int VIET_ENG_TYPE = 2;
@@ -26,7 +28,49 @@ public class TranslationService implements ServiceInterface<Translate>{
     public static void main(String s[]) {
         int j = 1;
         TranslationService sa = new TranslationService();
-        
+
+    }
+
+    public ArrayList<Translate> selectAllByWordIdAndType(int wid, int typeId) {
+        return translateDAO.selectAllBySourceWordIDAndType(wid, typeId);
+    }
+
+    public Map<String, Object> getAllSourceWordByNameAndType(String sourceWord, int sourceLanguageId, int targetLanguageId) {
+        try {
+            Map<String, Object> results = new HashMap<>();
+            int typeTranslateId;
+            if (sourceLanguageId == 1 && targetLanguageId == 2) {
+                typeTranslateId = ENG_VIET_TYPE;
+            } else if (sourceLanguageId == 2 && targetLanguageId == 1) {
+                typeTranslateId = VIET_ENG_TYPE;
+            } else {
+                return results;
+            }
+            results = translateDAO.findByWordNameAndTypeTranslation(sourceWord, MAX_RESULTS, 1, typeTranslateId);
+            return results;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public ArrayList<Word> getInfoTranslate(int sourceId, int sourceLanguageId, int targetLanguageId) {
+        try {
+            ArrayList<Word> results = new ArrayList<>();
+            int typeTranslateId;
+            if (sourceLanguageId == 1 && targetLanguageId == 2) {
+                typeTranslateId = ENG_VIET_TYPE;
+            } else if (sourceLanguageId == 2 && targetLanguageId == 1) {
+                typeTranslateId = VIET_ENG_TYPE;
+            } else {
+                return results;
+            }
+
+            results = translateDAO.getAllTransWordByWordIdAndType(sourceId, typeTranslateId);
+
+            return results;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // API tìm kiếm từ cơ bản
@@ -93,17 +137,13 @@ public class TranslationService implements ServiceInterface<Translate>{
         }
     }
 
-    public ArrayList<Translate> selectAllByWordIdAndType(int wid, int typeId)
-    {
-        return translateDAO.selectAllBySourceWordIDAndType(wid, typeId);
-    }
     @Override
     public int insert(Translate t) {
         ArrayList<Translate> existingTranslations = translateDAO.selectAllBySourceWordIDAndType(t.getSource_word_id(), t.getType_translate_id());
         if (existingTranslations != null) {
             for (Translate existing : existingTranslations) {
                 if (existing.getTrans_word_id() == t.getTrans_word_id()) {
-                   
+
                     return -1; // Hoặc một mã lỗi khác cho biết đã tồn tại
                 }
             }

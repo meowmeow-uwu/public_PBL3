@@ -1,6 +1,7 @@
 package com.pbl3.controller;
 
 import com.pbl3.dto.Translate;
+import com.pbl3.dto.Word;
 import com.pbl3.service.AuthService;
 import com.pbl3.service.TranslationService;
 import jakarta.ws.rs.GET;
@@ -12,8 +13,10 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +29,16 @@ public class TranslationController {
     // Định nghĩa constant cho language
     private static final int ENGLISH_LANGUAGE_ID = 1;
     private static final int VIETNAMESE_LANGUAGE_ID = 2;
+
+    @GET
+    @Path("/get/{id}/{type}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTranslateByWordId(@PathParam("id") int wid,
+            @PathParam("type") int typeId) {
+
+        List<Translate> translates = translationService.selectAllByWordIdAndType(wid, typeId);
+        return Response.ok(translates).build();
+    }
 
     @GET
     @Path("{sourceWord}/{sourceLanguageId}/{targetLanguageId}")
@@ -59,6 +72,63 @@ public class TranslationController {
         }
     }
 
+    @GET
+    @Path("/get/{sourceId}/{sourceLanguageId}/{targetLanguageId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getInfoTranslate(@PathParam("sourceId") int sourceId,
+            @PathParam("sourceLanguageId") int sourceLanguageId,
+            @PathParam("targetLanguageId") int targetLanguageId) {
+        // Kiểm tra sourceLanguageId
+        if ((sourceLanguageId != ENGLISH_LANGUAGE_ID && sourceLanguageId != VIETNAMESE_LANGUAGE_ID)
+                || (targetLanguageId != ENGLISH_LANGUAGE_ID && targetLanguageId != VIETNAMESE_LANGUAGE_ID)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"Invalid language ID. Use 1 for English or 2 for Vietnamese\"}")
+                    .build();
+        }
+        // Gọi service với sourceLanguageId và targetLanguageId tương ứng
+        ArrayList<Word> results = translationService.getInfoTranslate(
+                sourceId,
+                sourceLanguageId,
+                targetLanguageId
+        );
+        if (results != null && !results.isEmpty()) {
+            return Response.ok(results).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"No matching words found\"}")
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/get/info/{sourceLanguageId}/{targetLanguageId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getInfoTranslate(@PathParam("sourceId") int sourceId,
+            @PathParam("sourceLanguageId") int sourceLanguageId,
+            @PathParam("targetLanguageId") int targetLanguageId,
+            @QueryParam("keyword") String sourceWord) {
+        // Kiểm tra sourceLanguageId
+        if ((sourceLanguageId != ENGLISH_LANGUAGE_ID && sourceLanguageId != VIETNAMESE_LANGUAGE_ID)
+                || (targetLanguageId != ENGLISH_LANGUAGE_ID && targetLanguageId != VIETNAMESE_LANGUAGE_ID)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"Invalid language ID. Use 1 for English or 2 for Vietnamese\"}")
+                    .build();
+        }
+        // Gọi service với sourceLanguageId và targetLanguageId tương ứng
+        Map<String, Object> results = translationService.getAllSourceWordByNameAndType(
+                sourceWord,
+                sourceLanguageId,
+                targetLanguageId
+        );
+        if (results != null && !results.isEmpty()) {
+            return Response.ok(results).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"No matching words found\"}")
+                    .build();
+        }
+    }
+
     @POST
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
@@ -79,7 +149,7 @@ public class TranslationController {
         translate.setTrans_word_id(targetId);
         translate.setType_translate_id(typeTranslateId);
         int isInserted = translationService.insert(translate);
-        
+
         if (isInserted > 0) {
             return Response.status(Response.Status.CREATED)
                     .entity("{\"message\":\"Translate created successfully\"}")
@@ -90,6 +160,7 @@ public class TranslationController {
                     .build();
         }
     }
+
     @PUT
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
@@ -112,7 +183,7 @@ public class TranslationController {
         translate.setTrans_word_id(targetId);
         translate.setType_translate_id(typeTranslateId);
         int isUpdated = translationService.update(translate);
-        
+
         if (isUpdated != 0) {
             return Response.status(Response.Status.OK)
                     .entity("{\"message\":\"Translate updated successfully\"}")
@@ -143,19 +214,10 @@ public class TranslationController {
                     .entity("{\"message\":\"Translate deleted successfully\"}")
                     .build();
         } else {
-            return Response.status(Response.Status.BAD_REQUEST) 
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\":\"Failed to delete Translate\"}")
                     .build();
         }
     }
-    @GET
-    @Path("/get/{id}/{type}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getTranslateByWordId(@PathParam("id") int wid,
-                                         @PathParam("type") int typeId) {
-        
-        List<Translate> translates = translationService.selectAllByWordIdAndType(wid,typeId);
-        return Response.ok(translates).build();
-    }   
 
 }

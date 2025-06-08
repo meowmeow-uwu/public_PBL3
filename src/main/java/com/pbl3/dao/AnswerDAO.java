@@ -148,4 +148,28 @@ public class AnswerDAO implements DAOInterface<Answer>{
         }
         return null;
     }
+
+    public ArrayList<Answer> selectTrueByQuestionID(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "SELECT * FROM answer WHERE question_id = ? AND is_correct = true";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+            ResultSet rs = s.executeQuery();
+            ArrayList<Answer> answers = new ArrayList<>();
+            while (rs.next()) {
+                answers.add(new Answer(rs.getInt("answer_id"), rs.getInt("question_id"), rs.getString("content"), rs.getBoolean("is_correct")));
+            }
+            s.close();
+            rs.close();
+            return answers;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
+        return null;
+    }
+
 }

@@ -52,8 +52,11 @@ public class DefinitionService implements ServiceInterface<Definition>{
     public Definition selectByCondition(String condition) {
         return null;
     }
-    
-    public List<Definition> selectByWordId(int wid)
+    public Definition selectByWordId(int wid)
+    {
+        return definitionDAO.selectByWordID(wid);
+    }
+    public List<Definition> selectAllByWordId(int wid)
     {
         return definitionDAO.selectAllByWordID(wid);
     }

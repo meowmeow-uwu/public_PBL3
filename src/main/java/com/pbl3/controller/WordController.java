@@ -43,10 +43,25 @@ public class WordController {
     }
 
     @GET
+    @Path("/get/{wordId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWordById(@PathParam("wordId") int wordId) {
+        Word result = wordService.selectByID(wordId);
+
+        if (result != null) {
+            return Response.ok(result).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"Word not found\"}")
+                    .build();
+        }
+    }
+
+    @GET
     @Path("/flashcard/{wordId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCardWord(@PathParam("wordId") int wordId) {
-        Map<String, Object> result = wordService.getFlashcard(wordId,1);
+        Map<String, Object> result = wordService.getFlashcard(wordId, 1);
         if (result != null && !result.isEmpty()) {
             return Response.ok(result).build();
         } else {

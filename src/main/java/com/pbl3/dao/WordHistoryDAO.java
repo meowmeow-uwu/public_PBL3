@@ -130,6 +130,7 @@ public class WordHistoryDAO implements HistoryDAOInterface {
         
         return null;
     }
+    
 
     @Override
     public History selectByCondition(String condition) {

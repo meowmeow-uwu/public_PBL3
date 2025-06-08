@@ -1,11 +1,16 @@
 package com.pbl3.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.pbl3.dto.Answer;
+import com.pbl3.dto.ExamHistory;
+import com.pbl3.dto.ReviewQuestionDTO;
+import com.pbl3.dto.SubmissionDTO;
 import com.pbl3.service.AnswerService;
 import com.pbl3.service.AnswerServiceInterface;
 import com.pbl3.service.AuthService;
+import com.pbl3.service.ExamHistoryService;
 import com.pbl3.util.JwtUtil;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -23,10 +28,13 @@ import jakarta.ws.rs.core.Response;
 public class AnswerController {
     private AnswerServiceInterface answerService;
     private AnswerService answerServices;
+    private ExamHistoryService examHistoryService;
+
 
     public AnswerController() {
         this.answerService = new AnswerService();
         this.answerServices = new AnswerService();
+        this.examHistoryService = new ExamHistoryService();
     }
 
     private void chooseAnswerService(int type) {
@@ -166,6 +174,68 @@ public class AnswerController {
             return Response.status(Response.Status.OK).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @POST
+    @Path("/check/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkAnswers(@HeaderParam("Authorization") String authHeader, @HeaderParam("type") Integer type, List<SubmissionDTO> submissions, @PathParam("id") int id) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"Missing or invalid Authorization header\"}").build();
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
+        int userId = JwtUtil.getUserIdFromToken(token);
+        if (userId == -1) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if (type == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("{\"error\":\"Header 'type' is required.\"}").build();
+        }
+        if (submissions == null || submissions.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("{\"error\":\"Submission list cannot be empty.\"}").build();
+        }
+    
+        try {
+            chooseAnswerService(type); 
+            
+            List<ReviewQuestionDTO> results = answerServices.checkAnswers(submissions);
+
+            int totalQuestions = results.size();
+            long correctCount = results.stream().filter(ReviewQuestionDTO::isAnswer).count();
+            int wrongCount = totalQuestions - (int) correctCount;
+    
+            ExamHistory history = new ExamHistory();
+            history.setExam_id(id);
+            history.setUser_id(userId); 
+            history.setTotal_question(totalQuestions);
+            history.setCorrect_number((int) correctCount);
+            history.setWrong_number(wrongCount);
+            history.setExam_history_date(new java.util.Date());
+            
+            int insertResult = examHistoryService.insert(history); 
+            if (insertResult == 0) {
+                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                               .entity("{\"error\":\"Failed to save exam history.\"}")
+                               .build();
+            }
+
+            return Response.ok(results).build();
+    
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("{\"error\":\"" + e.getMessage() + "\"}")
+                           .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                           .entity("{\"error\":\"An internal server error occurred. Please try again later.\"}")
+                           .build();
         }
     }
 

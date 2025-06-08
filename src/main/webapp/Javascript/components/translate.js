@@ -69,7 +69,7 @@ function displaySuggestions(suggestions) {
         <div class="suggestion-item" data-id="${item.source_word_id}">
             <div class="suggestion-word">${item.source_word}</div>
             <div class="suggestion-phonetic">/${item.source_phonetic}/</div>
-            <div class="suggestion-translations">${item.target_words.map(t => t.target_word).join(', ')}</div>
+            <div class="suggestion-translations">Đang tải...</div>
         </div>
     `).join('');
 
@@ -82,6 +82,32 @@ function displaySuggestions(suggestions) {
             showWordDetail(wordId);
             suggestionsBox.classList.remove('active');
         });
+    });
+
+    // Gọi API getInfoTranslate cho từng gợi ý
+    suggestions.forEach(async (suggestion, index) => {
+        try {
+            const from = fromLang.dataset.value === 'en' ? '1' : '2';
+            const to = toLang.dataset.value === 'vi' ? '2' : '1';
+            
+            const translations = await window.TRANSLATE_API.getInfoTranslate(
+                suggestion.source_word_id,
+                from,
+                to
+            );
+
+            // Cập nhật UI với kết quả dịch
+            const translationElement = suggestionsBox.children[index].querySelector('.suggestion-translations');
+            if (translationElement) {
+                translationElement.textContent = translations.map(t => t.wordName).join(', ');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy thông tin dịch:', error);
+            const translationElement = suggestionsBox.children[index].querySelector('.suggestion-translations');
+            if (translationElement) {
+                translationElement.textContent = 'Không thể tải bản dịch';
+            }
+        }
     });
 }
 
@@ -119,14 +145,22 @@ searchInput.addEventListener('keydown', function (e) {
 async function fetchSuggestions(keyword) {
     const from = fromLang.dataset.value === 'en' ? '1' : '2';
     const to = toLang.dataset.value === 'vi' ? '2' : '1';
-    const url = `${API_Translate_BASE}/${encodeURIComponent(keyword)}/${from}/${to}`;
-
+    
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Gọi API getAllWordByKeyword trước
+        const result = await window.TRANSLATE_API.getAllWordByKeyword(keyword, from, to);
+        
+        if (!result || !result.words || result.words.length === 0) {
+            return [];
         }
-        return await response.json();
+
+        // Chuyển đổi format dữ liệu để hiển thị gợi ý
+        return result.words.map(word => ({
+            source_word_id: word.wordId,
+            source_word: word.wordName,
+            source_phonetic: word.pronunciation,
+            target_words: [] // Sẽ được cập nhật sau khi gọi getInfoTranslate
+        }));
     } catch (error) {
         console.error('Lỗi khi lấy gợi ý:', error);
         return [];
@@ -153,15 +187,17 @@ async function showResult(word, from, to) {
     resultBox.innerHTML = `<div style="text-align:center;padding:32px 0;">Đang tra cứu...</div>`;
 
     try {
-        const suggestions = await fetchSuggestions(word);
-        if (!suggestions || suggestions.length === 0) {
+        // Gọi API getAllWordByKeyword trước
+        const result = await window.TRANSLATE_API.getAllWordByKeyword(word, from, to);
+        
+        if (!result || !result.words || result.words.length === 0) {
             resultBox.innerHTML = `<div style="text-align:center;padding:32px 0;color:#f00;">Không tìm thấy kết quả.</div>`;
             return;
         }
 
         // Lấy chi tiết từ đầu tiên
-        const firstWord = suggestions[0];
-        await showWordDetail(firstWord.source_word_id);
+        const firstWord = result.words[0];
+        await showWordDetail(firstWord.wordId);
     } catch (error) {
         console.error('Lỗi khi hiển thị kết quả:', error);
         resultBox.innerHTML = `<div style="text-align:center;padding:32px 0;color:#f00;">Có lỗi xảy ra khi tra cứu.</div>`;
@@ -171,96 +207,131 @@ async function showResult(word, from, to) {
 // Hiển thị chi tiết từ
 async function showWordDetail(wordId) {
     // Hiển thị loader
-    resultBox.innerHTML = '';
-    // Lấy các phần tử trong result-card
-    const wordImage = document.getElementById('wordImage');
-    const wordText = document.getElementById('wordText');
-    const phoneticText = document.getElementById('phoneticText');
-    const definitionsContainer = document.getElementById('definitionsContainer');
-    const soundBtn = document.getElementById('soundBtn');
-    const saveBtn = document.getElementById('saveBtn');
-
-    // Nếu chưa có result-card (lần đầu), render lại mẫu
-    if (!wordImage || !wordText || !phoneticText || !definitionsContainer) {
-        resultBox.innerHTML = `
-        <div class="result-card">
-          <div class="result-header">
-            <div class="header-content">
-              <img src="" alt="" class="translate-image" id="wordImage">
-              <div class="word-info">
-                <span class="word" id="wordText"></span>
-                <span class="phonetic" id="phoneticText"></span>
-              </div>
-              <button class="sound-btn" id="soundBtn">
-                <i class="fas fa-volume-up"></i>
-              </button>
-            </div>
-            <button class="save-btn" id="saveBtn">Lưu</button>
-          </div>
-          <div class="result-body">
-            <div class="definitions-container" id="definitionsContainer"></div>
-          </div>
-        </div>`;
-    }
-
-    // Lấy lại các phần tử sau khi render mẫu
-    const imgEl = document.getElementById('wordImage');
-    const wordEl = document.getElementById('wordText');
-    const phoneticEl = document.getElementById('phoneticText');
-    const defsEl = document.getElementById('definitionsContainer');
-    const soundEl = document.getElementById('soundBtn');
-    const saveEl = document.getElementById('saveBtn');
+    resultBox.innerHTML = '<div class="loading">Đang tải...</div>';
 
     try {
-        const wordDetail = await fetchWordDetail(wordId);
-
-        // Gán ảnh nếu có
-        if (wordDetail.image) {
-            imgEl.src = wordDetail.image;
-            imgEl.alt = wordDetail.word;
-            imgEl.style.display = '';
-        } else {
-            imgEl.src = '';
-            imgEl.alt = '';
-            imgEl.style.display = 'none';
+        // Lấy thông tin từ gốc và danh sách từ dịch
+        const from = fromLang.dataset.value === 'en' ? '1' : '2';
+        const to = toLang.dataset.value === 'vi' ? '2' : '1';
+        
+        // Lấy thông tin từ gốc
+        const sourceWord = await fetchWordDetail(wordId);
+        
+        // Lấy danh sách từ dịch
+        const translations = await window.TRANSLATE_API.getInfoTranslate(wordId, from, to);
+        
+        // Lấy định nghĩa của từ gốc
+        let sourceDefinition = null;
+        try {
+            sourceDefinition = await window.DEFINITION_API.getDefinitionByWordId(wordId);
+        } catch (error) {
+            console.warn('Không tìm thấy định nghĩa cho từ gốc:', error);
         }
 
-        // Gán từ và phiên âm
-        wordEl.textContent = wordDetail.word || '';
-        phoneticEl.textContent = wordDetail.phonetic ? `/${wordDetail.phonetic}/` : '';
-
-        // Gán các định nghĩa
-        defsEl.innerHTML = wordDetail.definitions.map(def => `
-            <div class="definition-item">
-                <div class="word-type">(${escapeHtml(def.word_type)})</div>
-                <div class="meaning"><b>${escapeHtml(def.meaning)}</b></div>
-                <div class="example" style="color:#888;margin-left:10px;">${def.example ? `<i>${escapeHtml(def.example)}</i>` : ''}</div>
+        // Tạo HTML cho từ gốc
+        let html = `
+            <div class="result-card">
+                <div class="result-header">
+                    <div class="header-content">
+                        ${sourceWord.image ? `
+                            <img src="${sourceWord.image}" alt="${sourceWord.word}" class="translate-image">
+                        ` : ''}
+                        <div class="word-info">
+                            <span class="word">${sourceWord.word}</span>
+                            ${sourceWord.phonetic ? `
+                                <span class="phonetic">/${sourceWord.phonetic}/</span>
+                            ` : ''}
+                        </div>
+                        <button class="sound-btn" onclick="playSound('${sourceWord.word}')">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                    ${user ? `
+                        <button class="save-btn" onclick="openSaveModal('${sourceWord.word}', '${sourceDefinition?.meaning || ''}', ${wordId})">
+                            Lưu
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="result-body">
+                    ${sourceDefinition ? `
+                        <div class="definition-item">
+                            <div class="word-type">(${sourceDefinition.wordType})</div>
+                            <div class="meaning">${sourceDefinition.meaning}</div>
+                            ${sourceDefinition.example ? `
+                                <div class="example">${sourceDefinition.example}</div>
+                            ` : ''}
+                        </div>
+                    ` : '<div class="no-definition">Chưa có định nghĩa cho từ này</div>'}
+                </div>
             </div>
-        `).join('');
+        `;
 
-        // Gán sự kiện phát âm
-        soundEl.onclick = function () {
-            playSound(wordDetail.word);
-        };
+        // Thêm phần từ dịch nếu có
+        if (translations && translations.length > 0) {
+            html += `
+                <div class="translations-section">
+                    <h3>Các từ dịch:</h3>
+                    <div class="translations-list">
+            `;
 
-        // Gán sự kiện lưu từ (nếu có quyền)
+            // Lấy định nghĩa cho từng từ dịch
+            for (const translation of translations) {
+                let targetDefinitions = [];
+                try {
+                    targetDefinitions = await window.DEFINITION_API.getAllDefinitionsByWordId(translation.wordId);
+                } catch (error) {
+                    console.warn(`Không tìm thấy định nghĩa cho từ dịch ${translation.wordName}:`, error);
+                }
+                
+                html += `
+                    <div class="translation-item">
+                        <div class="translation-header">
+                            <span class="translation-word">${translation.wordName}</span>
+                            ${translation.pronunciation ? `
+                                <span class="translation-phonetic">/${translation.pronunciation}/</span>
+                            ` : ''}
+                            <button class="sound-btn" onclick="playSound('${translation.wordName}')">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                        <div class="translation-definitions">
+                            ${targetDefinitions.length > 0 ? 
+                                targetDefinitions.map((def, index) => `
+                                    <div class="translation-definition">
+                                        <span class="definition-number">${index + 1}.</span>
+                                        <span class="definition-meaning">${def.meaning}</span>
+                                        ${def.example ? `
+                                            <div class="definition-example">${def.example}</div>
+                                        ` : ''}
+                                    </div>
+                                `).join('') : 
+                                '<div class="no-definition">Chưa có định nghĩa cho từ này</div>'
+                            }
+                        </div>
+                    </div>
+                `;
+            }
 
-        
+            html += `
+                    </div>
+                </div>
+            `;
+        }
 
-       console.log(user);
+        resultBox.innerHTML = html;
+
+        // Thêm sự kiện lưu từ vào lịch sử nếu đã đăng nhập
         if (user) {
             await window.addWordHistory(wordId);
-
-            saveEl.style.display = 'block';
-            saveEl.onclick = function () {
-                openSaveModal(wordDetail.word, wordDetail.definitions[0]?.meaning || '', wordId);
-            };
-        } else {
-            saveEl.style.display = 'none';
         }
+
     } catch (error) {
         console.error('Lỗi khi hiển thị chi tiết từ:', error);
-        resultBox.innerHTML = `<div style="text-align:center;padding:32px 0;color:#f00;">Có lỗi xảy ra khi lấy chi tiết từ.</div>`;
+        resultBox.innerHTML = `
+            <div class="error-message">
+                Có lỗi xảy ra khi lấy chi tiết từ. Vui lòng thử lại sau.
+            </div>
+        `;
     }
 }
 

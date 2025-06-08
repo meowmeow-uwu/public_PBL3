@@ -74,68 +74,144 @@ h1{
     margin-top: 3px;
   }
   .result-card {
-    margin-top: 32px;
-    background: #f7fbff;
-    border-radius: 12px;
-    padding: 24px 18px;
-    box-shadow: 0 2px 8px rgba(74,144,226,0.07);
-    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
   }
   .result-header {
-    background: #4285f4;
-    color: #fff;
-    border-radius: 12px 12px 0 0;
-    padding: 12px 18px;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
   }
   .header-content {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 12px;
+  }
+  .translate-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    object-fit: cover;
   }
   .word-info {
     display: flex;
     flex-direction: column;
   }
   .word {
-    font-size: 2rem;
+    font-size: 24px;
     font-weight: bold;
-    color: #fff;
   }
   .phonetic {
-    font-size: 1.1rem;
-    color: #e3f0fc;
+    color: #666;
+    font-size: 16px;
   }
   .sound-btn {
     background: none;
     border: none;
+    color: #666;
     cursor: pointer;
-    color: #fff;
-    font-size: 1.3rem;
+    padding: 8px;
+  }
+  .sound-btn:hover {
+    color: #333;
   }
   .save-btn {
-    background: linear-gradient(90deg, #1fd655 0%, #00c3ff 100%);
-    color: #fff;
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 8px 22px;
-    font-size: 1rem;
-    font-weight: bold;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.3s;
   }
   .save-btn:hover {
-    background: linear-gradient(90deg, #00c3ff 0%, #1fd655 100%);
+    background: #45a049;
   }
   .result-body {
-    padding: 18px;
+    padding: 16px;
+  }
+  .definition-item {
+    margin-bottom: 12px;
+  }
+  .word-type {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 4px;
   }
   .meaning {
-    font-size: 1.3rem;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .example {
+    color: #666;
+    font-style: italic;
+    margin-top: 4px;
+    padding-left: 16px;
+  }
+  .translations-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 16px;
+  }
+  .translations-section h3 {
+    margin: 0 0 16px 0;
     color: #333;
+  }
+  .translation-item {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .translation-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .translation-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 8px;
+  }
+  .translation-word {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .translation-phonetic {
+    color: #666;
+  }
+  .translation-definitions {
+    padding-left: 16px;
+  }
+  .translation-definition {
+    margin-bottom: 8px;
+  }
+  .definition-number {
+    color: #666;
+    margin-right: 8px;
+  }
+  .definition-meaning {
+    color: #333;
+  }
+  .definition-example {
+    color: #666;
+    font-style: italic;
+    margin-top: 4px;
+    padding-left: 16px;
+  }
+  .loading {
+    text-align: center;
+    padding: 32px;
+    color: #666;
+  }
+  .error-message {
+    text-align: center;
+    padding: 32px;
+    color: #f44336;
   }
   /* Popup lưu từ */
   .modal-backdrop {
@@ -269,15 +345,6 @@ h1{
   .result-card li {
     margin-bottom: 6px;
     font-size: 1.08rem;
-  }
-  .definition-item {
-    margin: 15px 0;
-    padding: 10px;
-    border-left: 3px solid #4a90e2;
-  }
-  .word-type {
-    color: #666;
-    font-style: italic;
   }
   .loader {
     border: 4px solid #f3f3f3;

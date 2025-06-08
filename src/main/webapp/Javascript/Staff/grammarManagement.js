@@ -6,23 +6,70 @@ let currentKeyword = "";
 
 async function fetchAPI(url, options = {}) {
     const currentToken = window.USER_API.getBearerToken();
-    // 1. Lấy headers tùy chỉnh từ options, mặc định là đối tượng rỗng
     const customHeaders = options.headers || {};
-
-    // 2. Tạo một bản sao của options ĐỂ XÓA headers đi
     const otherOptions = { ...options };
-    delete otherOptions.headers; // Xóa key 'headers' để nó không ghi đè khi spread
+    delete otherOptions.headers;
 
-    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}${url}`, {
-        // 4. Spread các options khác (method, body,...)
-        ...otherOptions,
-        // 3. Xây dựng headers bằng cách merge
-        headers: {
-            'Authorization': currentToken,
-            'Content-Type': 'application/json',
-            ...customHeaders, // Merge các headers tùy chỉnh vào đây
-        },
-    });
+    try {
+        const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}${url}`, {
+            ...otherOptions,
+            headers: {
+                'Authorization': currentToken,
+                'Content-Type': 'application/json',
+                ...customHeaders,
+            },
+        });
+
+        // Lấy dữ liệu body
+        const contentType = response.headers.get("content-type");
+        let data = null;
+        if (response.status !== 204) { // 204 No Content không có body
+            if (contentType && contentType.includes("application/json")) {
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    // Nếu server báo là JSON nhưng body rỗng hoặc lỗi, ta coi như data là null
+                    console.warn("Server indicated JSON, but parsing failed.", jsonError);
+                    data = null;
+                }
+            } else {
+                 try {
+                    data = await response.text();
+                } catch (textError) {
+                     // Nếu không đọc được text, ta vẫn tiếp tục với data là null
+                    console.warn("Could not read response body as text.", textError);
+                    data = null;
+                }
+            }
+        }
+        
+        // Nếu response không OK, ném lỗi với thông tin rõ ràng
+        if (!response.ok) {
+            // Ưu tiên thông báo lỗi từ body (nếu có), không thì dùng status text
+            const errorMessage = (data && (data.message || data.error)) || response.statusText;
+            const error = new Error(errorMessage);
+            error.status = response.status;
+            error.data = data; // Gắn thêm data lỗi vào để có thể dùng sau này
+            throw error;
+        }
+
+        // Nếu response OK, trả về đối tượng chứa cả status và data
+        return {
+            status: response.status,
+            data: data
+        };
+
+    } catch (error) {
+        // Ném lại lỗi để hàm gọi có thể bắt được
+        console.error(`[fetchAPI] Error for URL ${url}:`, error);
+        // Đảm bảo lỗi được ném ra luôn là một đối tượng Error
+        if (error instanceof Error) {
+            throw error;
+        } else {
+            throw new Error(error.toString());
+        }
+    }
+
 
     // 1. Xử lý các phản hồi lỗi (!response.ok)
     if (!response.ok) {
@@ -274,9 +321,22 @@ async function renderTable() {
             }
         } else if (currentView === 'exams' && currentSubTopicId) {
             renderExamHeaders();
-            data = await window.SUB_TOPIC_MANAGEMENT_API.getSubTopicExams(currentSubTopicId);
-            currentDataCache = data.filter(item => !item.is_deleted);
-            renderExamRows(currentDataCache);
+            try {
+                const result = await window.EXAM_MANAGEMENT_API.fetchExamList({
+                    page: currentPage,
+                    pageSize: pageSize,
+                    subTopicId: currentSubTopicId,
+                    keyword: currentKeyword
+                });
+                data = result.exams;
+                totalPages = result.totalPages;
+                currentDataCache = data;
+                renderExamRows(data);
+                renderPagination(totalPages);
+            } catch (error) {
+                console.error("Lỗi khi tải danh sách bài kiểm tra:", error);
+                dataTableTbody.innerHTML = `<tr><td colspan="3">Lỗi tải danh sách bài kiểm tra: ${error.message}</td></tr>`;
+            }
         } else if (['postDetail', 'examDetail', 'questionDetail'].includes(currentView)) {
             dataTableTbody.innerHTML = '';
         }
@@ -443,15 +503,24 @@ function renderExamHeaders() {
 function renderExamRows(exams) {
     if (!dataTableTbody)
         return;
-    dataTableTbody.innerHTML = (!exams || exams.length === 0) ? `<tr><td colspan="3">Chưa có bài kiểm tra nào.</td></tr>` :
+    dataTableTbody.innerHTML = (!exams || exams.length === 0) ? 
+        `<tr><td colspan="3">Chưa có bài kiểm tra nào.</td></tr>` :
         exams.map(exam => `
             <tr data-id="${exam.exam_id}" data-name="${exam.name.replace(/"/g, '&quot;')}" class="clickable-row">
-                <td>${exam.exam_id}</td><td>${exam.name}</td>
+                <td>${exam.exam_id}</td>
+                <td>${exam.name}</td>
                 <td>
-                    <button class="action-btn view" onclick="event.stopPropagation(); window.viewDetail('exam', ${exam.exam_id})"><i class="fas fa-eye"></i></button>
-                    <button class="action-btn edit" onclick="event.stopPropagation(); window.openFormModal('edit', 'exam', ${exam.exam_id}, ${currentSubTopicId})"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn delete" onclick="event.stopPropagation(); window.deleteEntity('exam', ${exam.exam_id})"><i class="fas fa-trash"></i></button>
-                </td></tr>`).join('');
+                    <button class="action-btn view" onclick="event.stopPropagation(); window.viewDetail('exam', ${exam.exam_id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn edit" onclick="event.stopPropagation(); window.openFormModal('edit', 'exam', ${exam.exam_id}, ${currentSubTopicId})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete" onclick="event.stopPropagation(); window.deleteEntity('exam', ${exam.exam_id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`).join('');
     addRowClickListeners();
 }
 
@@ -1393,7 +1462,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await apiCallPromise;
 
                 // Kiểm tra status code
-                if (result.status >= 200 && result.status < 300) {
+
                     showToast('success', 'Thành công!', `${entityId ? 'Cập nhật' : 'Thêm mới'} thành công!`);
                     window.closeModal('formModal');
 
@@ -1412,9 +1481,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log(render);
                         renderTable(); // Hàm render chung
                     }
-                } else {
-                    throw new Error(result.message || 'Có lỗi xảy ra khi xử lý yêu cầu');
-                }
+
 
             } catch (error) {
                 console.error("Đã xảy ra lỗi trong quá trình xử lý form:", error);

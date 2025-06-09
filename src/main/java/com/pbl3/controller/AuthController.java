@@ -20,16 +20,17 @@ public class AuthController {
 
     private final UserService userService = new UserService();
 
-    @POST
-    @Path("/register")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response register(
-            @FormParam("username") String username,
-            @FormParam("email") String email,
-            @FormParam("password") String password,
-            @FormParam("name") String name
-    ) {
-        
+@POST
+@Path("/register")
+@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+@Produces(MediaType.APPLICATION_JSON) 
+public Response register(
+        @FormParam("username") String username,
+        @FormParam("email") String email,
+        @FormParam("password") String password,
+        @FormParam("name") String name
+) {
+    try {
         User user = new User();
         user.setName(name);
         user.setAvatar("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkM2OJy9rNds8J8DrtvjImMk-krlUMtDd0hfjdEwQORF9HKPxxSNClCYBCRxMi4dZS-0c&usqp=CAU");
@@ -37,18 +38,24 @@ public class AuthController {
         user.setEmail(email);
         user.setPassword(password);
         user.setUsername(username);
-        int userId = userService.insert(user);
-        if(userId == -1) return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("{\"error\":\"Unable to register user\"}")
-                        .build();
         
+        userService.insert(user);
         
-        return (userId >= 0)
-                ? Response.status(Response.Status.CREATED).build()
-                : Response.status(Response.Status.BAD_REQUEST)
-                        .entity("{\"error\":\"Unable to register account\"}")
-                        .build();
+        return Response.status(Response.Status.CREATED)
+                       .entity("{\"message\":\"Đăng ký thành công!\"}")
+                       .build();
+
+    } catch (IllegalArgumentException e) {
+         return Response.status(Response.Status.CONFLICT)
+                       .entity("{\"error\":\"" + e.getMessage() + "\"}")
+                       .build();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                       .entity("{\"error\":\"Đã xảy ra lỗi phía máy chủ. Vui lòng thử lại.\"}")
+                       .build();
     }
+}
 
     @POST
     @Path("/login")

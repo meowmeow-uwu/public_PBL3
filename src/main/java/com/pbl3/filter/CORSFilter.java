@@ -20,7 +20,7 @@ public class CORSFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
         // Danh sách các origin được phép
         String origin = requestContext.getHeaderString("Origin");
-        if (origin != null && (origin.equals("https://pbl32025.web.app") || origin.equals("http://localhost:6969")|| origin.equals("http://localhost:2005") || origin.equals("https://pbl3-gnbb.onrender.com"))) {
+        if (origin != null && (origin.equals("https://pbl32025.web.app") || origin.equals("http://localhost:6969")|| origin.equals("https://english.up.railway.app") || origin.equals("https://pbl3-gnbb.onrender.com"))) {
             responseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
             responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
             responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, type");

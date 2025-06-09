@@ -79,7 +79,6 @@ async function handleLogin(event) {
     }
 }
 
-
 async function handleRegister(event) {
     event.preventDefault();
 
@@ -89,13 +88,11 @@ async function handleRegister(event) {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const name = document.getElementById('name').value;
 
-    // Kiểm tra định dạng username - không cho phép dấu cách
     if (!/^[a-z0-9_]+$/.test(username) || username.includes(' ')) {
         showToast('warning', 'Cảnh báo', 'Username chỉ được chứa chữ thường, số và dấu gạch dưới, không được chứa dấu cách!');
         return;
     }
 
-    // Kiểm tra mật khẩu khớp
     if (password !== confirmPassword) {
         showToast('warning', 'Cảnh báo', 'Mật khẩu không khớp!');
         return;
@@ -115,23 +112,21 @@ async function handleRegister(event) {
             })
         });
 
-        const text = await response.text();
-        let data = {};
-        try {
-            data = text ? JSON.parse(text) : {};
-        } catch (e) {
-            console.warn("Phản hồi không phải JSON:", text);
-        }
+        const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data?.error || 'Đăng ký thất bại');
+        if (response.ok) {
+            showToast('success', 'Thành công!', data.message || 'Đăng ký thành công! Vui lòng đăng nhập.');
+            window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
+        } else {
+            if (data && data.error) {
+                showToast('warning', 'Đăng ký không thành công', data.error);
+            } else {
+                showToast('error', 'Lỗi', 'Đăng ký thất bại. Vui lòng thử lại.');
+            }
         }
-
-        showToast('success', 'Thành công!',  'Đăng ký thành công! Vui lòng đăng nhập.');
-        window.location.href = window.APP_CONFIG.BASE_PATH + 'Pages/Components/Login_Register_ForgotPW/login.html';
     } catch (error) {
         console.error('Lỗi đăng ký:', error);
-        showToast('error', 'Lỗi','Lỗi: ' + error.message);
+        showToast('error', 'Lỗi hệ thống', 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền.');
     }
 }
 

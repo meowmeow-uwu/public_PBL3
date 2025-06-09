@@ -85,7 +85,7 @@ public class AuthController {
             String resetToken = userService.generateResetPasswordToken(user);
             
             // Gửi email chứa link reset password
-            String resetLink = "https://pbl3-gnbb.onrender.com/Pages/Components/Login_Register_ForgotPW/resetPassword.html?token=" + resetToken;
+            String resetLink = "https://english.up.railway.app/Pages/Components/Login_Register_ForgotPW/resetPassword.html?token=" + resetToken;
             userService.sendResetPasswordEmail(user.getEmail(), resetLink);
 
             return Response.ok()

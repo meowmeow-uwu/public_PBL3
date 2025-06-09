@@ -42,9 +42,9 @@ public class WordService implements ServiceInterface<Word> {
 
     @Override
     public int delete(int wid) {
-        collectionOfWordDAO.deleteByWordId(wid);
         translateDAO.deleteByWordId(wid);
         definitionDAO.DeleteByWordId(wid);
+        collectionOfWordDAO.deleteByWordId(wid);
         return wordDAO.delete(wid);
     }
 

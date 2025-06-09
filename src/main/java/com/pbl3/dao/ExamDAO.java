@@ -176,12 +176,23 @@ public int getNumberPage(int pageSize, int SubTopicId, String keyword) {
         Connection c= null;
         try {
             c= DBUtil.makeConnection();
+
+            String query = "DELETE FROM exam_has_question WHERE exam_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, exam.getExam_id());
+            int result = s.executeUpdate();
+
+            // query = "DELETE FROM exam_has_reading WHERE exam_id = ?";
+            // s = c.prepareStatement(query);
+            // s.setInt(1, id);
+            // result = s.executeUpdate();
+
             PreparedStatement ps= c.prepareStatement("UPDATE exam SET name=?, sub_topic_id=?, is_deleted=? WHERE exam_id=? AND is_deleted = 0");
             ps.setString(1, exam.getName());
             ps.setInt(2, exam.getSub_topic_id());
             ps.setBoolean(3, exam.is_deleted());
             ps.setInt(4, exam.getExam_id());
-            int result= ps.executeUpdate();
+            result= ps.executeUpdate();
             ps.close();
             return result;
         } catch (Exception e) {
@@ -192,8 +203,50 @@ public int getNumberPage(int pageSize, int SubTopicId, String keyword) {
         return 0;
     }
 
+    public boolean checkExistHistory(int id){
+        String existsQuery = "SELECT EXISTS (SELECT 1 FROM exam_history WHERE exam_id = ?)";
+        try (Connection c = DBUtil.makeConnection();
+        PreparedStatement existsStmt = c.prepareStatement(existsQuery)) {
+       
+       existsStmt.setInt(1, id);
+       try (ResultSet rs = existsStmt.executeQuery()) {
+           if (rs.next() && rs.getBoolean(1)) {
+               return true;
+           }
+       }
+   } catch(Exception e){
+
+   }
+   return false;
+    }
+
     @Override
     public int delete(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "DELETE FROM exam_has_question WHERE exam_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+            int result = s.executeUpdate();
+
+            // query = "DELETE FROM exam_has_reading WHERE exam_id = ?";
+            // s = c.prepareStatement(query);
+            // s.setInt(1, id);
+            // result = s.executeUpdate();
+
+            query = "DELETE FROM exam WHERE exam_id = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, id);
+            result = s.executeUpdate();
+
+            s.close();
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
         return 0;
     }
     

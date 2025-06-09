@@ -212,7 +212,7 @@ public class TranslateDAO implements DAOInterface<Translate> {
 
     public int deleteByWordId(int wordId) {
         try (Connection conn = DBUtil.makeConnection(); PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM translate WHERE word_id = ?")) {
+                "DELETE FROM translate WHERE source_word_id = ?")) {
 
             ps.setInt(1, wordId);
             return ps.executeUpdate();

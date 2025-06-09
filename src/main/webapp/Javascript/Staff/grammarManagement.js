@@ -169,7 +169,7 @@ function renderBreadcrumbs() {
         html += ` &gt; <span class="breadcrumb-item active">${currentPostName.replace(/"/g, '&quot;')} (Bài học)</span>`;
     }
     if (currentView === 'examDetail' && currentExamName) {
-        html += ` &gt; <span class="breadcrumb-item active">${currentExamName.replace(/"/g, '&quot;')} (Bài KT)</span>`;
+        html += ` &gt; <span class="breadcrumb-item active">${currentExamName.replace(/"/g, '&quot;')} (Bài ôn tập)</span>`;
     }
     if (currentView === 'questionDetail' && currentQuestionContent) {
         html += ` &gt; <span class="breadcrumb-item" data-level="exams" data-id="${currentExamIdForQuestionsManagement}" onclick="viewDetail('exam', ${currentExamIdForQuestionsManagement})">${currentExamName.replace(/"/g, '&quot;')}</span>`;
@@ -208,8 +208,8 @@ function updateManagementTitleAndButton() {
             addNewBtn.onclick = () => openFormModal('add', 'post', null, currentSubTopicId);
             break;
         case 'exams':
-            title += `Bài KT của "${currentSubTopicName}"`;
-            btnText += "Bài KT mới";
+            title += `Bài ôn tập của "${currentSubTopicName}"`;
+            btnText += "Bài ôn tập mới";
             contentTabs.style.display = 'flex';
             setActiveTabButton('exams');
             addNewBtn.onclick = () => openFormModal('add', 'exam', null, currentSubTopicId);
@@ -220,7 +220,7 @@ function updateManagementTitleAndButton() {
             contentTabs.style.display = 'none';
             break;
         case 'examDetail':
-            title = `Chi tiết Bài KT: ${currentExamName.replace(/"/g, '&quot;')}`;
+            title = `Chi tiết Bài ôn tập: ${currentExamName.replace(/"/g, '&quot;')}`;
             showAddNew = false;
             contentTabs.style.display = 'none';
             break;
@@ -334,8 +334,8 @@ async function renderTable() {
                 renderExamRows(data);
                 renderPagination(totalPages);
             } catch (error) {
-                console.error("Lỗi khi tải danh sách bài kiểm tra:", error);
-                dataTableTbody.innerHTML = `<tr><td colspan="3">Lỗi tải danh sách bài kiểm tra: ${error.message}</td></tr>`;
+                console.error("Lỗi khi tải danh sách bài ôn tập:", error);
+                dataTableTbody.innerHTML = `<tr><td colspan="3">Lỗi tải danh sách bài ôn tập: ${error.message}</td></tr>`;
             }
         } else if (['postDetail', 'examDetail', 'questionDetail'].includes(currentView)) {
             dataTableTbody.innerHTML = '';
@@ -498,13 +498,13 @@ function renderPostRows(posts) {
 
 function renderExamHeaders() {
     if (dataTableThead)
-        dataTableThead.innerHTML = `<tr><th>ID</th><th>Tên Bài kiểm tra</th><th>Hành động</th></tr>`;
+        dataTableThead.innerHTML = `<tr><th>ID</th><th>Tên Bài ôn tập</th><th>Hành động</th></tr>`;
 }
 function renderExamRows(exams) {
     if (!dataTableTbody)
         return;
     dataTableTbody.innerHTML = (!exams || exams.length === 0) ? 
-        `<tr><td colspan="3">Chưa có bài kiểm tra nào.</td></tr>` :
+        `<tr><td colspan="3">Chưa có bài ôn tập nào.</td></tr>` :
         exams.map(exam => `
             <tr data-id="${exam.exam_id}" data-name="${exam.name.replace(/"/g, '&quot;')}" class="clickable-row">
                 <td>${exam.exam_id}</td>
@@ -835,7 +835,7 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                 // Form thêm mới - chỉ hiển thị subtopic hiện tại
                 fieldsHtml = `
                     <div class="form-group">
-                        <label for="modalEntityName">Tên Bài KT:</label>
+                        <label for="modalEntityName">Tên Bài ôn tập:</label>
                         <input type="text" id="modalEntityName" name="name" value="${(entityData.name || '').replace(/"/g, '&quot;')}" required>
                     </div>
                     <div class="form-group">
@@ -848,7 +848,7 @@ window.openFormModal = async (mode, entityType, id = null, parentIdFromCall = nu
                 // Form chỉnh sửa - cho phép chọn subtopic khác
                 fieldsHtml = `
                     <div class="form-group">
-                        <label for="modalEntityName">Tên Bài KT:</label>
+                        <label for="modalEntityName">Tên Bài ôn tập:</label>
                         <input type="text" id="modalEntityName" name="name" value="${(entityData.name || '').replace(/"/g, '&quot;')}" required>
                     </div>
                     <div class="form-group">
@@ -943,7 +943,7 @@ function getEntityTypeDisplayName(type) {
         topic: 'Chủ đề',
         subtopic: 'Chủ đề con',
         post: 'Bài viết',
-        exam: 'Bài kiểm tra',
+        exam: 'Bài ôn tập',
         question: 'Câu hỏi',
         answer: 'Câu trả lời'
     };
@@ -986,7 +986,7 @@ window.deleteEntity = async (entityType, id) => {
             topic: 'Chủ đề',
             subtopic: 'Chủ đề con',
             post: 'Bài viết',
-            exam: 'Bài kiểm tra',
+            exam: 'Bài ôn tập',
             question: 'Câu hỏi',
             answer: 'Câu trả lời'
         };
@@ -1098,7 +1098,7 @@ window.viewDetail = async (entityType, id) => { /* ... logic như cũ ... */
             currentExamId = id;
             currentExamName = entityData.name;
             currentExamIdForQuestionsManagement = id;
-            detailModalTitle.textContent = `Chi tiết Bài KT: ${entityData.name}`;
+            detailModalTitle.textContent = `Chi tiết Bài ôn tập: ${entityData.name}`;
             contentHtml = `<h4>ID: ${entityData.exam_id}</h4><p><strong>Tên:</strong> ${entityData.name}</p>`;
             currentView = 'examDetail';
             detailModalContent.innerHTML = contentHtml;
@@ -1119,7 +1119,7 @@ function getEntityTypeDisplayName(entityType) { /* ... logic như cũ ... */
     if (entityType === 'post')
         return 'Bài học';
     if (entityType === 'exam')
-        return 'Bài kiểm tra';
+        return 'Bài ôn tập';
     if (entityType === 'question')
         return 'Câu hỏi';
     if (entityType === 'answer')
@@ -1138,7 +1138,17 @@ async function renderQuestionsForExam(examId) {
     try {
         const questions = await window.QUESTION_MANAGEMENT_API.getQuestionsByExamId(examId);
         if (!questions || questions.length === 0) {
-            examQuestionsList.innerHTML = '<li class="list-group-item">Bài kiểm tra này chưa có câu hỏi nào.</li>';
+            examQuestionsList.innerHTML = `
+                <li class="list-group-item">
+                    <div class="no-questions-message">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Bài ôn tập này chưa có câu hỏi nào.</p>
+                        <p class="sub-message">Vui lòng thêm câu hỏi để hoàn thiện bài ôn tập.</p>
+                        <button class="btn btn-primary" onclick="window.openFormModal('add', 'question', null, ${examId})">
+                            <i class="fas fa-plus"></i> Thêm câu hỏi
+                        </button>
+                    </div>
+                </li>`;
             return;
         }
         let questionsHtml = '<ul class="list-group">';
@@ -1159,7 +1169,24 @@ async function renderQuestionsForExam(examId) {
         examQuestionsList.innerHTML = questionsHtml;
     } catch (error) {
         console.error('Lỗi khi tải danh sách câu hỏi:', error);
-        examQuestionsList.innerHTML = `<li class="list-group-item text-danger">Lỗi tải câu hỏi: ${error.message}</li>`;
+        if (error.status === 404) {
+            examQuestionsList.innerHTML = `
+                <li class="list-group-item">
+                    <div class="no-questions-message">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Bài ôn tập này chưa có câu hỏi nào.</p>
+                        <p class="sub-message">Vui lòng thêm câu hỏi để hoàn thiện bài ôn tập.</p>
+                        <button class="btn btn-primary" onclick="window.openFormModal('add', 'question', null, ${examId})">
+                            <i class="fas fa-plus"></i> Thêm câu hỏi
+                        </button>
+                    </div>
+                </li>`;
+        } else {
+            examQuestionsList.innerHTML = `<li class="list-group-item text-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                Lỗi tải câu hỏi: ${error.message}
+            </li>`;
+        }
     }
 }
 

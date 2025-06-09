@@ -18,6 +18,7 @@ async function getQuestionsByExamId(examId) {
             if (response.status === 401) throw new Error('Unauthorized: Vui lòng đăng nhập lại');
             if (response.status === 403) throw new Error('Bạn không có quyền thực hiện thao tác này');
             if (response.status === 400) throw new Error('Dữ liệu không hợp lệ');
+            if (response.status === 404) return [];
             throw new Error('Có lỗi xảy ra khi lấy danh sách câu hỏi');
         }
 

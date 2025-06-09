@@ -6,6 +6,8 @@ package com.pbl3.dao;
 
 import com.pbl3.dto.Word;
 import com.pbl3.util.DBUtil;
+
+import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,13 +15,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  *
  * @author Danh
  */
 public class WordDAO implements DAOInterface<Word> {
-
+    private static final Logger LOGGER = Logger.getLogger(Word.class.getName());
     private static WordDAO instance;
 
     private WordDAO() {
@@ -106,24 +109,34 @@ public class WordDAO implements DAOInterface<Word> {
 
     @Override
     public int delete(int id) {
-        Connection c = null;
-        try {
-            c = DBUtil.makeConnection();
-
-            String query = "UPDATE word SET  is_deleted=1 WHERE word_id=?";
-            PreparedStatement s = c.prepareStatement(query);
-            s.setInt(1, id);
-
-            int result = s.executeUpdate();
-            s.close();
-            return result;
+        String existsQuery = "SELECT EXISTS (SELECT 1 FROM word_history WHERE word_id = ?)";
+        String deleteQuery = "DELETE FROM word WHERE word_id = ?";
+        String updateQuery = "UPDATE word SET is_deleted = 1 WHERE word_id = ?";
+    
+        try (Connection c = DBUtil.makeConnection();
+             PreparedStatement existsStmt = c.prepareStatement(existsQuery)) {
+            
+            existsStmt.setInt(1, id);
+            try (ResultSet rs = existsStmt.executeQuery()) {
+                if (rs.next() && rs.getBoolean(1)) {
+                    deleteQuery = updateQuery;
+                }
+            }
+        } catch(Exception e){
+            LOGGER.log(Level.SEVERE, "Có lỗi xảy ra", e);
+        }
+    
+        try (Connection c = DBUtil.makeConnection();
+             PreparedStatement stmt = c.prepareStatement(deleteQuery)) {
+            
+            stmt.setInt(1, id);
+            return stmt.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.closeConnection(c);
+            LOGGER.log(Level.SEVERE, "Có lỗi xảy ra", e);
         }
         return 0;
     }
+    
 
     @Override
     public ArrayList<Word> selectAll() {

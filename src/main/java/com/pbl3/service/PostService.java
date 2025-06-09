@@ -25,6 +25,9 @@ public class PostService implements ServiceInterface<Post> {
 
     @Override
     public int update(Post t) {
+        if(t.is_deleted() && !postDAO.checkExistHistory(t.getPost_id())){
+            return delete(t.getPost_id());
+        }
         return postDAO.update(t);
     }
 

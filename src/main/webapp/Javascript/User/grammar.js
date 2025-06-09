@@ -49,9 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             return allTopics;
         } catch (error) {
             console.error("Error fetching main topics:", error);
-            if (mainTopicsGrid) mainTopicsGrid.innerHTML = `<p class="error-message">Lỗi tải danh sách chủ đề. Vui lòng thử lại sau.</p>`;
+            if (mainTopicsGrid)
+                mainTopicsGrid.innerHTML = `<p class="error-message">Lỗi tải danh sách chủ đề. Vui lòng thử lại sau.</p>`;
             return [];
-        }
+    }
     }
 
     async function getSubTopicsForTopic(topicId, keyword = '') {
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error(`Error fetching subtopics for topic ${topicId}:`, error);
             return [];
-        }
+    }
     }
 
     async function getPostsForSubTopic(subTopicId, keyword = '') {
@@ -85,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error(`Error fetching posts for subtopic ${subTopicId}:`, error);
             return [];
-        }
+    }
     }
 
     async function getExamsForSubTopic(subTopicId, keyword = '') {
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error(`Error fetching exams for subtopic ${subTopicId}:`, error);
             return [];
-        }
+    }
     }
 
     async function getPostDetails(postId) {
@@ -127,12 +128,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Lưu lịch sử bài học (post)
     async function addPostHistory(postId) {
         try {
-            const historyData = { key_id: postId };
+            const historyData = {key_id: postId};
             await window.historyAPI.createHistory(historyData, 2);
             console.log(`Post history added for post_id ${postId}.`);
         } catch (error) {
             if (error.message && (error.message.includes("400") || error.message.includes("409")) &&
-                error.message.toLowerCase().includes("history already exists")) {
+                    error.message.toLowerCase().includes("history already exists")) {
                 console.log(`Post history already exists for post_id ${postId}.`);
             } else {
                 console.error(`CLIENT: Error adding post history for post_id ${postId}:`, error.message);
@@ -140,13 +141,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ĐÃ CẬP NHẬT: Hàm lưu lịch sử bài kiểm tra (ExamHistory)
+    // ĐÃ CẬP NHẬT: Hàm lưu lịch sử bài ôn tập (ExamHistory)
     async function addExamResultHistory(examId, correctNumber, wrongNumber, totalQuestion) {
         try {
             const examHistoryData = {
                 // exam_history_id: 0, // Backend sẽ tự tạo
                 // user_id: 0,         // Backend sẽ lấy từ token
-                exam_id: examId,        // Khớp với DTO ExamHistory
+                exam_id: examId, // Khớp với DTO ExamHistory
                 correct_number: correctNumber,
                 wrong_number: wrongNumber,
                 total_question: totalQuestion
@@ -165,7 +166,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- UI RENDERING FUNCTIONS ---
     function renderMainTopics(topics) {
-        if (!mainTopicsGrid) return;
+        if (!mainTopicsGrid)
+            return;
 
         // Tạo container chính
         const mainContainer = document.createElement('div');
@@ -256,7 +258,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function showSubTopicsView(mainTopicId) {
         const subTopicsGrid = document.getElementById('subTopicsGrid');
-        if (!subTopicsGrid) return;
+        if (!subTopicsGrid)
+            return;
         subTopicsGrid.innerHTML = '<p class="loading-message">Đang tải chủ đề con...</p>';
 
         const currentTopic = allTopics.find(t => t.topic_id === mainTopicId);
@@ -359,20 +362,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         let subTopicName = "Danh sách";
         try {
             const subTopicDetail = await fetchWithAuth(`${API_BASE_URL}/subtopic/${subTopicId}`);
-            if (subTopicDetail) subTopicName = subTopicDetail.name;
-        } catch (e) { console.error("Could not fetch subtopic name for title", e) }
+            if (subTopicDetail)
+                subTopicName = subTopicDetail.name;
+        } catch (e) {
+            console.error("Could not fetch subtopic name for title", e)
+        }
 
         document.getElementById('lessonsTitle').textContent = subTopicName;
 
         document.querySelectorAll('.lessons-tabs .tab-btn').forEach(b => b.classList.remove('active'));
         const activeTabButton = document.querySelector(`.lessons-tabs .tab-btn[data-tab="${currentLessonOrQuizType}"]`);
-        if (activeTabButton) activeTabButton.classList.add('active');
+        if (activeTabButton)
+            activeTabButton.classList.add('active');
         else {
             document.querySelector('.lessons-tabs .tab-btn[data-tab="lessons"]')?.classList.add('active');
             currentLessonOrQuizType = 'lessons';
         }
 
-        if (!lessonsContentDiv) return;
+        if (!lessonsContentDiv)
+            return;
         lessonsContentDiv.innerHTML = '<p class="loading-message">Đang tải danh sách...</p>';
         await renderItemsInLessonsContent(subTopicId, currentLessonOrQuizType);
 
@@ -384,7 +392,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function renderItemsInLessonsContent(subTopicId, type) {
-        if (!lessonsContentDiv) return;
+        if (!lessonsContentDiv)
+            return;
         lessonsContentDiv.innerHTML = `<p class="loading-message">Đang tải ${type === 'lessons' ? 'bài học' : 'bài ôn tập'}...</p>`;
 
         // Tạo container chính cho phần nội dung bài học/bài ôn tập
@@ -407,10 +416,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         let items = [];
         if (type === 'lessons') {
             const posts = await getPostsForSubTopic(subTopicId, currentKeyword);
-            items = posts.map(post => ({ id: post.post_id, title: post.post_name, type: 'lesson', description: post.content }));
+            items = posts.map(post => ({id: post.post_id, title: post.post_name, type: 'lesson', description: post.content}));
         } else if (type === 'quizzes') {
             const exams = await getExamsForSubTopic(subTopicId, currentKeyword);
-            items = exams.map(exam => ({ id: exam.exam_id, title: exam.name, type: 'quiz', description: exam.description }));
+            items = exams.map(exam => ({id: exam.exam_id, title: exam.name, type: 'quiz', description: exam.description}));
         }
 
         if (!items || items.length === 0) {
@@ -460,8 +469,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const lessonItemDiv = e.target.closest('.lesson-item');
                     const itemId = parseInt(lessonItemDiv.dataset.id);
                     const itemType = lessonItemDiv.dataset.type;
-                    if (itemType === 'lesson') await showLessonDetailView(itemId);
-                    else if (itemType === 'quiz') await showQuizView(itemId);
+                    if (itemType === 'lesson')
+                        await showLessonDetailView(itemId);
+                    else if (itemType === 'quiz')
+                        await showQuizView(itemId);
                 });
             });
         }
@@ -509,21 +520,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function showQuizView(quizId) {
-        if (!quizContentDiv) return;
-        quizContentDiv.innerHTML = '<p class="loading-message">Đang tải chi tiết bài kiểm tra...</p>';
-        if (submitQuizButton) submitQuizButton.style.display = 'none';
+        if (!quizContentDiv)
+            return;
+        quizContentDiv.innerHTML = '<p class="loading-message">Đang tải chi tiết bài ôn tập...</p>';
+        if (submitQuizButton)
+            submitQuizButton.style.display = 'none';
 
         try {
             // Lấy danh sách câu hỏi từ API
             const questions = await window.QUESTION_API.getQuestionsByExamId(quizId);
-            
+
+            // Hiển thị giao diện bài ôn tập
+            lessonsSection.classList.add('hidden');
+            lessonDetailSection.classList.add('hidden');
+            subTopicsSection.classList.add('hidden');
+            mainTopicsSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+
             if (!questions || questions.length === 0) {
-                quizContentDiv.innerHTML = '<p>Bài ôn tập này hiện chưa có câu hỏi.</p>';
+                quizContentDiv.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Bài ôn tập này chưa có câu hỏi nào.</p>
+                        <p class="error-sub-message">Vui lòng quay lại sau khi bài ôn tập đã được cập nhật.</p>
+                        <div class="error-actions">
+                            <button class="btn-secondary" onclick="backToQuizList.click()">Quay lại</button>
+                        </div>
+                    </div>`;
                 document.getElementById('totalQuestions').textContent = '0';
                 document.getElementById('currentQuestion').textContent = '0';
                 stopQuizTimerInterval();
                 document.getElementById('quizTime').textContent = 'Không giới hạn';
-                if (submitQuizButton) submitQuizButton.style.display = 'inline-block';
+                if (submitQuizButton)
+                    submitQuizButton.style.display = 'none';
                 return;
             }
 
@@ -532,31 +561,38 @@ document.addEventListener('DOMContentLoaded', async () => {
                 questions: questions
             };
 
-            quizTimeLeft = 0; // Bắt đầu từ 0
+            quizTimeLeft = 0;
             updateQuizTimerDisplay();
             startQuizTimerInterval();
-            
+
             currentQuestionIndex = 0;
             userAnswers = new Array(questions.length).fill(null);
             document.getElementById('totalQuestions').textContent = questions.length;
             renderQuizQuestionView(currentQuestionIndex);
-            if (submitQuizButton) submitQuizButton.style.display = 'inline-block';
+            if (submitQuizButton)
+                submitQuizButton.style.display = 'inline-block';
 
-            lessonsSection.classList.add('hidden');
-            lessonDetailSection.classList.add('hidden');
-            subTopicsSection.classList.add('hidden');
-            mainTopicsSection.classList.add('hidden');
-            quizSection.classList.remove('hidden');
         } catch (error) {
-            console.error('Lỗi khi tải bài kiểm tra:', error);
-            quizContentDiv.innerHTML = '<p class="error-message">Không thể tải thông tin bài kiểm tra.</p>';
+            console.error('Lỗi khi tải bài ôn tập:', error);
+            quizContentDiv.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>${error.message || 'Không thể tải thông tin bài ôn tập.'}</p>
+                    <div class="error-actions">
+                        <button class="btn-secondary" onclick="backToQuizList.click()">Quay lại</button>
+                    </div>
+                </div>`;
+            if (submitQuizButton)
+                submitQuizButton.style.display = 'none';
         }
     }
 
     // --- QUIZ LOGIC FUNCTIONS ---
     function startQuizTimerInterval() {
-        if (quizTimer) clearInterval(quizTimer);
-        if (currentQuizData && currentQuizData.timeLimit === 0) return;
+        if (quizTimer)
+            clearInterval(quizTimer);
+        if (currentQuizData && currentQuizData.timeLimit === 0)
+            return;
 
         quizTimer = setInterval(() => {
             quizTimeLeft++;
@@ -571,7 +607,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateQuizTimerDisplay() {
         if (currentQuizData && currentQuizData.timeLimit === 0) {
             const quizTimeEl = document.getElementById('quizTime');
-            if (quizTimeEl) quizTimeEl.textContent = 'Không giới hạn';
+            if (quizTimeEl)
+                quizTimeEl.textContent = 'Không giới hạn';
             return;
         }
         const minutes = Math.floor(quizTimeLeft / 60);
@@ -579,13 +616,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const quizTimeEl = document.getElementById('quizTime');
         if (quizTimeEl) {
             quizTimeEl.textContent =
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
     }
 
     function renderQuizQuestionView(index) {
         if (!currentQuizData || !currentQuizData.questions || currentQuizData.questions.length === 0) {
-            if (quizContentDiv) quizContentDiv.innerHTML = "<p>Không có câu hỏi nào để hiển thị.</p>";
+            if (quizContentDiv)
+                quizContentDiv.innerHTML = "<p>Không có câu hỏi nào để hiển thị.</p>";
             return;
         }
 
@@ -616,8 +654,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="fill-answer">
                         <input type="text" class="answer-input" 
                                placeholder="Nhập đáp án của bạn"
-                               value="${userAnswers[index] || ''}"
-                               oninput="updateFillAnswer(${index}, this.value)">
+                               value="${userAnswers[index] || ''}">
                     </div>
                 </div>
             `;
@@ -634,6 +671,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Thêm sự kiện cho các nút điều hướng
         document.getElementById('nextQuestionBtn')?.addEventListener('click', () => {
             if (currentQuestionIndex < currentQuizData.questions.length - 1) {
+                // Lưu đáp án hiện tại trước khi chuyển câu
+                const currentInput = quizContentDiv.querySelector('.answer-input');
+                if (currentInput) {
+                    userAnswers[currentQuestionIndex] = currentInput.value;
+                }
                 currentQuestionIndex++;
                 renderQuizQuestionView(currentQuestionIndex);
             }
@@ -641,6 +683,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('prevQuestionBtn')?.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
+                // Lưu đáp án hiện tại trước khi chuyển câu
+                const currentInput = quizContentDiv.querySelector('.answer-input');
+                if (currentInput) {
+                    userAnswers[currentQuestionIndex] = currentInput.value;
+                }
                 currentQuestionIndex--;
                 renderQuizQuestionView(currentQuestionIndex);
             }
@@ -658,9 +705,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const input = quizContentDiv.querySelector('.answer-input');
             if (input) {
                 input.addEventListener('input', (e) => {
-                    userAnswers[currentQuestionIndex] = e.target.value;
-                    console.log('Updated fill answer:', currentQuestionIndex, e.target.value);
+                    updateFillAnswer(currentQuestionIndex, e.target.value);
                 });
+
             }
         }
     }
@@ -674,7 +721,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Hàm xử lý nộp bài
     async function processQuizSubmission() {
         stopQuizTimerInterval();
-        
+
         try {
             // Chuẩn bị dữ liệu gửi đi
             const submissions = currentQuizData.questions.map((question, index) => {
@@ -698,28 +745,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Hiển thị kết quả
             let correctCount = 0;
             let html = '<div class="quiz-results">';
-            html += '<h2>Kết quả bài kiểm tra</h2>';
+            html += '<h2>Kết quả bài ôn tập</h2>';
 
             results.forEach((result, index) => {
                 const question = currentQuizData.questions[index];
-                if (result.answer) correctCount++;
+                if (result.answer)
+                    correctCount++;
 
                 html += `
                     <div class="result-item ${result.answer ? 'correct' : 'incorrect'}">
                         <h3>Câu ${index + 1}: ${question.content}</h3>
                         <p>Đáp án của bạn: ${
-                            question.question_type_id === 1 
-                                ? question.answers.find(a => a.answer_id === userAnswers[index])?.content || 'Chưa trả lời'
-                                : userAnswers[index] || 'Chưa trả lời'
+                        question.question_type_id === 1
+                        ? question.answers.find(a => a.answer_id === userAnswers[index])?.content || 'Chưa trả lời'
+                        : userAnswers[index] || 'Chưa trả lời'
                         }</p>
                         <p>Kết quả: ${result.answer ? 'Đúng' : 'Sai'}</p>
                         ${!result.answer ? `
                             <div class="correct-answer">
                                 <p>Đáp án đúng: ${
-                                    question.question_type_id === 1
-                                        ? result.answers.filter(a => a.is_correct).map(a => a.content).join(', ')
-                                        : result.answer_list.join(', ')
-                                }</p>
+                        question.question_type_id === 1
+                        ? result.answers.filter(a => a.is_correct).map(a => a.content).join(', ')
+                        : result.answer_list.join(', ')
+                        }</p>
                             </div>
                         ` : ''}
                     </div>
@@ -742,7 +790,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showLessonsAndQuizzesListView(currentSubTopicId);
             });
 
-            if (submitQuizButton) submitQuizButton.style.display = 'none';
+            if (submitQuizButton)
+                submitQuizButton.style.display = 'none';
 
         } catch (error) {
             console.error('Lỗi khi nộp bài:', error);
@@ -752,37 +801,44 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- NAVIGATION AND UI FLOW ---
     // ... (Các nút back và tab switching giữ nguyên) ...
-    if (backToMainTopics) backToMainTopics.addEventListener('click', () => {
-        subTopicsSection.classList.add('hidden');
-        lessonsSection.classList.add('hidden');
-        lessonDetailSection.classList.add('hidden');
-        quizSection.classList.add('hidden');
-        mainTopicsSection.classList.remove('hidden');
-        stopQuizTimerInterval();
-        if (submitQuizButton) submitQuizButton.style.display = 'inline-block';
-    });
+    if (backToMainTopics)
+        backToMainTopics.addEventListener('click', () => {
+            subTopicsSection.classList.add('hidden');
+            lessonsSection.classList.add('hidden');
+            lessonDetailSection.classList.add('hidden');
+            quizSection.classList.add('hidden');
+            mainTopicsSection.classList.remove('hidden');
+            stopQuizTimerInterval();
+            if (submitQuizButton)
+                submitQuizButton.style.display = 'inline-block';
+        });
 
-    if (backToSubTopics) backToSubTopics.addEventListener('click', () => {
-        lessonsSection.classList.add('hidden');
-        subTopicsSection.classList.remove('hidden');
-        mainTopicsSection.classList.add('hidden');
-        stopQuizTimerInterval();
-        if (submitQuizButton) submitQuizButton.style.display = 'inline-block';
-    });
+    if (backToSubTopics)
+        backToSubTopics.addEventListener('click', () => {
+            lessonsSection.classList.add('hidden');
+            subTopicsSection.classList.remove('hidden');
+            mainTopicsSection.classList.add('hidden');
+            stopQuizTimerInterval();
+            if (submitQuizButton)
+                submitQuizButton.style.display = 'inline-block';
+        });
 
-    if (backToLessons) backToLessons.addEventListener('click', () => {
-        lessonDetailSection.classList.add('hidden');
-        currentLessonOrQuizType = 'lessons';
-        showLessonsAndQuizzesListView(currentSubTopicId);
-    });
+    if (backToLessons)
+        backToLessons.addEventListener('click', () => {
+            lessonDetailSection.classList.add('hidden');
+            currentLessonOrQuizType = 'lessons';
+            showLessonsAndQuizzesListView(currentSubTopicId);
+        });
 
-    if (backToQuizList) backToQuizList.addEventListener('click', () => {
-        quizSection.classList.add('hidden');
-        stopQuizTimerInterval();
-        currentLessonOrQuizType = 'quizzes';
-        showLessonsAndQuizzesListView(currentSubTopicId);
-        if (submitQuizButton) submitQuizButton.style.display = 'inline-block';
-    });
+    if (backToQuizList)
+        backToQuizList.addEventListener('click', () => {
+            quizSection.classList.add('hidden');
+            stopQuizTimerInterval();
+            currentLessonOrQuizType = 'quizzes';
+            showLessonsAndQuizzesListView(currentSubTopicId);
+            if (submitQuizButton)
+                submitQuizButton.style.display = 'inline-block';
+        });
 
     if (submitQuizButton) {
         submitQuizButton.addEventListener('click', () => {
@@ -815,7 +871,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- INITIALIZATION ---
     async function initializeApp() {
-        if (mainTopicsGrid) mainTopicsGrid.innerHTML = '<p class="loading-message">Đang tải danh sách chủ đề...</p>';
+        if (mainTopicsGrid)
+            mainTopicsGrid.innerHTML = '<p class="loading-message">Đang tải danh sách chủ đề...</p>';
         const topics = await getMainTopics();
         renderMainTopics(topics);
         mainTopicsSection.classList.remove('hidden');
@@ -830,7 +887,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Thêm các hàm mới cho tìm kiếm và phân trang
     async function handleTopicSearch() {
         const searchInput = document.getElementById('topicSearch');
-        if (!searchInput) return;
+        if (!searchInput)
+            return;
 
         currentKeyword = searchInput.value.trim();
         currentPage = 1; // Reset về trang 1 khi tìm kiếm
@@ -840,7 +898,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function handleSubTopicSearch() {
         const searchInput = document.getElementById('subTopicSearch');
-        if (!searchInput) return;
+        if (!searchInput)
+            return;
 
         currentKeyword = searchInput.value.trim();
         currentPage = 1; // Reset về trang 1 khi tìm kiếm
@@ -849,7 +908,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function handleTopicPageChange(delta) {
         const newPage = currentPage + delta;
-        if (newPage < 1 || newPage > totalPages) return;
+        if (newPage < 1 || newPage > totalPages)
+            return;
 
         currentPage = newPage;
         const topics = await getMainTopics(currentKeyword);
@@ -858,7 +918,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function handleSubTopicPageChange(delta) {
         const newPage = currentPage + delta;
-        if (newPage < 1 || newPage > totalPages) return;
+        if (newPage < 1 || newPage > totalPages)
+            return;
 
         currentPage = newPage;
         await showSubTopicsView(currentMainTopicId);
@@ -867,7 +928,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Thêm các hàm mới cho tìm kiếm và phân trang cho item (bài học/bài ôn tập)
     async function handleItemSearch(type) {
         const searchInput = document.getElementById('itemSearch');
-        if (!searchInput) return;
+        if (!searchInput)
+            return;
 
         currentKeyword = searchInput.value.trim();
         currentPage = 1; // Reset về trang 1 khi tìm kiếm
@@ -876,8 +938,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function handleItemPageChange(delta, type) {
         const newPage = currentPage + delta;
-        if (newPage < 1 || newPage > totalPages) return;
-        
+        if (newPage < 1 || newPage > totalPages)
+            return;
+
         currentPage = newPage;
         await renderItemsInLessonsContent(currentSubTopicId, type);
     }

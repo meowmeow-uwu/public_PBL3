@@ -22,6 +22,9 @@ public class ExamService implements ServiceInterface<Exam> {
 
     @Override
     public int update(Exam t) {
+        if(t.is_deleted() && !examDAO.checkExistHistory(t.getExam_id())){
+            return delete(t.getExam_id());
+        }
         return examDAO.update(t);
     }
 

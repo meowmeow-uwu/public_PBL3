@@ -146,8 +146,41 @@ public int getNumberPage(int pageSize, int SubTopicId, String keyword) {
         return 0;
     }
 
+    public boolean checkExistHistory(int id){
+        String existsQuery = "SELECT EXISTS (SELECT 1 FROM post_history WHERE post_id = ?)";
+        try (Connection c = DBUtil.makeConnection();
+        PreparedStatement existsStmt = c.prepareStatement(existsQuery)) {
+       
+       existsStmt.setInt(1, id);
+       try (ResultSet rs = existsStmt.executeQuery()) {
+           if (rs.next() && rs.getBoolean(1)) {
+               return true;
+           }
+       }
+   } catch(Exception e){
+
+   }
+   return false;
+    }
+
+
     @Override
     public int delete(int id) {
+        Connection c = null;
+        try {
+            c = DBUtil.makeConnection();
+            String query = "DELETE FROM post WHERE post_id = ?";
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, id);
+            
+            int result = s.executeUpdate();
+            s.close();
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(c);
+        }
         return 0;
     }
 

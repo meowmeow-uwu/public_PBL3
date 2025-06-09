@@ -79,6 +79,7 @@ async function handleLogin(event) {
     }
 }
 
+
 async function handleRegister(event) {
     event.preventDefault();
 

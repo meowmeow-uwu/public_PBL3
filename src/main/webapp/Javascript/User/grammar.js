@@ -721,7 +721,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Hàm xử lý nộp bài
     async function processQuizSubmission() {
         stopQuizTimerInterval();
-
+        
         try {
             // Chuẩn bị dữ liệu gửi đi
             const submissions = currentQuizData.questions.map((question, index) => {
@@ -749,25 +749,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             results.forEach((result, index) => {
                 const question = currentQuizData.questions[index];
-                if (result.answer)
-                    correctCount++;
+                if (result.answer) correctCount++;
 
                 html += `
                     <div class="result-item ${result.answer ? 'correct' : 'incorrect'}">
                         <h3>Câu ${index + 1}: ${question.content}</h3>
                         <p>Đáp án của bạn: ${
-                        question.question_type_id === 1
-                        ? question.answers.find(a => a.answer_id === userAnswers[index])?.content || 'Chưa trả lời'
-                        : userAnswers[index] || 'Chưa trả lời'
+                            question.question_type_id === 1 
+                                ? question.answers.find(a => a.answer_id === userAnswers[index])?.content || 'Chưa trả lời'
+                                : userAnswers[index] || 'Chưa trả lời'
                         }</p>
                         <p>Kết quả: ${result.answer ? 'Đúng' : 'Sai'}</p>
                         ${!result.answer ? `
                             <div class="correct-answer">
                                 <p>Đáp án đúng: ${
-                        question.question_type_id === 1
-                        ? result.answers.filter(a => a.is_correct).map(a => a.content).join(', ')
-                        : result.answer_list.join(', ')
-                        }</p>
+                                    question.question_type_id === 1
+                                        ? (result.answers?.filter(a => a.is_correct).map(a => a.content).join(', ') || '')
+                                        : (result.answer_list?.join(', ') || '')
+                                }</p>
                             </div>
                         ` : ''}
                     </div>
@@ -790,8 +789,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showLessonsAndQuizzesListView(currentSubTopicId);
             });
 
-            if (submitQuizButton)
-                submitQuizButton.style.display = 'none';
+            if (submitQuizButton) submitQuizButton.style.display = 'none';
 
         } catch (error) {
             console.error('Lỗi khi nộp bài:', error);
